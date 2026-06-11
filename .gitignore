@@ -1,3 +1,9 @@
 node_modules/
 .next/
 .env.local
+
+# OS / editor junk
+.DS_Store
+
+# TypeScript incremental build cache
+*.tsbuildinfo
