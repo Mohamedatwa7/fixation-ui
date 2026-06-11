@@ -98,10 +98,28 @@ export async function analyzeCreative(file: File, meta: AnalysisMeta): Promise<a
   if (meta.description) form.append('description', meta.description)
   if (meta.format) form.append('format_type', meta.format)
   if (meta.role) form.append('role', String(meta.role).toLowerCase().replace(/\s+/g, '_'))
-  const res = await fetch('/api/analyze?endpoint=/api/analyze/image', { method: 'POST', body: form })
+  // Submit asynchronously and poll — a synchronous request holds the HTTP
+  // connection open and trips Modal's web-request timeout (→ 408) on slower
+  // images or cold starts. This mirrors the video flow.
+  const res = await fetch('/api/analyze?endpoint=/api/analyze/image/submit', { method: 'POST', body: form })
   if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `Analysis failed (${res.status})`) }
-  const raw = await res.json()
-  return adaptResult(raw, { ...meta, mediaType: 'image' })
+  const { job_id } = await res.json()
+  if (!job_id) throw new Error('No job_id returned')
+  let attempts = 0
+  const maxAttempts = 120 // ~10 min at 5s intervals
+  while (attempts < maxAttempts) {
+    await new Promise(r => setTimeout(r, 5000))
+    let statusRes: Response
+    try { statusRes = await fetch(`/api/analyze?endpoint=/api/job/${job_id}`, { method: 'GET' }) }
+    catch { attempts++; continue }
+    if (!statusRes.ok) { attempts++; continue }
+    const status = await statusRes.json()
+    if (status.status === 'done') return adaptResult(status.result, { ...meta, mediaType: 'image' })
+    if (status.status === 'error') throw new Error(`Analysis error: ${status.error}`)
+    if (status.status === 'not_found') throw new Error('Job lost (backend restarted). Please resubmit.')
+    attempts++
+  }
+  throw new Error('Image analysis timed out')
 }
 
 export async function analyzeVideoUrl(url: string, meta: AnalysisMeta): Promise<any> {

@@ -101,6 +101,44 @@ def fastapi_app():
             if os.path.exists(tmp):
                 os.remove(tmp)
 
+    def _run_image(job_id, image_path, title, description, format_type, role):
+        try:
+            JOBS[job_id] = {"status": "analyzing"}
+            from analyze_image import analyze_image
+            report = analyze_image(
+                image_path=image_path,
+                title=title or None,
+                description=description or None,
+                format_type=format_type,
+                output_path=f"/tmp/image_report_{job_id}.json",
+                model_cache=MODEL_CACHE,
+                benchmark_path=BENCHMARK,
+                role_key=role,
+            )
+            overlay = report.get("saliency", {}).get("overlay_path")
+            kpi_data = report.get("kpis", {})
+            JOBS[job_id] = {
+                "status": "done",
+                "result": {
+                    "verdict": report.get("diagnosis", {}),
+                    "score": kpi_data.get("overall", 0),
+                    "kpis": kpi_data.get("kpis", {}),
+                    "kpis_overall": kpi_data.get("overall", 0),
+                    "localization": report.get("localization"),
+                    "heatmap": b64(overlay),
+                    "heatmap_type": "image/png",
+                },
+            }
+        except Exception as e:
+            import traceback
+            JOBS[job_id] = {"status": "error", "error": str(e), "trace": traceback.format_exc()[-800:]}
+        finally:
+            if os.path.exists(image_path):
+                try:
+                    os.remove(image_path)
+                except Exception:
+                    pass
+
     def _run_video(job_id, video_path):
         try:
             JOBS[job_id] = {"status": "analyzing"}
@@ -182,6 +220,24 @@ def fastapi_app():
                 JOBS[job_id] = {"status": "error", "error": str(e)}
 
         threading.Thread(target=work, daemon=True).start()
+        return {"job_id": job_id}
+
+    @web_app.post("/api/analyze/image/submit")
+    async def submit_image(
+        file: UploadFile = File(...),
+        title: str = Form(None), description: str = Form(None),
+        format_type: str = Form("KV"), role: str = Form("creative_director"),
+    ):
+        job_id = str(uuid.uuid4())
+        tmp = f"/tmp/upload_{job_id}_{file.filename}"
+        with open(tmp, "wb") as f:
+            f.write(await file.read())
+        JOBS[job_id] = {"status": "analyzing"}
+        threading.Thread(
+            target=_run_image,
+            args=(job_id, tmp, title, description, format_type, role),
+            daemon=True,
+        ).start()
         return {"job_id": job_id}
 
     @web_app.post("/api/analyze/video/submit")
