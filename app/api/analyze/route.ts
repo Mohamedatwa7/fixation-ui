@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-export const maxDuration = 600
+// Vercel Hobby plan caps serverless functions at 300s (Pro allows more).
+export const maxDuration = 300
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
