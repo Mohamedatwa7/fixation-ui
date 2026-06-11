@@ -17,7 +17,7 @@ export default function FullDiagnostic({ result }: Props) {
       <button
         onClick={() => setOpen(v => !v)}
         aria-expanded={open}
-        className="w-full flex items-center justify-between px-7 py-5 bg-[#141312] hover:bg-[#1a1816] transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent"
+        className="w-full flex items-center justify-between px-7 py-5 bg-panel hover:bg-elevated transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-accent"
       >
         <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
           Full Diagnostic
@@ -79,8 +79,8 @@ export default function FullDiagnostic({ result }: Props) {
               </p>
               <ul className="space-y-3">
                 {result.strengths.map((s, i) => (
-                  <li key={i} className="flex gap-3 prose-serif text-base text-white/65">
-                    <span className="text-accent mt-px flex-shrink-0">+</span>
+                  <li key={i} className="flex gap-3 font-sans text-sm text-white/65 leading-relaxed">
+                    <span className="font-mono text-accent mt-px flex-shrink-0">+</span>
                     {s}
                   </li>
                 ))}
@@ -92,8 +92,8 @@ export default function FullDiagnostic({ result }: Props) {
               </p>
               <ul className="space-y-3">
                 {result.risks.map((r, i) => (
-                  <li key={i} className="flex gap-3 prose-serif text-base text-white/65">
-                    <span className="mt-px flex-shrink-0" style={{ color: SCORE_MID }}>!</span>
+                  <li key={i} className="flex gap-3 font-sans text-sm text-white/65 leading-relaxed">
+                    <span className="font-mono mt-px flex-shrink-0" style={{ color: SCORE_MID }}>!</span>
                     <span>
                       {r.issue}
                       {r.impact && <span className="text-white/40"> — {r.impact}</span>}
@@ -105,7 +105,7 @@ export default function FullDiagnostic({ result }: Props) {
           </div>
 
           {/* Raw JSON */}
-          <div className="p-7 bg-[#0b0b0a]">
+          <div className="p-7 bg-noir">
             <button
               onClick={() => setJsonOpen(v => !v)}
               aria-expanded={jsonOpen}
@@ -133,7 +133,7 @@ function KpiRow({ kpi }: { kpi: import('@/lib/mock-data').KPI }) {
   return (
     <div>
       <div className="flex items-baseline justify-between mb-2">
-        <span className="prose-serif text-lg text-paper">{kpi.label}</span>
+        <span className="font-sans text-[15px] font-medium text-[#fafafa]">{kpi.label}</span>
         <span className="font-mono text-sm font-medium" style={{ color }}>
           {kpi.score.toFixed(1)}
         </span>
@@ -150,7 +150,7 @@ function KpiRow({ kpi }: { kpi: import('@/lib/mock-data').KPI }) {
           aria-label={kpi.label}
         />
       </div>
-      <p className="prose-serif text-[0.95rem] text-white/55 mb-1.5">
+      <p className="font-sans text-[13px] text-white/55 leading-relaxed mb-1.5">
         {kpi.methodology}
       </p>
       <p className="font-mono text-[10px] text-white/35">{kpi.citation}</p>

@@ -10,14 +10,14 @@ export default function VerdictBlock({ result }: Props) {
   const color = scoreColor(score)
 
   return (
-    <div className="border border-white/10 bg-[#141312] rounded-[2px] p-7 md:p-10">
+    <div className="border border-white/10 bg-panel rounded-[3px] p-7 md:p-10">
       <div className="flex flex-col sm:flex-row sm:items-start gap-7 md:gap-12">
 
         {/* Score column */}
         <div className="flex-shrink-0 flex flex-col items-start gap-3">
           <span
-            className="font-serif font-normal leading-[0.85] tracking-tightest"
-            style={{ fontSize: 'clamp(5rem, 11vw, 8rem)', color }}
+            className="font-mono font-semibold leading-[0.85] tracking-tightest"
+            style={{ fontSize: 'clamp(4rem, 9vw, 6.5rem)', color }}
             aria-label={`Score: ${score} out of 10`}
           >
             {score.toFixed(1)}
@@ -37,7 +37,7 @@ export default function VerdictBlock({ result }: Props) {
 
         {/* Verdict + meta */}
         <div className="flex-1 sm:pt-1">
-          <p className="prose-serif text-2xl md:text-[1.75rem] text-paper leading-snug mb-6">
+          <p className="font-sans text-xl md:text-2xl font-medium text-[#fafafa] leading-snug mb-6 tracking-tight">
             {result.verdict}
           </p>
 

@@ -129,231 +129,245 @@ export default function UploadPage() {
     }
   }
 
-  return (
-    <main className="bg-paper text-ink min-h-screen bg-grid-light">
-      <Nav active="upload" theme="light" />
+  const source = inputMode === 'upload' ? (file ? 'FILE' : '—') : 'URL'
+  const configReadout = `${mediaType === 'image' ? 'IMG' : 'VID'} · ${source} · ${role.toUpperCase()} · ${format}`
 
-      <div className="pt-16 min-h-screen flex items-start justify-center px-6 py-20">
+  return (
+    <main className="relative min-h-screen bg-noir text-[#fafafa]">
+      <Nav active="upload" />
+      <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
+      <div className="absolute inset-0 spotlight pointer-events-none" aria-hidden="true" />
+
+      <div className="relative pt-16 min-h-screen flex items-start justify-center px-4 sm:px-6 py-16">
         <div className="w-full max-w-2xl">
 
-          {/* Header */}
-          <div className="mb-12 animate-rise">
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent mb-5">
-              New Diagnostic
-            </p>
-            <h1 className="font-serif font-normal tracking-tightest text-ink leading-[1.05] mb-4"
-                style={{ fontSize: 'clamp(2.25rem, 5vw, 3.5rem)' }}>
-              Upload your creative.
+          {/* Header — centered */}
+          <div className="text-center mb-10 animate-rise">
+            <div className="inline-flex items-center gap-2.5 mb-6 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03]">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent pulse-dot" aria-hidden="true" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
+                {isAnalyzing ? 'Analyzing' : 'Engine ready'}
+              </span>
+            </div>
+            <h1 className="font-mono font-semibold tracking-tightest text-[#fafafa] leading-tight"
+                style={{ fontSize: 'clamp(1.75rem, 4vw, 2.75rem)' }}>
+              Run a diagnostic
+              <span className="text-accent cursor-blink">_</span>
             </h1>
-            <p className="prose-serif text-lg text-ink/55 max-w-md">
-              Drop a video or static image. Full diagnosis in under thirty seconds.
+            <p className="font-sans text-sm text-white/50 mt-3 max-w-md mx-auto">
+              Drop a video or static image. Full attention diagnosis in under thirty seconds.
             </p>
           </div>
 
-          {/* Media type toggle */}
-          <SegmentLabel>Medium</SegmentLabel>
-          <div className="flex mb-6 rounded-[2px] overflow-hidden border border-ink/15">
-            {(['image', 'video'] as const).map(type => (
-              <button
-                key={type}
-                onClick={() => setMediaType(type)}
-                aria-pressed={mediaType === type}
-                className={`flex-1 py-3 text-[10px] font-mono uppercase tracking-[0.18em] transition-colors duration-300
-                  ${mediaType === type ? 'bg-ink text-paper' : 'bg-transparent text-ink/50 hover:text-ink'}`}
-              >
-                {type === 'image' ? 'Static image' : 'Video'}
-              </button>
-            ))}
-          </div>
+          {/* Console panel */}
+          <div className="rounded-[5px] border border-white/10 bg-panel overflow-hidden animate-rise"
+               style={{ animationDelay: '0.1s' }}>
 
-          {/* Input mode toggle */}
-          <SegmentLabel>Source</SegmentLabel>
-          <div className="flex mb-8 rounded-[2px] overflow-hidden border border-ink/15">
-            {(['upload', 'url'] as const).map(mode => (
-              <button
-                key={mode}
-                onClick={() => { setInputMode(mode); setError(null) }}
-                aria-pressed={inputMode === mode}
-                disabled={isAnalyzing}
-                className={`flex-1 py-3 text-[10px] font-mono uppercase tracking-[0.18em] transition-colors duration-300 disabled:opacity-50
-                  ${inputMode === mode ? 'bg-ink text-paper' : 'bg-transparent text-ink/50 hover:text-ink'}`}
-              >
-                {mode === 'upload' ? 'Upload file' : 'Paste URL'}
-              </button>
-            ))}
-          </div>
+            {/* Window-chrome header */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-white/10 bg-white/[0.02]">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full border border-white/15" aria-hidden="true" />
+                <span className="w-2.5 h-2.5 rounded-full border border-white/15" aria-hidden="true" />
+                <span className="w-2.5 h-2.5 rounded-full bg-accent/80" aria-hidden="true" />
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 ml-2">
+                  F1X8 // diagnostic engine
+                </span>
+              </div>
+              <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/30">
+                v2.1
+              </span>
+            </div>
 
-          {/* Drop zone / URL input */}
-          {inputMode === 'upload' ? (
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onClick={() => !isAnalyzing && fileInputRef.current?.click()}
-              onKeyDown={e => { if (!isAnalyzing && (e.key === 'Enter' || e.key === ' ')) fileInputRef.current?.click() }}
-              role="button"
-              tabIndex={0}
-              aria-label="Upload creative file"
-              className={`relative w-full h-56 flex flex-col items-center justify-center rounded-[2px] border border-dashed transition-all duration-300 mb-8 select-none
-                ${isAnalyzing ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
-                ${isDragging ? 'border-accent bg-accent/5'
-                  : file ? 'border-ink/40 bg-white/40'
-                  : 'border-ink/20 bg-white/30 hover:border-ink/40'}`}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                className="sr-only"
-                accept={mediaType === 'image' ? 'image/jpeg,image/png,image/webp' : 'video/mp4,video/quicktime'}
-                onChange={handleFileInput}
-                aria-hidden="true"
-                tabIndex={-1}
-                disabled={isAnalyzing}
-              />
-              {file ? (
-                <div className="flex flex-col items-center gap-2 px-6 w-full">
-                  <FileIcon />
-                  <p className="font-mono text-sm text-ink truncate max-w-xs">{file.name}</p>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/45">
-                    {(file.size / 1024 / 1024).toFixed(1)} MB · click to replace
-                  </p>
+            <div className="p-5 sm:p-7 space-y-7">
+
+              {/* Step 01 — Medium + Source */}
+              <Field step="01" label="Input">
+                <div className="grid grid-cols-2 gap-3">
+                  <Segment
+                    options={[['image', 'Static'], ['video', 'Video']]}
+                    value={mediaType}
+                    onChange={v => setMediaType(v as 'image' | 'video')}
+                  />
+                  <Segment
+                    options={[['upload', 'Upload'], ['url', 'URL']]}
+                    value={inputMode}
+                    onChange={v => { setInputMode(v as InputMode); setError(null) }}
+                    disabled={isAnalyzing}
+                  />
                 </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3">
-                  <UploadIcon dragging={isDragging} />
-                  <p className="prose-serif text-lg text-ink/70 mt-1">
-                    {isDragging ? 'Release to upload' : 'Drop file here, or click to browse'}
-                  </p>
-                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40">
-                    {mediaType === 'image' ? 'JPG · PNG · WebP' : 'MP4 · MOV'}&ensp;·&ensp;max 50 MB
-                  </p>
+              </Field>
+
+              {/* Step 02 — Source target */}
+              <Field step="02" label="Creative">
+                {inputMode === 'upload' ? (
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onClick={() => !isAnalyzing && fileInputRef.current?.click()}
+                    onKeyDown={e => { if (!isAnalyzing && (e.key === 'Enter' || e.key === ' ')) fileInputRef.current?.click() }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Upload creative file"
+                    className={`group relative w-full h-52 flex flex-col items-center justify-center rounded-[3px] border transition-all duration-300 select-none
+                      ${isAnalyzing ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}
+                      ${isDragging ? 'border-accent bg-accent/5'
+                        : file ? 'border-white/25 bg-white/[0.02]'
+                        : 'border-dashed border-white/15 bg-white/[0.015] hover:border-white/30'}`}
+                  >
+                    {/* crosshair corner ticks */}
+                    <CornerTicks active={isDragging} />
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      className="sr-only"
+                      accept={mediaType === 'image' ? 'image/jpeg,image/png,image/webp' : 'video/mp4,video/quicktime'}
+                      onChange={handleFileInput}
+                      aria-hidden="true"
+                      tabIndex={-1}
+                      disabled={isAnalyzing}
+                    />
+                    {file ? (
+                      <div className="flex flex-col items-center gap-2 px-6 w-full">
+                        <FileIcon />
+                        <p className="font-mono text-sm text-accent truncate max-w-xs">{file.name}</p>
+                        <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40">
+                          {(file.size / 1024 / 1024).toFixed(1)} MB · click to replace
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center gap-3">
+                        <UploadIcon dragging={isDragging} />
+                        <p className="font-sans text-sm text-white/60 mt-1">
+                          {isDragging ? 'Release to upload' : 'Drop file here, or click to browse'}
+                        </p>
+                        <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/35">
+                          {mediaType === 'image' ? 'JPG · PNG · WebP' : 'MP4 · MOV'}&ensp;·&ensp;max 50 MB
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-center gap-2 rounded-[3px] border border-white/15 bg-white/[0.02] px-3 focus-within:border-accent transition-colors duration-300">
+                      <span className="font-mono text-xs text-accent/70 select-none">›</span>
+                      <input
+                        type="url"
+                        value={mediaUrl}
+                        onChange={e => {
+                          const val = e.target.value
+                          setMediaUrl(val)
+                          setError(null)
+                          // Auto-switch to video for social media links
+                          if (/tiktok\.com|instagram\.com|youtube\.com|youtu\.be|twitter\.com|x\.com|facebook\.com/.test(val)) {
+                            setMediaType('video')
+                          }
+                        }}
+                        placeholder="https://tiktok.com/…  or direct image/video URL"
+                        disabled={isAnalyzing}
+                        className="flex-1 bg-transparent py-3.5 font-mono text-xs text-[#fafafa] placeholder-white/30 focus:outline-none disabled:opacity-50"
+                      />
+                    </div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/35 mt-2.5">
+                      TikTok · Instagram · YouTube · or direct media URL
+                    </p>
+                  </div>
+                )}
+              </Field>
+
+              {/* Step 03 — Lens */}
+              <Field step="03" label="Read as">
+                <Segment
+                  options={ROLES.map(r => [r, r] as [string, string])}
+                  value={role}
+                  onChange={v => setRole(v as Role)}
+                  disabled={isAnalyzing}
+                  small
+                />
+              </Field>
+
+              {/* Step 04 — Parameters */}
+              <Field step="04" label="Parameters">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="relative">
+                    <select
+                      value={format}
+                      onChange={e => setFormat(e.target.value as Format)}
+                      disabled={isAnalyzing}
+                      aria-label="Format"
+                      className="w-full appearance-none bg-white/[0.02] border border-white/15 rounded-[3px] px-3.5 py-3 font-mono text-xs text-[#fafafa] focus:outline-none focus:border-accent cursor-pointer transition-colors duration-300 pr-8 disabled:opacity-50"
+                    >
+                      {FORMATS.map(f => <option key={f} value={f} className="bg-panel">{f}</option>)}
+                    </select>
+                    <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
+                      <ChevronIcon />
+                    </div>
+                  </div>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    placeholder="Title (optional)"
+                    disabled={isAnalyzing}
+                    className="w-full bg-white/[0.02] border border-white/15 rounded-[3px] px-3.5 py-3 font-mono text-xs text-[#fafafa] placeholder-white/30 focus:outline-none focus:border-accent transition-colors duration-300 disabled:opacity-50"
+                  />
+                </div>
+                <textarea
+                  value={context}
+                  onChange={e => setContext(e.target.value)}
+                  placeholder="Context — campaign objective, audience, anything the diagnostic should account for… (optional)"
+                  rows={2}
+                  disabled={isAnalyzing}
+                  className="w-full mt-3 bg-white/[0.02] border border-white/15 rounded-[3px] px-3.5 py-3 font-sans text-xs text-[#fafafa] placeholder-white/30 focus:outline-none focus:border-accent transition-colors duration-300 resize-none disabled:opacity-50"
+                />
+              </Field>
+
+              {/* Error */}
+              {error && (
+                <div className="flex items-start gap-2 px-4 py-3 border border-accent/40 bg-accent/10 rounded-[3px]">
+                  <span className="font-mono text-xs text-accent">✕</span>
+                  <p className="font-mono text-xs text-accent leading-relaxed">{error}</p>
                 </div>
               )}
-            </div>
-          ) : (
-            <div className="mb-8">
-              <input
-                type="url"
-                value={mediaUrl}
-                onChange={e => {
-                  const val = e.target.value
-                  setMediaUrl(val)
-                  setError(null)
-                  // Auto-switch to video for social media links
-                  if (/tiktok\.com|instagram\.com|youtube\.com|youtu\.be|twitter\.com|x\.com|facebook\.com/.test(val)) {
-                    setMediaType('video')
-                  }
-                }}
-                placeholder="https://www.tiktok.com/… or direct image/video URL"
+
+              {/* Analyze button */}
+              <button
+                onClick={handleAnalyze}
                 disabled={isAnalyzing}
-                className="w-full bg-white/40 border border-ink/15 rounded-[2px] px-4 py-3.5 font-mono text-xs text-ink placeholder-ink/35 focus:outline-none focus:border-accent transition-colors duration-300 disabled:opacity-50"
-              />
-              <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40 mt-3">
-                TikTok · Instagram · YouTube · or direct image / video URL
-              </p>
-            </div>
-          )}
-
-          {/* Role selector */}
-          <div className="mb-6">
-            <SegmentLabel>Read as</SegmentLabel>
-            <div className="flex rounded-[2px] overflow-hidden border border-ink/15">
-              {ROLES.map(r => (
-                <button
-                  key={r}
-                  onClick={() => setRole(r)}
-                  aria-pressed={role === r}
-                  disabled={isAnalyzing}
-                  className={`flex-1 py-3 px-2 text-[11px] font-mono leading-tight transition-colors duration-300
-                    ${role === r ? 'bg-ink text-paper' : 'bg-transparent text-ink/50 hover:text-ink'}`}
-                >
-                  {r}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Format + Title */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
-            <div>
-              <SegmentLabel>Format</SegmentLabel>
-              <div className="relative">
-                <select
-                  value={format}
-                  onChange={e => setFormat(e.target.value as Format)}
-                  disabled={isAnalyzing}
-                  className="w-full appearance-none bg-white/40 border border-ink/15 rounded-[2px] px-4 py-3 font-mono text-xs text-ink focus:outline-none focus:border-accent cursor-pointer transition-colors duration-300 pr-8 disabled:opacity-50"
-                >
-                  {FORMATS.map(f => <option key={f} value={f}>{f}</option>)}
-                </select>
-                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink/45">
-                  <ChevronIcon />
-                </div>
-              </div>
+                className="group w-full bg-accent text-[#0a0a0a] font-mono text-[11px] font-medium uppercase tracking-[0.18em] py-4 rounded-[3px]
+                           hover:bg-[#ff6a44]
+                           disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-accent
+                           transition-colors duration-300 ease-cinematic
+                           flex items-center justify-center gap-3
+                           shadow-[0_0_36px_-10px_rgba(255,79,35,0.7)]"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <SpinnerIcon />
+                    {(inputMode === 'url' ? URL_LOADING_STEPS : LOADING_STEPS)[loadingStep]}
+                  </>
+                ) : (
+                  <>
+                    Execute analysis
+                    <ArrowIcon />
+                  </>
+                )}
+              </button>
             </div>
 
-            <div>
-              <SegmentLabel>
-                Title <span className="text-ink/30">(optional)</span>
-              </SegmentLabel>
-              <input
-                type="text"
-                value={title}
-                onChange={e => setTitle(e.target.value)}
-                placeholder="Ramadan KV — Hero Banner"
-                disabled={isAnalyzing}
-                className="w-full bg-white/40 border border-ink/15 rounded-[2px] px-4 py-3 font-mono text-xs text-ink placeholder-ink/35 focus:outline-none focus:border-accent transition-colors duration-300 disabled:opacity-50"
-              />
+            {/* Console status line */}
+            <div className="flex items-center justify-between px-5 py-2.5 border-t border-white/10 bg-white/[0.02]">
+              <span className="font-mono text-[10px] tracking-[0.14em] text-white/35">
+                <span className="text-accent/70">cfg</span> {configReadout}
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/30">
+                {isAnalyzing ? 'processing…' : 'idle'}
+              </span>
             </div>
           </div>
-
-          {/* Context */}
-          <div className="mb-8">
-            <SegmentLabel>
-              Context <span className="text-ink/30">(optional)</span>
-            </SegmentLabel>
-            <textarea
-              value={context}
-              onChange={e => setContext(e.target.value)}
-              placeholder="Campaign objective, target audience, or anything the diagnostic should account for…"
-              rows={3}
-              disabled={isAnalyzing}
-              className="w-full bg-white/40 border border-ink/15 rounded-[2px] px-4 py-3 font-mono text-xs text-ink placeholder-ink/35 focus:outline-none focus:border-accent transition-colors duration-300 resize-none disabled:opacity-50"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="mb-5 px-4 py-3 border border-accent/40 bg-accent/10 rounded-[2px]">
-              <p className="font-mono text-xs text-accent">{error}</p>
-            </div>
-          )}
-
-          {/* Analyze button */}
-          <button
-            onClick={handleAnalyze}
-            disabled={isAnalyzing}
-            className="group w-full bg-ink text-paper font-mono text-[11px] uppercase tracking-[0.18em] py-4 rounded-[2px]
-                       hover:bg-accent
-                       disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-ink
-                       transition-colors duration-300 ease-cinematic
-                       flex items-center justify-center gap-3"
-          >
-            {isAnalyzing ? (
-              <>
-                <SpinnerIcon />
-                {(inputMode === 'url' ? URL_LOADING_STEPS : LOADING_STEPS)[loadingStep]}
-              </>
-            ) : (
-              <>
-                Analyze creative
-                <ArrowIcon />
-              </>
-            )}
-          </button>
 
           {isAnalyzing && (
-            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40 text-center mt-4">
+            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/35 text-center mt-4">
               This may take up to a few minutes for large files.
             </p>
           )}
@@ -363,22 +377,66 @@ export default function UploadPage() {
   )
 }
 
-/* ── Small building blocks ──────────────────────────────────────────────────── */
+/* ── Building blocks ────────────────────────────────────────────────────────── */
 
-function SegmentLabel({ children }: { children: React.ReactNode }) {
+function Field({ step, label, children }: { step: string; label: string; children: React.ReactNode }) {
   return (
-    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink/45 mb-2.5">
+    <div>
+      <div className="flex items-center gap-2.5 mb-3">
+        <span className="font-mono text-[10px] text-accent/70 tracking-[0.1em]">{step}</span>
+        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/45">{label}</span>
+        <span className="h-px flex-1 bg-white/10" aria-hidden="true" />
+      </div>
       {children}
-    </p>
+    </div>
+  )
+}
+
+function Segment({
+  options, value, onChange, disabled, small,
+}: {
+  options: [string, string][]
+  value: string
+  onChange: (v: string) => void
+  disabled?: boolean
+  small?: boolean
+}) {
+  return (
+    <div className="flex rounded-[3px] overflow-hidden border border-white/15">
+      {options.map(([val, label]) => (
+        <button
+          key={val}
+          onClick={() => onChange(val)}
+          aria-pressed={value === val}
+          disabled={disabled}
+          className={`flex-1 ${small ? 'py-2.5 px-1.5 text-[10px]' : 'py-3 text-[11px]'} font-mono uppercase tracking-[0.12em] leading-tight transition-colors duration-300 disabled:opacity-50
+            ${value === val ? 'bg-accent text-[#0a0a0a]' : 'bg-transparent text-white/45 hover:text-white/80 hover:bg-white/[0.03]'}`}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
   )
 }
 
 /* ── Icons ──────────────────────────────────────────────────────────────────── */
 
+function CornerTicks({ active }: { active: boolean }) {
+  const c = active ? 'border-accent' : 'border-white/20'
+  return (
+    <div aria-hidden="true" className="pointer-events-none absolute inset-2.5 transition-colors duration-300">
+      <span className={`absolute top-0 left-0 w-3 h-3 border-t border-l ${c}`} />
+      <span className={`absolute top-0 right-0 w-3 h-3 border-t border-r ${c}`} />
+      <span className={`absolute bottom-0 left-0 w-3 h-3 border-b border-l ${c}`} />
+      <span className={`absolute bottom-0 right-0 w-3 h-3 border-b border-r ${c}`} />
+    </div>
+  )
+}
+
 function UploadIcon({ dragging }: { dragging: boolean }) {
   return (
     <svg width="30" height="30" viewBox="0 0 28 28" fill="none" aria-hidden="true"
-      className={`transition-colors duration-300 ${dragging ? 'text-accent' : 'text-ink/40'}`}>
+      className={`transition-colors duration-300 ${dragging ? 'text-accent' : 'text-white/40'}`}>
       <path d="M14 18V8M9 13l5-5 5 5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M5 21h18" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
     </svg>
@@ -406,7 +464,7 @@ function ArrowIcon() {
   return (
     <svg width="15" height="11" viewBox="0 0 16 12" fill="none" aria-hidden="true"
       className="transition-transform duration-300 ease-cinematic group-hover:translate-x-1">
-      <path d="M1 6h13M10 1l5 5-5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M1 6h13M10 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

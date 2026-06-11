@@ -44,12 +44,12 @@ export default function CustomMetricPanel({ diagnosticId }: Props) {
   }
 
   return (
-    <div className="border border-white/10 bg-[#141312] rounded-[2px] p-7">
+    <div className="border border-white/10 bg-panel rounded-[3px] p-7">
       <div className="mb-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40 mb-2">
           Custom Metric
         </p>
-        <p className="prose-serif text-base text-white/55 max-w-lg">
+        <p className="font-sans text-sm text-white/55 max-w-lg leading-relaxed">
           Ask for any quality. Returned as AI judgment — clearly distinguished from grounded measurements.
         </p>
       </div>
@@ -61,14 +61,14 @@ export default function CustomMetricPanel({ diagnosticId }: Props) {
           value={query}
           onChange={e => setQuery(e.target.value)}
           placeholder="e.g. luxury feel, Gen-Z appeal, urgency…"
-          className="flex-1 bg-[#0b0b0a] border border-white/10 rounded-[2px] px-4 py-3 font-mono text-xs text-paper placeholder-white/30 focus:outline-none focus:border-accent transition-colors duration-300"
+          className="flex-1 bg-noir border border-white/10 rounded-[3px] px-4 py-3 font-mono text-xs text-[#fafafa] placeholder-white/30 focus:outline-none focus:border-accent transition-colors duration-300"
           aria-label="Custom metric query"
         />
         <button
           type="submit"
           disabled={!query.trim() || isLoading}
-          className="px-5 py-3 bg-paper text-ink text-[10px] font-mono uppercase tracking-[0.16em] rounded-[2px]
-                     hover:bg-accent hover:text-paper disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-paper disabled:hover:text-ink
+          className="px-5 py-3 bg-[#fafafa] text-[#0a0a0a] text-[10px] font-mono uppercase tracking-[0.16em] rounded-[3px]
+                     hover:bg-accent hover:text-[#0a0a0a] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[#fafafa] disabled:hover:text-[#0a0a0a]
                      transition-colors duration-300 whitespace-nowrap"
         >
           {isLoading ? (
@@ -87,7 +87,7 @@ export default function CustomMetricPanel({ diagnosticId }: Props) {
             key={s}
             type="button"
             onClick={() => handleSuggestion(s)}
-            className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40 border border-white/10 rounded-[2px] px-2.5 py-1.5
+            className="font-mono text-[10px] uppercase tracking-[0.12em] text-white/40 border border-white/10 rounded-[3px] px-2.5 py-1.5
                        hover:border-accent hover:text-accent transition-colors duration-300"
           >
             {s}
@@ -98,14 +98,14 @@ export default function CustomMetricPanel({ diagnosticId }: Props) {
       {/* Result card */}
       {result && (
         <div
-          className="border rounded-[2px] p-5"
+          className="border rounded-[3px] p-5"
           style={{ borderColor: `${AI_GOLD}33`, backgroundColor: `${AI_GOLD}0d` }}
         >
           {/* AI Judgment badge — visually distinct from grounded KPIs */}
           <div className="flex items-center justify-between mb-5 flex-wrap gap-2">
             <div className="flex items-center gap-2.5">
               <span
-                className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
+                className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] px-2.5 py-1 rounded-[3px] border"
                 style={{ color: AI_GOLD, backgroundColor: `${AI_GOLD}1f`, borderColor: `${AI_GOLD}40` }}
               >
                 ⚠ AI Judgment
@@ -113,7 +113,7 @@ export default function CustomMetricPanel({ diagnosticId }: Props) {
               <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/40">not a grounded measurement</span>
             </div>
             <span
-              className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px]"
+              className="font-mono text-[10px] font-medium uppercase tracking-[0.16em] px-2.5 py-1 rounded-[3px]"
               style={{
                 color: CONFIDENCE_COLOR[result.confidence],
                 backgroundColor: `${CONFIDENCE_COLOR[result.confidence]}15`,
@@ -125,13 +125,13 @@ export default function CustomMetricPanel({ diagnosticId }: Props) {
           </div>
 
           <div className="flex items-baseline gap-4 mb-3">
-            <span className="font-serif font-normal text-5xl leading-none" style={{ color: AI_GOLD }}>
+            <span className="font-mono font-semibold text-4xl leading-none tracking-tightest" style={{ color: AI_GOLD }}>
               {result.score.toFixed(1)}
             </span>
-            <span className="prose-serif text-lg text-paper capitalize">{result.label}</span>
+            <span className="font-sans text-base font-medium text-[#fafafa] capitalize">{result.label}</span>
           </div>
 
-          <p className="prose-serif text-base text-white/55">
+          <p className="font-sans text-sm text-white/55 leading-relaxed">
             {result.reasoning}
           </p>
         </div>

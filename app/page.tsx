@@ -3,95 +3,110 @@ import Nav from '@/components/Nav'
 
 export default function LandingPage() {
   return (
-    <main className="bg-paper text-ink">
-      <Nav theme="light" />
+    <main className="bg-noir text-[#fafafa]">
+      <Nav />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section
-        className="bg-grid-light relative min-h-screen flex flex-col justify-center pt-16"
+        className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden"
         aria-label="Hero"
       >
-        <div className="max-w-6xl w-full mx-auto px-6 md:px-10">
+        {/* Layered backdrops */}
+        <div className="absolute inset-0 bg-grid" aria-hidden="true" />
+        <div className="absolute inset-0 spotlight" aria-hidden="true" />
+        <div
+          className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-noir to-transparent"
+          aria-hidden="true"
+        />
 
-          {/* Eyebrow / wordmark */}
-          <div className="flex items-center gap-4 mb-10 animate-rise">
-            <span className="font-mono text-sm font-semibold tracking-tightest text-ink">
-              F<span className="text-accent">1</span>X<span className="text-accent">8</span>
-            </span>
-            <span className="h-px flex-1 max-w-[80px] bg-ink/15" aria-hidden="true" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink/45">
-              Creative Diagnostics
+        <div className="relative z-10 w-full max-w-3xl mx-auto px-6 flex flex-col items-center text-center">
+
+          {/* Status eyebrow */}
+          <div
+            className="flex items-center gap-2.5 mb-10 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] animate-rise"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-accent pulse-dot" aria-hidden="true" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
+              Diagnostic engine · online
             </span>
           </div>
 
+          {/* Wordmark */}
+          <p
+            className="font-mono font-bold leading-none tracking-tightest select-none text-[#fafafa] animate-rise"
+            style={{ fontSize: 'clamp(4.5rem, 16vw, 11rem)', animationDelay: '0.06s' }}
+            aria-label="F1X8"
+          >
+            F<span className="text-accent">1</span>X<span className="text-accent">8</span>
+          </p>
+
           {/* Headline */}
           <h1
-            className="font-serif font-normal text-ink leading-[1.02] tracking-tightest max-w-4xl
-                       animate-rise"
-            style={{ fontSize: 'clamp(2.75rem, 7vw, 6.5rem)', animationDelay: '0.08s' }}
+            className="font-mono font-semibold leading-[1.05] tracking-tightest text-[#fafafa] mt-8 animate-rise"
+            style={{ fontSize: 'clamp(1.5rem, 4vw, 2.75rem)', animationDelay: '0.12s' }}
           >
             See what your audience sees,{' '}
-            <span className="italic text-accent">before they do.</span>
+            <span className="text-accent">before they do.</span>
           </h1>
 
           {/* Sub-line */}
           <p
-            className="prose-serif text-ink/55 mt-8 max-w-xl animate-rise"
-            style={{ fontSize: 'clamp(1.05rem, 1.6vw, 1.35rem)', animationDelay: '0.16s' }}
+            className="font-sans text-base md:text-lg text-white/50 leading-relaxed mt-7 max-w-xl animate-rise"
+            style={{ animationDelay: '0.16s' }}
           >
-            A cognitive-science approach to attention — diagnostics for video and
-            static creative, grounded in real gaze data.
+            Cognitive-science attention diagnostics for video and static creative —
+            grounded in real gaze data, calibrated against 30,000 ads.
           </p>
 
-          {/* CTA row */}
+          {/* CTA */}
           <div
-            className="mt-12 flex flex-wrap items-center gap-6 animate-rise"
+            className="mt-11 flex flex-col items-center gap-5 animate-rise"
             style={{ animationDelay: '0.24s' }}
           >
             <Link
               href="/upload"
-              className="group inline-flex items-center gap-3 bg-ink text-paper font-mono text-[11px]
-                         uppercase tracking-[0.18em] px-8 py-4 rounded-[2px]
-                         hover:bg-accent transition-colors duration-300 ease-cinematic"
+              className="group inline-flex items-center gap-3 bg-accent text-[#0a0a0a] font-mono text-[11px]
+                         font-medium uppercase tracking-[0.18em] px-8 py-4 rounded-[3px]
+                         hover:bg-[#ff6a44] transition-colors duration-300 ease-cinematic
+                         shadow-[0_0_40px_-8px_rgba(255,79,35,0.6)]"
             >
               Run a diagnostic
               <ArrowRight />
             </Link>
-            <span className="font-mono text-[11px] tracking-wide text-ink/40">
+            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
               No account required · Results in &lt; 30s
             </span>
           </div>
         </div>
 
         {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-6 md:left-10 flex items-center gap-3" aria-hidden="true">
-          <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-ink/35">Scroll</span>
-          <svg width="14" height="10" viewBox="0 0 14 10" fill="none">
-            <path d="M1 1l6 6 6-6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-ink/35" />
+        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" aria-hidden="true">
+          <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-white/30">Scroll</span>
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+            <path d="M6 1v12M2 9l4 4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-white/30" />
           </svg>
         </div>
       </section>
 
-      {/* ── Grounding strip ──────────────────────────────────── */}
-      <section className="border-t border-ink/10 bg-paper" aria-label="Why F1X8">
-        <div className="max-w-6xl mx-auto px-6 md:px-10 py-20 md:py-28">
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-ink/40 mb-12">
-            The Method
+      {/* ── Method grid ──────────────────────────────────────── */}
+      <section className="relative border-t border-white/10 bg-noir" aria-label="Why F1X8">
+        <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40 mb-14 text-center">
+            ── The Method ──
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {groundingItems.map((item, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10 rounded-[3px] overflow-hidden">
+            {groundingItems.map(item => (
               <article
                 key={item.label}
-                className={`flex flex-col py-8 lg:py-0 lg:px-10 first:lg:pl-0 last:lg:pr-0
-                  ${i > 0 ? 'border-t sm:border-t-0 sm:[&:nth-child(odd)]:border-l-0 lg:border-l border-ink/10' : ''}`}
+                className="flex flex-col items-center text-center bg-noir px-6 py-10 hover:bg-panel transition-colors duration-300"
               >
-                <span className="font-mono text-[11px] tracking-[0.2em] text-accent mb-5">
+                <span className="font-mono text-xs tracking-[0.2em] text-accent mb-5">
                   {item.numeral}
                 </span>
-                <h3 className="font-serif text-2xl md:text-[1.75rem] leading-tight text-ink mb-3">
+                <h3 className="font-mono text-base font-semibold tracking-tight text-[#fafafa] mb-3">
                   {item.label}
                 </h3>
-                <p className="prose-serif text-[0.95rem] text-ink/55">
+                <p className="font-sans text-[13px] text-white/50 leading-relaxed">
                   {item.description}
                 </p>
               </article>
@@ -100,21 +115,23 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Closing CTA band ─────────────────────────────────── */}
-      <section className="border-t border-ink/10 bg-ink text-paper" aria-label="Get started">
-        <div className="max-w-6xl mx-auto px-6 md:px-10 py-24 md:py-32 flex flex-col items-start">
+      {/* ── Closing CTA ──────────────────────────────────────── */}
+      <section className="relative border-t border-white/10 overflow-hidden" aria-label="Get started">
+        <div className="absolute inset-0 bg-dots opacity-60" aria-hidden="true" />
+        <div className="relative max-w-3xl mx-auto px-6 py-24 md:py-32 flex flex-col items-center text-center">
           <h2
-            className="font-serif font-normal leading-[1.05] tracking-tightest max-w-3xl"
-            style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}
+            className="font-mono font-semibold leading-[1.08] tracking-tightest text-[#fafafa]"
+            style={{ fontSize: 'clamp(1.75rem, 4.5vw, 3.25rem)' }}
           >
             Stop guessing what gets seen.{' '}
-            <span className="italic text-accent">Measure it.</span>
+            <span className="text-accent">Measure it.</span>
           </h2>
           <Link
             href="/upload"
-            className="group mt-10 inline-flex items-center gap-3 bg-paper text-ink font-mono text-[11px]
-                       uppercase tracking-[0.18em] px-8 py-4 rounded-[2px]
-                       hover:bg-accent hover:text-paper transition-colors duration-300 ease-cinematic"
+            className="group mt-10 inline-flex items-center gap-3 bg-accent text-[#0a0a0a] font-mono text-[11px]
+                       font-medium uppercase tracking-[0.18em] px-8 py-4 rounded-[3px]
+                       hover:bg-[#ff6a44] transition-colors duration-300 ease-cinematic
+                       shadow-[0_0_40px_-8px_rgba(255,79,35,0.6)]"
           >
             Run a diagnostic
             <ArrowRight />
@@ -123,12 +140,12 @@ export default function LandingPage() {
       </section>
 
       {/* ── Footer ───────────────────────────────────────────── */}
-      <footer className="bg-ink text-paper border-t border-white/10 px-6 md:px-10 py-8">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <span className="font-mono text-xs tracking-tightest text-paper/70">
+      <footer className="border-t border-white/10 px-6 md:px-10 py-8">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <span className="font-mono text-xs tracking-tightest text-white/60">
             F<span className="text-accent">1</span>X<span className="text-accent">8</span>
           </span>
-          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-paper/35">
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/30">
             © 2025 — All rights reserved
           </span>
         </div>
@@ -143,7 +160,7 @@ function ArrowRight() {
   return (
     <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true"
       className="transition-transform duration-300 ease-cinematic group-hover:translate-x-1">
-      <path d="M1 6h13M10 1l5 5-5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M1 6h13M10 1l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
 }

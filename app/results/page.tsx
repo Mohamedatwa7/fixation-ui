@@ -33,11 +33,11 @@ function VideoMetadataStrip({ meta }: { meta: VideoMetadata }) {
   if (items.length === 0) return null
 
   return (
-    <div className="flex flex-wrap gap-x-8 gap-y-2 px-5 py-4 bg-[#141312] border border-white/10 rounded-[2px]">
+    <div className="flex flex-wrap gap-x-8 gap-y-2 px-5 py-4 bg-panel border border-white/10 rounded-[3px]">
       {items.map(({ label, value }) => (
         <div key={label} className="flex items-center gap-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">{label}</span>
-          <span className="font-mono text-xs text-paper">{value}</span>
+          <span className="font-mono text-xs text-[#fafafa]">{value}</span>
         </div>
       ))}
     </div>
@@ -65,8 +65,8 @@ export default function ResultsPage() {
 
   if (!result) {
     return (
-      <main className="bg-[#0b0b0a] min-h-screen text-paper">
-        <Nav active="results" theme="dark" />
+      <main className="bg-noir min-h-screen text-[#fafafa]">
+        <Nav active="results" />
         <div className="pt-16 min-h-screen flex items-center justify-center">
           <div className="flex items-center gap-3">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="animate-spin text-accent">
@@ -81,10 +81,11 @@ export default function ResultsPage() {
   }
 
   return (
-    <main className="bg-[#0b0b0a] min-h-screen text-paper bg-grid-dark">
-      <Nav active="results" theme="dark" />
+    <main className="relative bg-noir min-h-screen text-[#fafafa]">
+      <Nav active="results" />
+      <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
 
-      <div className="pt-16 px-4 sm:px-6 py-12">
+      <div className="relative pt-16 px-4 sm:px-6 py-12">
         <div className="max-w-4xl mx-auto space-y-5">
 
           {/* Breadcrumb */}

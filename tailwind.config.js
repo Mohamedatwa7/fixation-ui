@@ -7,20 +7,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        accent: '#ff4f23',     // depoluxe orange-red — brand pop + alert
-        paper: '#f3f0ea',      // warm off-white (light editorial bg)
-        ink: '#100f0c',        // near-black (light text / dark base)
+        accent: '#ff4f23',     // brand pop + low-score alert
+        noir: '#0a0a0a',       // app background (true near-black) — not "base" (collides with text-base)
+        panel: '#141414',      // card / panel surface
+        elevated: '#1c1c1c',   // hover / raised surface
       },
       fontFamily: {
-        serif: ['var(--font-serif)', 'EB Garamond', 'Georgia', 'serif'],
-        mono: ['var(--font-mono)', 'JetBrains Mono', 'Courier New', 'monospace'],
-        sans: ['var(--font-sans)', 'Inter', '-apple-system', 'sans-serif'],
+        // Geist Mono is the hero/display + label/data face (console aesthetic)
+        mono: ['var(--font-geist-mono)', 'JetBrains Mono', 'Courier New', 'monospace'],
+        // Geist Sans for longer body copy / readability
+        sans: ['var(--font-geist-sans)', 'Inter', '-apple-system', 'sans-serif'],
       },
       letterSpacing: {
-        tightest: '-0.02em',
+        tightest: '-0.04em',
       },
       transitionTimingFunction: {
-        cinematic: 'cubic-bezier(0.215, 0.61, 0.355, 1)',  // ease-out-cubic
+        cinematic: 'cubic-bezier(0.215, 0.61, 0.355, 1)',
       },
     },
   },

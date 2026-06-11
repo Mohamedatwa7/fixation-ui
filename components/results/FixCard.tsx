@@ -10,15 +10,15 @@ export default function FixCard({ fix }: Props) {
       <div className="flex">
         {/* Accent left rule */}
         <div className="w-[3px] flex-shrink-0 bg-accent" aria-hidden="true" />
-        <div className="flex-1 bg-[#141312] px-7 py-6">
+        <div className="flex-1 bg-panel px-7 py-6">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent mb-4">
             The Fix
           </p>
-          <p className="prose-serif text-lg text-white/55 mb-5">
+          <p className="font-sans text-[15px] text-white/55 leading-relaxed mb-5">
             {fix.issue}
           </p>
-          <p className="prose-serif text-lg text-paper flex gap-3">
-            <span className="text-accent flex-shrink-0">→</span>
+          <p className="font-sans text-[15px] text-[#fafafa] leading-relaxed flex gap-3">
+            <span className="font-mono text-accent flex-shrink-0">→</span>
             <span>{fix.action}</span>
           </p>
         </div>
