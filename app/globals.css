@@ -1,5 +1,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --ease-cinematic: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f3f0ea;
+  color: #100f0c;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Light editorial: faint ink grid (landing / upload) ───────────── */
+.bg-grid-light {
+  background-image: radial-gradient(circle, rgba(16, 15, 12, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* ── Dark instrument: faint accent grid (results) ─────────────────── */
+.bg-grid-dark {
+  background-image: radial-gradient(circle, rgba(255, 79, 35, 0.05) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* Editorial body type: EB Garamond reads larger, so nudge line-height */
+.prose-serif {
+  font-family: var(--font-serif), Georgia, serif;
+  line-height: 1.5;
+}
+
+/* Custom scrollbar — neutral, theme-agnostic */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(128, 128, 128, 0.4); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(128, 128, 128, 0.7); }
+
+/* Focus ring — accent, works on both light and dark */
+:focus-visible {
+  outline: 2px solid #ff4f23;
+  outline-offset: 2px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Reusable slow fade-rise for editorial entrances */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise 0.8s var(--ease-cinematic) both;
+}
