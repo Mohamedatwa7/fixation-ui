@@ -6,9 +6,10 @@ import { analyzeCreative, analyzeVideoUrl } from '@/lib/api'
 import { setLastResult } from '@/lib/resultStore'
 
 const ROLES = ['Creative Director', 'Marketer', 'Strategist', 'Executive'] as const
-const FORMATS = ['KV', 'OOH', 'Banner', 'Print', 'Social'] as const
+const IMAGE_FORMATS = ['KV', 'OOH', 'Banner', 'Print', 'Social'] as const
+const VIDEO_FORMATS = ['TVC', 'Pre-roll', 'Bumper', 'Story', 'Reel', 'Social'] as const
 type Role = typeof ROLES[number]
-type Format = typeof FORMATS[number]
+type Format = typeof IMAGE_FORMATS[number] | typeof VIDEO_FORMATS[number]
 type InputMode = 'upload' | 'url'
 
 const LOADING_STEPS = [
@@ -80,6 +81,14 @@ export default function UploadPage() {
     const f = e.target.files?.[0]
     if (f) { setFile(f); setError(null) }
   }
+
+  // Image and video have different creative formats; switching media type
+  // resets the format to a valid default for the new list.
+  const formats = mediaType === 'image' ? IMAGE_FORMATS : VIDEO_FORMATS
+  const changeMediaType = useCallback((next: 'image' | 'video') => {
+    setMediaType(next)
+    setFormat(next === 'image' ? IMAGE_FORMATS[0] : VIDEO_FORMATS[0])
+  }, [])
 
   const handleAnalyze = async () => {
     setError(null)
@@ -186,7 +195,8 @@ export default function UploadPage() {
                   <Segment
                     options={[['image', 'Static'], ['video', 'Video']]}
                     value={mediaType}
-                    onChange={v => setMediaType(v as 'image' | 'video')}
+                    onChange={v => changeMediaType(v as 'image' | 'video')}
+                    disabled={isAnalyzing}
                   />
                   <Segment
                     options={[['upload', 'Upload'], ['url', 'URL']]}
@@ -260,7 +270,7 @@ export default function UploadPage() {
                           setError(null)
                           // Auto-switch to video for social media links
                           if (/tiktok\.com|instagram\.com|youtube\.com|youtu\.be|twitter\.com|x\.com|facebook\.com/.test(val)) {
-                            setMediaType('video')
+                            changeMediaType('video')
                           }
                         }}
                         placeholder="https://tiktok.com/…  or direct image/video URL"
@@ -297,7 +307,7 @@ export default function UploadPage() {
                       aria-label="Format"
                       className="w-full appearance-none bg-white/[0.02] border border-white/15 rounded-[3px] px-3.5 py-3 font-mono text-xs text-[#fafafa] focus:outline-none focus:border-accent cursor-pointer transition-colors duration-300 pr-8 disabled:opacity-50"
                     >
-                      {FORMATS.map(f => <option key={f} value={f} className="bg-panel">{f}</option>)}
+                      {formats.map(f => <option key={f} value={f} className="bg-panel">{f}</option>)}
                     </select>
                     <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
                       <ChevronIcon />
