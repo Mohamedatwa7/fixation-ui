@@ -73,6 +73,13 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
   let score = raw.score ?? raw.kpis_overall ?? raw.kpis?.overall ?? 0
   if (score > 10) score = score / 10
   const heatmap = raw.heatmap ? `data:${raw.heatmap_type || 'image/png'};base64,${raw.heatmap}` : undefined
+  const kpis = toKpiArray(raw.kpis)
+  // The backend returns per-KPI percentiles vs. the MAdVerse benchmark, not a
+  // single top-level percentile. Average the ones that exist; fall back to 50.
+  const pcts = kpis.map(k => k.percentile).filter((p): p is number => typeof p === 'number')
+  const benchmarkPercentile =
+    raw.benchmarkPercentile ??
+    (pcts.length ? Math.round(pcts.reduce((a, b) => a + b, 0) / pcts.length) : 50)
   return {
     id: `result-${Date.now()}`,
     title: meta.title || 'Untitled creative',
@@ -80,10 +87,12 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     role: (meta.role as any) || 'Marketer',
     mediaType: (meta.mediaType as any) || 'video',
     score: Number(Number(score).toFixed(1)),
-    benchmarkPercentile: raw.benchmarkPercentile ?? raw.kpis?.percentile ?? 50,
+    benchmarkPercentile,
+    funnelStage: raw.funnel_stage ?? undefined,
+    productTier: raw.product_tier ?? undefined,
     verdict: verdictText,
     fix,
-    kpis: toKpiArray(raw.kpis),
+    kpis,
     strengths,
     risks,
     heatmapDataUrl: heatmap,

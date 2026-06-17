@@ -48,6 +48,8 @@ export interface DiagnosticResult {
   mediaType: MediaType
   score: number
   benchmarkPercentile: number
+  funnelStage?: string       // 'upper' | 'mid' | 'lower' — inferred from format (image)
+  productTier?: string       // 'mass-market' | 'mid-market' | 'premium' | 'luxury'
   verdict: string
   fix: { issue: string; action: string }
   kpis: KPI[]

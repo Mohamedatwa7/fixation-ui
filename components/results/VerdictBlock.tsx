@@ -52,6 +52,16 @@ export default function VerdictBlock({ result }: Props) {
               {result.format}
             </span>
 
+            {/* Funnel stage — scores are interpreted relative to this */}
+            {result.funnelStage && (
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent/80 border border-accent/25 bg-accent/5 px-2.5 py-1 rounded-[2px]"
+                title={result.productTier ? `Scored as ${result.productTier} tier` : undefined}
+              >
+                {result.funnelStage} funnel
+              </span>
+            )}
+
             {/* Benchmark */}
             <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35 pl-1">
               Better than{' '}
