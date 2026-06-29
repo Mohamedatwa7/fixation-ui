@@ -40,6 +40,12 @@ export interface VideoMetadata {
   duration_sec?: number
 }
 
+// Per-frame / per-window time series surfaced for video assets.
+export interface Timelines {
+  attention?: { t?: number; score: number }[]      // saliency/attention over time
+  audio_energy?: { t?: number; energy: number }[]   // audio energy over time
+}
+
 export interface DiagnosticResult {
   id: string
   title: string
@@ -57,6 +63,7 @@ export interface DiagnosticResult {
   risks: Risk[]
   heatmapDataUrl?: string
   metadata?: VideoMetadata
+  timelines?: Timelines
 }
 
 // ─── Fallback mock (used when no real result is stored) ──────────────────────

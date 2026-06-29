@@ -541,6 +541,10 @@ def fastapi_app():
                     "product_tier": judgment.get("product_tier"),
                     "heatmap": b64(sal_web),
                     "heatmap_type": "video/mp4",
+                    "timelines": {
+                        "attention": report.get("key_frames", {}).get("metadata", {}).get("score_timeline", []),
+                        "audio_energy": report.get("audio", {}).get("signals", {}).get("energy_timeline", []),
+                    },
                 },
             }
         except Exception as e:

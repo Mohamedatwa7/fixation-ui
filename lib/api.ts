@@ -97,6 +97,7 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     risks,
     heatmapDataUrl: heatmap,
     metadata: raw.metadata,
+    timelines: raw.timelines,
   }
 }
 

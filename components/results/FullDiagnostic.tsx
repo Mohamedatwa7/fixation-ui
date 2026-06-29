@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import type { DiagnosticResult } from '@/lib/mock-data'
 import { scoreColor, SCORE_MID } from '@/lib/score'
+import TimelineGraph from './TimelineGraph'
 
 interface Props {
   result: DiagnosticResult
@@ -58,6 +59,9 @@ export default function FullDiagnostic({ result }: Props) {
               </div>
             )}
           </div>
+
+          {/* Signal timelines — video only */}
+          {result.mediaType === 'video' && <SignalTimelines result={result} />}
 
           {/* Full KPI breakdown */}
           <div className="border-b border-white/10 p-7">
@@ -121,6 +125,43 @@ export default function FullDiagnostic({ result }: Props) {
             )}
           </div>
         </div>
+      )}
+    </div>
+  )
+}
+
+/* ── Video signal timelines (attention + audio energy) ──────────────────────── */
+function SignalTimelines({ result }: { result: DiagnosticResult }) {
+  const attention = (result.timelines?.attention ?? [])
+    .map(p => p.score)
+    .filter((v): v is number => typeof v === 'number')
+  const audio = (result.timelines?.audio_energy ?? [])
+    .map(p => p.energy)
+    .filter((v): v is number => typeof v === 'number')
+
+  if (attention.length < 2 && audio.length < 2) return null
+
+  return (
+    <div className="border-b border-white/10 p-7 space-y-6">
+      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
+        Signal Timelines
+      </p>
+      {attention.length >= 2 && (
+        <TimelineGraph
+          title="Attention over time"
+          values={attention}
+          color="#ff4f23"
+          fixedMax={10}
+          caption="saliency · 0–10"
+        />
+      )}
+      {audio.length >= 2 && (
+        <TimelineGraph
+          title="Audio energy over time"
+          values={audio}
+          color={SCORE_MID}
+          caption="relative energy"
+        />
       )}
     </div>
   )
