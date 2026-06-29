@@ -32,7 +32,24 @@ app = modal.App(name="fixation-api", image=image)
 SCRIPTS_DIR = "/mnt/fixation-assets"                    # scripts now live at root
 NESTED = "/mnt/fixation-assets/fixation-assets"         # weights/benchmarks are nested here
 TASED_WEIGHTS = f"{NESTED}/tased_weights/TASED_updated.pt"
-BENCHMARK = f"{NESTED}/benchmarks/benchmark_advert_gallery_percentiles.json"
+# Percentile benchmarks (full sets, computed in-house). Pick by asset format so a
+# digital KV is scored against the online gallery and print/OOH against e-paper.
+# (The old advert_gallery set is only 194 images — kept only as a last-resort fallback.)
+BENCHMARKS = {
+    "online": f"{NESTED}/benchmarks/benchmark_online_percentiles.json",      # 12,680 ads
+    "epaper": f"{NESTED}/benchmarks/benchmark_epaper1_percentiles.json",     # 15,408 ads
+    "gallery": f"{NESTED}/benchmarks/benchmark_advert_gallery_percentiles.json",  # 194 (fallback)
+}
+_FORMAT_BENCHMARK = {
+    "social": "online", "banner": "online", "kv": "online", "digital": "online",
+    "print": "epaper", "ooh": "epaper",
+}
+
+
+def benchmark_for(format_type):
+    """Select the percentile benchmark for an asset format; default to the online set."""
+    key = _FORMAT_BENCHMARK.get((format_type or "").strip().lower(), "online")
+    return BENCHMARKS[key]
 TASED_REPO = f"{NESTED}/TASED-Net"                      # saliency_module hardcodes /content/TASED-Net
 MODEL_CACHE = "/hf-cache"
 
@@ -412,7 +429,7 @@ def fastapi_app():
                 format_type=format_type,
                 output_path="/tmp/image_report.json",
                 model_cache=MODEL_CACHE,
-                benchmark_path=BENCHMARK,
+                benchmark_path=benchmark_for(format_type),
                 role_key=role,
             )
             overlay = report.get("saliency", {}).get("overlay_path")
@@ -451,7 +468,7 @@ def fastapi_app():
                 format_type=format_type,
                 output_path=f"/tmp/image_report_{job_id}.json",
                 model_cache=MODEL_CACHE,
-                benchmark_path=BENCHMARK,
+                benchmark_path=benchmark_for(format_type),
                 role_key=role,
             )
             overlay = report.get("saliency", {}).get("overlay_path")
