@@ -266,45 +266,59 @@ export function buildReportHtml(result: DiagnosticResult): string {
     </div>
   </div>
 
-  <div class="block">
-    <h2 class="section">Raw Diagnostic Data</h2>
-    <pre class="json">${esc(JSON.stringify(result, null, 2))}</pre>
-  </div>
-
   <footer>
     <span>F1X8 — Cognitive Creative Diagnostics</span>
     <span>Generated ${esc(generated)}</span>
   </footer>
 
 </div>
-<script>
-  window.addEventListener('load', function () {
-    // Give web fonts + heatmap a beat to paint, then open the print dialog.
-    var done = false;
-    function go(){ if (done) return; done = true; setTimeout(function(){ window.print(); }, 350); }
-    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(go); }
-    setTimeout(go, 1200); // fallback if fonts never resolve
-  });
-</script>
 </body>
 </html>`
 }
 
 export function exportResultToPdf(result: DiagnosticResult): void {
   const html = buildReportHtml(result)
-  const win = window.open('', '_blank', 'noopener,noopener,width=900,height=1100')
-  if (!win) {
-    // Pop-up blocked — fall back to a downloadable .html the user can open + print.
-    const blob = new Blob([html], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `F1X8-diagnostic-${result.id}.html`
-    a.click()
-    setTimeout(() => URL.revokeObjectURL(url), 4000)
+
+  // Render into an off-screen iframe and print that — no popup window (so no
+  // popup-blocker fallback to a downloaded .html) and the browser's native
+  // "Save as PDF" dialog opens directly over the current page.
+  const iframe = document.createElement('iframe')
+  iframe.setAttribute('aria-hidden', 'true')
+  iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;'
+  document.body.appendChild(iframe)
+
+  const doc = iframe.contentWindow?.document
+  if (!doc) {
+    iframe.remove()
     return
   }
-  win.document.open()
-  win.document.write(html)
-  win.document.close()
+  doc.open()
+  doc.write(html)
+  doc.close()
+
+  let printed = false
+  const triggerPrint = () => {
+    if (printed) return
+    printed = true
+    const win = iframe.contentWindow
+    if (win) {
+      win.focus()
+      win.print()
+    }
+    // Leave the iframe in place briefly so the print dialog keeps its document.
+    setTimeout(() => iframe.remove(), 1000)
+  }
+
+  const win = iframe.contentWindow
+  if (!win) {
+    iframe.remove()
+    return
+  }
+  win.addEventListener('load', () => {
+    const fonts = (iframe.contentDocument as Document & { fonts?: FontFaceSet })?.fonts
+    if (fonts?.ready) {
+      fonts.ready.then(() => setTimeout(triggerPrint, 200))
+    }
+    setTimeout(triggerPrint, 1200) // fallback if fonts never resolve
+  })
 }
