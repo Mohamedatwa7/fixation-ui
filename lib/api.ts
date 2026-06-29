@@ -70,7 +70,7 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
   const strengths: string[] = Array.isArray(diagnosis.strengths) ? diagnosis.strengths : []
   const topRisk = risks[0] || {}
   const fix = { issue: topRisk.evidence || topRisk.issue || verdictText, action: topRisk.suggested_fix || diagnosis.recommendation || 'See detailed risks below.' }
-  let score = raw.score ?? raw.kpis_overall ?? raw.kpis?.overall ?? 0
+  let score = raw.engagement_potential ?? raw.score ?? raw.kpis_overall ?? raw.kpis?.overall ?? 0
   if (score > 10) score = score / 10
   const heatmap = raw.heatmap ? `data:${raw.heatmap_type || 'image/png'};base64,${raw.heatmap}` : undefined
   const kpis = toKpiArray(raw.kpis)

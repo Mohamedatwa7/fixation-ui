@@ -1,8 +1,23 @@
 import type { DiagnosticResult } from '@/lib/mock-data'
-import { scoreColor, scoreLabel } from '@/lib/score'
+import { scoreColor } from '@/lib/score'
 
 interface Props {
   result: DiagnosticResult
+}
+
+// Engagement Potential band — same 0–10 thresholds as the score colour scale,
+// relabelled for the funnel-aware engagement score.
+function engagementBand(score: number): string {
+  if (score >= 7) return 'STRONG'
+  if (score >= 4) return 'MODERATE'
+  return 'WEAK'
+}
+
+// Detected funnel → audience-facing label.
+const FUNNEL_LABEL: Record<string, string> = {
+  upper: 'AWARENESS',
+  mid: 'CONSIDERATION',
+  lower: 'CONVERSION',
 }
 
 export default function VerdictBlock({ result }: Props) {
@@ -15,10 +30,13 @@ export default function VerdictBlock({ result }: Props) {
 
         {/* Score column */}
         <div className="flex-shrink-0 flex flex-col items-start gap-3">
+          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
+            Engagement Potential
+          </span>
           <span
             className="font-mono font-semibold leading-[0.85] tracking-tightest"
             style={{ fontSize: 'clamp(4rem, 9vw, 6.5rem)', color }}
-            aria-label={`Score: ${score} out of 10`}
+            aria-label={`Engagement Potential: ${score} out of 10`}
           >
             {score.toFixed(1)}
           </span>
@@ -27,7 +45,7 @@ export default function VerdictBlock({ result }: Props) {
               className="font-mono text-[10px] font-medium uppercase tracking-[0.18em] px-2.5 py-1 rounded-[2px] border"
               style={{ color, borderColor: `${color}55`, backgroundColor: `${color}12` }}
             >
-              {scoreLabel(score)}
+              {engagementBand(score)}
             </span>
             <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
               out of 10
@@ -52,13 +70,13 @@ export default function VerdictBlock({ result }: Props) {
               {result.format}
             </span>
 
-            {/* Funnel stage — scores are interpreted relative to this */}
+            {/* Funnel stage — the 5 surfaced KPIs + weighting are relative to this */}
             {result.funnelStage && (
               <span
                 className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent/80 border border-accent/25 bg-accent/5 px-2.5 py-1 rounded-[2px]"
                 title={result.productTier ? `Scored as ${result.productTier} tier` : undefined}
               >
-                {result.funnelStage} funnel
+                {FUNNEL_LABEL[result.funnelStage] ?? result.funnelStage}
               </span>
             )}
 
