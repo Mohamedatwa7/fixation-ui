@@ -237,7 +237,10 @@ def assess_engagement(images):
     """Send asset image(s) to the vision LLM with the engagement prompt; parse JSON robustly.
     images: list of (media_type, base64_data). Returns the parsed judgment or a neutral default."""
     if not images:
+        print("[engagement] no images supplied -> neutral default")
         return _neutral_engagement()
+    print(f"[engagement] calling vision LLM with {len(images)} image(s); "
+          f"ANTHROPIC_API_KEY set={bool(os.environ.get('ANTHROPIC_API_KEY'))}")
     try:
         import anthropic
         client = anthropic.Anthropic()
@@ -256,9 +259,16 @@ def assess_engagement(images):
             messages=[{"role": "user", "content": content}],
         )
         text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
-        return _parse_engagement_json(text)
+        parsed = _parse_engagement_json(text)
+        print(f"[engagement] OK funnel={parsed.get('funnel_stage')} "
+              f"emo={parsed.get('emotional_pull', {}).get('score')} "
+              f"brand={parsed.get('brand_strength', {}).get('score')} "
+              f"persuasive={parsed.get('persuasive_power', {}).get('score')}")
+        return parsed
     except Exception as e:
-        print(f"engagement assessment failed: {e}")
+        import traceback
+        print(f"[engagement] FAILED ({type(e).__name__}): {e}")
+        print(traceback.format_exc()[-600:])
         return _neutral_engagement()
 
 
@@ -322,8 +332,10 @@ def aggregate_engagement(measured, judgment, media_type, funnel):
         attention = _blend(measured, {"first_fixation": 0.4, "hook": 0.3, "pattern_interrupt": 0.3})
         clarity = _blend(measured, {"cognitive_load": 0.5, "switching_cost": 0.5})
     else:
-        attention = _blend(measured, {"hierarchy": 0.5, "color_contrast": 0.3, "composition": 0.2})
-        clarity = _blend(measured, {"text_balance": 0.4, "visual_complexity": 0.35, "white_space": 0.25})
+        # NOTE: the image CV pipeline emits keys `contrast` and `complexity`
+        # (not `color_contrast` / `visual_complexity` as the brief stated).
+        attention = _blend(measured, {"hierarchy": 0.5, "contrast": 0.3, "composition": 0.2})
+        clarity = _blend(measured, {"text_balance": 0.4, "complexity": 0.35, "white_space": 0.25})
 
     if (judgment.get("message_clarity_judgment") or {}).get("three_second_pass") is False:
         clarity *= 0.85
@@ -343,6 +355,9 @@ def aggregate_engagement(measured, judgment, media_type, funnel):
     stage = funnel if funnel in _FUNNEL_SELECT else "mid"
     five = {kid: all_kpis[kid] for kid in _FUNNEL_SELECT[stage]}
     engagement_potential = round(sum(all_kpis[kid]["score"] * w for kid, w in _FUNNEL_WEIGHTS[stage].items()), 1)
+    print(f"[engagement] aggregate stage={stage} measured_keys={list(measured.keys())} "
+          f"attention={all_kpis['attention_capture']['score']} clarity={all_kpis['message_clarity']['score']} "
+          f"-> engagement_potential={engagement_potential}")
     return engagement_potential, five
 
 
