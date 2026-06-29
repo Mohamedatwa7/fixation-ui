@@ -7,6 +7,7 @@ import FixCard from '@/components/results/FixCard'
 import KpiStrip from '@/components/results/KpiStrip'
 import CustomMetricPanel from '@/components/results/CustomMetricPanel'
 import FullDiagnostic from '@/components/results/FullDiagnostic'
+import ExportButton from '@/components/results/ExportButton'
 import { getDiagnostic } from '@/lib/api'
 import type { DiagnosticResult, VideoMetadata } from '@/lib/mock-data'
 import Link from 'next/link'
@@ -102,6 +103,9 @@ export default function ResultsPage() {
                 <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">{result.title}</span>
               </>
             )}
+            <div className="ml-auto">
+              <ExportButton result={result} />
+            </div>
           </div>
 
           {result.metadata && <VideoMetadataStrip meta={result.metadata} />}
