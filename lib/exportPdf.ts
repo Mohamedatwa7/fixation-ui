@@ -8,7 +8,11 @@
 // risks and raw JSON — regardless of which panels are collapsed on the page.
 // ─────────────────────────────────────────────────────────────────────────────
 import type { DiagnosticResult } from './mock-data'
-import { scoreColor, scoreLabel } from './score'
+import { scoreColor } from './score'
+
+// Engagement Potential band — mirrors VerdictBlock on the results page.
+const engagementBand = (score: number): string =>
+  score >= 7 ? 'STRONG' : score >= 4 ? 'MODERATE' : 'WEAK'
 
 const esc = (s: unknown): string =>
   String(s ?? '')
@@ -107,11 +111,14 @@ export function buildReportHtml(result: DiagnosticResult): string {
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --paper:#f3f0ea; --ink:#100f0c; --accent:#ff4f23;
-    --line:rgba(16,15,12,0.14); --soft:rgba(16,15,12,0.55);
+    /* Dark "instrument" theme — matches the F1X8 /results page */
+    --noir:#0b0b0a; --panel:#141312; --elevated:#1a1816;
+    --paper:#fafafa; --accent:#ff4f23;
+    --line:rgba(255,255,255,0.10); --hair:rgba(255,255,255,0.18);
+    --soft:rgba(255,255,255,0.45);
   }
   * { box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-  html,body { margin:0; padding:0; background:var(--paper); color:var(--ink); }
+  html,body { margin:0; padding:0; background:var(--noir); color:var(--paper); }
   body { font-family:'EB Garamond',Georgia,serif; font-size:13px; line-height:1.5; }
   .page { max-width:760px; margin:0 auto; padding:40px 44px 64px; }
   .mono { font-family:'JetBrains Mono',ui-monospace,monospace; }
@@ -122,7 +129,8 @@ export function buildReportHtml(result: DiagnosticResult): string {
 
   /* Masthead */
   .mast { display:flex; justify-content:space-between; align-items:flex-end;
-    border-bottom:1px solid var(--ink); padding-bottom:14px; margin-bottom:28px; }
+    border-bottom:1px solid var(--hair); padding-bottom:14px; margin-bottom:28px; }
+  .mast .brand { color:var(--accent); }
   .mast .brand { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:13px;
     letter-spacing:0.34em; }
   .mast .sub { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.18em;
@@ -143,16 +151,17 @@ export function buildReportHtml(result: DiagnosticResult): string {
     letter-spacing:-0.01em; }
   .meta { display:flex; flex-wrap:wrap; gap:8px; }
   .meta-item { border:1px solid var(--line); border-radius:2px; padding:4px 9px;
-    display:flex; gap:7px; align-items:baseline; }
+    background:var(--panel); display:flex; gap:7px; align-items:baseline; }
   .meta-label { font-family:'JetBrains Mono',monospace; font-size:8.5px; text-transform:uppercase;
     letter-spacing:0.16em; color:var(--soft); }
   .meta-value { font-family:'JetBrains Mono',monospace; font-size:9.5px; }
 
   /* Cards */
-  .card { border:1px solid var(--line); border-radius:3px; padding:20px 22px; margin-bottom:18px; }
+  .card { border:1px solid var(--line); border-radius:3px; padding:20px 22px; margin-bottom:18px;
+    background:var(--panel); }
   .card.accent { border-left:3px solid var(--accent); }
   .fix-issue { font-size:15px; line-height:1.45; margin:0 0 10px; }
-  .fix-action { font-size:14px; line-height:1.5; color:#2a2824; margin:0;
+  .fix-action { font-size:14px; line-height:1.5; color:rgba(250,250,250,0.78); margin:0;
     border-top:1px solid var(--line); padding-top:10px; }
   .fix-action b { font-family:'JetBrains Mono',monospace; font-size:9px; text-transform:uppercase;
     letter-spacing:0.18em; color:var(--accent); display:block; margin-bottom:5px; font-weight:500; }
@@ -165,12 +174,12 @@ export function buildReportHtml(result: DiagnosticResult): string {
   .kpi-pct { color:var(--soft); font-weight:400; }
   .bar { height:2px; background:var(--line); border-radius:2px; overflow:hidden; margin-bottom:7px; }
   .bar span { display:block; height:100%; }
-  .kpi-method { font-size:12.5px; line-height:1.45; color:#3a382f; margin:0 0 3px; }
+  .kpi-method { font-size:12.5px; line-height:1.45; color:rgba(255,255,255,0.6); margin:0 0 3px; }
   .kpi-cite { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--soft); margin:0; }
 
   /* Strengths / risks */
   .two-col { display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--line);
-    border-radius:3px; overflow:hidden; margin-bottom:18px; }
+    border-radius:3px; overflow:hidden; margin-bottom:18px; background:var(--panel); }
   .two-col > div { padding:20px 22px; }
   .two-col > div:first-child { border-right:1px solid var(--line); }
   ul.list { list-style:none; margin:0; padding:0; }
@@ -178,23 +187,20 @@ export function buildReportHtml(result: DiagnosticResult): string {
     break-inside:avoid; }
   ul.list li.empty { color:var(--soft); font-style:italic; }
   .plus { color:var(--accent); font-family:monospace; flex:0 0 auto; }
-  .bang { color:#c98a1e; font-family:monospace; flex:0 0 auto; }
+  .bang { color:#e0a23c; font-family:monospace; flex:0 0 auto; }
   .risk-body { display:flex; flex-direction:column; gap:3px; }
   .risk-issue { font-weight:500; }
   .risk-conf { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--soft);
     text-transform:uppercase; letter-spacing:0.1em; font-weight:400; }
   .risk-sub { font-size:11.5px; color:var(--soft); }
 
-  /* Heatmap */
-  .heatmap-img { width:100%; max-height:420px; object-fit:contain; border:1px solid var(--line);
-    border-radius:3px; background:#000; }
+  /* Heatmap — capped so the figure + heading stay together on one page */
+  .heatmap-img { display:block; width:100%; max-height:300px; object-fit:contain;
+    border:1px solid var(--line); border-radius:3px; background:#000;
+    break-inside:avoid; page-break-inside:avoid; }
   .heatmap-note { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--soft);
-    border:1px dashed var(--line); border-radius:3px; padding:18px; text-align:center; }
-
-  /* Raw JSON */
-  pre.json { font-family:'JetBrains Mono',monospace; font-size:8.5px; line-height:1.5;
-    color:#3a382f; background:#fff; border:1px solid var(--line); border-radius:3px;
-    padding:14px; white-space:pre-wrap; word-break:break-word; margin:0; }
+    border:1px dashed var(--line); border-radius:3px; padding:18px; text-align:center;
+    background:var(--panel); }
 
   footer { margin-top:32px; padding-top:14px; border-top:1px solid var(--line);
     font-family:'JetBrains Mono',monospace; font-size:8.5px; letter-spacing:0.14em;
@@ -203,7 +209,7 @@ export function buildReportHtml(result: DiagnosticResult): string {
   .block { margin-bottom:28px; }
   @media print {
     .page { padding:24px 28px; max-width:none; }
-    .block, .card, .two-col, .kpi { break-inside:avoid; }
+    .block, .card, .two-col, .kpi, img { break-inside:avoid; page-break-inside:avoid; }
   }
   @page { margin:14mm; }
 </style>
@@ -223,9 +229,10 @@ export function buildReportHtml(result: DiagnosticResult): string {
 
   <div class="verdict">
     <div class="score-col">
+      <div class="eyebrow" style="margin-bottom:8px;">Engagement Potential</div>
       <div class="score-num" style="color:${color}">${score.toFixed(1)}</div>
       <span class="score-tag" style="color:${color};border-color:${color}66;background:${color}14">
-        ${scoreLabel(score)} · OUT OF 10
+        ${engagementBand(score)} · OUT OF 10
       </span>
     </div>
     <div class="verdict-body">
