@@ -21,6 +21,11 @@ image = (
 assets_volume = modal.Volume.from_name("fixation-assets")
 hf_cache = modal.Volume.from_name("hf-cache", create_if_missing=True)
 
+# Distributed job store — survives container restarts (redeploys) and is shared
+# across replicas, so a status poll can't miss a job submitted to another container.
+# Replaces a per-container in-memory dict that produced "Job lost" on restart/scale.
+JOBS = modal.Dict.from_name("fixation-jobs", create_if_missing=True)
+
 app = modal.App(name="fixation-api", image=image)
 
 # Paths inside the container
@@ -382,7 +387,6 @@ def fastapi_app():
     _setup_paths()
 
     web_app = FastAPI()
-    JOBS = {}
 
     def b64(path):
         if not path or not os.path.exists(path):
