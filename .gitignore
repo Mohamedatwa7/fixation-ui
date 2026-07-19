@@ -8,3 +8,7 @@ node_modules/
 # TypeScript incremental build cache
 *.tsbuildinfo
 .vercel
+
+# eval harness artifacts (generated)
+eval/runs/
+eval/assets/

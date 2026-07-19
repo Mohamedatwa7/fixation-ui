@@ -1,5 +1,6 @@
 import modal
 import os
+import re
 import json
 import base64
 import subprocess
@@ -13,7 +14,7 @@ image = (
         "fastapi", "uvicorn", "python-multipart",
         "torch", "torchvision", "transformers", "qwen-vl-utils", "accelerate",
         "opencv-contrib-python", "numpy", "librosa", "openai-whisper",
-        "yt-dlp", "anthropic", "Pillow", "scipy",
+        "yt-dlp", "anthropic>=0.117.0", "Pillow", "scipy",
     )
     .run_commands("apt-get update && apt-get install -y ffmpeg")
 )
@@ -188,6 +189,95 @@ OUTPUT FORMAT (return only this object):
 }"""
 
 
+# Structured-output schema for the engagement judgment. Mirrors the OUTPUT
+# FORMAT block in ENGAGEMENT_PROMPT; passed as output_config.format so the API
+# guarantees syntactically valid JSON (a ~11% rate of trailing-comma/other
+# malformed responses was observed without it — each one silently became the
+# neutral 5.0 default and the "mid" funnel via _neutral_engagement()).
+# Only schema features supported by structured outputs are used
+# (type/enum/properties/required/additionalProperties).
+ENGAGEMENT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "funnel_stage": {"type": "string", "enum": ["upper", "mid", "lower"]},
+        "funnel_reasoning": {"type": "string"},
+        "product_tier": {"type": "string", "enum": ["mass", "mid", "premium", "luxury"]},
+        "asset_intent": {"type": "string", "enum": ["brand", "offer", "hybrid"]},
+        "emotional_pull": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "primary_emotion": {"type": "string"},
+                "storytelling_present": {"type": "boolean"},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "primary_emotion", "storytelling_present", "reasoning"],
+            "additionalProperties": False,
+        },
+        "brand_strength": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "logo_present": {"type": "boolean"},
+                "attribution_without_logo": {"type": "string", "enum": ["high", "medium", "low"]},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "logo_present", "attribution_without_logo", "reasoning"],
+            "additionalProperties": False,
+        },
+        "distinctiveness": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "reasoning"],
+            "additionalProperties": False,
+        },
+        "persuasive_power": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "offer_present": {"type": "boolean"},
+                "offer_aggressiveness": {"type": "string", "enum": ["none", "soft", "moderate", "hard"]},
+                "cta_strength": {"type": "string", "enum": ["absent", "passive", "specific", "urgent"]},
+                "urgency_signals": {"type": "boolean"},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "offer_present", "offer_aggressiveness",
+                         "cta_strength", "urgency_signals", "reasoning"],
+            "additionalProperties": False,
+        },
+        "trust_credibility": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "signals_present": {"type": "string"},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "signals_present", "reasoning"],
+            "additionalProperties": False,
+        },
+        "message_clarity_judgment": {
+            "type": "object",
+            "properties": {
+                "three_second_pass": {"type": "boolean"},
+                "biggest_blocker": {"type": "string"},
+            },
+            "required": ["three_second_pass", "biggest_blocker"],
+            "additionalProperties": False,
+        },
+        "primary_engagement_driver": {"type": "string"},
+        "primary_engagement_risk": {"type": "string"},
+    },
+    "required": ["funnel_stage", "funnel_reasoning", "product_tier", "asset_intent",
+                 "emotional_pull", "brand_strength", "distinctiveness", "persuasive_power",
+                 "trust_credibility", "message_clarity_judgment",
+                 "primary_engagement_driver", "primary_engagement_risk"],
+    "additionalProperties": False,
+}
+
+
 def _neutral_engagement():
     """Neutral default so the pipeline never crashes when the LLM/JSON fails."""
     judgment = {"score": 5, "reasoning": ""}
@@ -220,7 +310,14 @@ def _parse_engagement_json(text):
         end = t.rfind("}")
         if start == -1 or end == -1:
             return _neutral_engagement()
-        return json.loads(t[start:end + 1])
+        t = t[start:end + 1]
+        try:
+            return json.loads(t)
+        except json.JSONDecodeError:
+            # The judge occasionally emits trailing commas ("...",\n}) — the
+            # dominant observed failure mode. Repair rather than discarding the
+            # whole judgment for neutral defaults.
+            return json.loads(re.sub(r",(\s*[}\]])", r"\1", t))
     except Exception as e:
         print(f"engagement JSON parse failed: {e}")
         return _neutral_engagement()
@@ -286,6 +383,7 @@ def assess_engagement(images):
             max_tokens=1500,
             system=ENGAGEMENT_PROMPT,
             messages=[{"role": "user", "content": content}],
+            output_config={"format": {"type": "json_schema", "schema": ENGAGEMENT_SCHEMA}},
         )
         text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
         parsed = _parse_engagement_json(text)
