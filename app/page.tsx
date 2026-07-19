@@ -1,92 +1,14 @@
 import Link from 'next/link'
 import Nav from '@/components/Nav'
+import ParallaxHero from '@/components/landing/ParallaxHero'
 
 export default function LandingPage() {
   return (
     <main className="bg-noir text-[#fafafa]">
-      <Nav />
+      <Nav minimal />
 
-      {/* ── Hero ─────────────────────────────────────────────── */}
-      <section
-        className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden"
-        aria-label="Hero"
-      >
-        {/* Layered backdrops */}
-        <div className="absolute inset-0 bg-grid" aria-hidden="true" />
-        <div className="absolute inset-0 spotlight" aria-hidden="true" />
-        <div
-          className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-noir to-transparent"
-          aria-hidden="true"
-        />
-
-        <div className="relative z-10 w-full max-w-3xl mx-auto px-6 flex flex-col items-center text-center">
-
-          {/* Status eyebrow */}
-          <div
-            className="flex items-center gap-2.5 mb-10 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] animate-rise"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-accent pulse-dot" aria-hidden="true" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/55">
-              Diagnostic engine · online
-            </span>
-          </div>
-
-          {/* Wordmark */}
-          <p
-            className="font-mono font-bold leading-none tracking-tightest select-none text-[#fafafa] animate-rise"
-            style={{ fontSize: 'clamp(4.5rem, 16vw, 11rem)', animationDelay: '0.06s' }}
-            aria-label="F1X8"
-          >
-            F<span className="text-accent">1</span>X<span className="text-accent">8</span>
-          </p>
-
-          {/* Headline */}
-          <h1
-            className="font-mono font-semibold leading-[1.05] tracking-tightest text-[#fafafa] mt-8 animate-rise"
-            style={{ fontSize: 'clamp(1.5rem, 4vw, 2.75rem)', animationDelay: '0.12s' }}
-          >
-            See what your audience sees,{' '}
-            <span className="text-accent">before they do.</span>
-          </h1>
-
-          {/* Sub-line */}
-          <p
-            className="font-sans text-base md:text-lg text-white/50 leading-relaxed mt-7 max-w-xl animate-rise"
-            style={{ animationDelay: '0.16s' }}
-          >
-            Cognitive-science attention diagnostics for video and static creative —
-            grounded in real gaze data, calibrated against 30,000 ads.
-          </p>
-
-          {/* CTA */}
-          <div
-            className="mt-11 flex flex-col items-center gap-5 animate-rise"
-            style={{ animationDelay: '0.24s' }}
-          >
-            <Link
-              href="/upload"
-              className="group inline-flex items-center gap-3 bg-accent text-[#0a0a0a] font-mono text-[11px]
-                         font-medium uppercase tracking-[0.18em] px-8 py-4 rounded-[3px]
-                         hover:bg-[#ff6a44] transition-colors duration-300 ease-cinematic
-                         shadow-[0_0_40px_-8px_rgba(255,79,35,0.6)]"
-            >
-              Run a diagnostic
-              <ArrowRight />
-            </Link>
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-              No account required · Results in &lt; 30s
-            </span>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-9 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2" aria-hidden="true">
-          <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-white/30">Scroll</span>
-          <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
-            <path d="M6 1v12M2 9l4 4 4-4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="text-white/30" />
-          </svg>
-        </div>
-      </section>
+      {/* ── Hero (3D parallax specimen plate) ────────────────── */}
+      <ParallaxHero />
 
       {/* ── Method grid ──────────────────────────────────────── */}
       <section className="relative border-t border-white/10 bg-noir" aria-label="Why F1X8">
@@ -124,14 +46,14 @@ export default function LandingPage() {
             style={{ fontSize: 'clamp(1.75rem, 4.5vw, 3.25rem)' }}
           >
             Stop guessing what gets seen.{' '}
-            <span className="text-accent">Measure it.</span>
+            <span className="text-white/40">Measure it.</span>
           </h2>
           <Link
             href="/upload"
             className="group mt-10 inline-flex items-center gap-3 bg-accent text-[#0a0a0a] font-mono text-[11px]
                        font-medium uppercase tracking-[0.18em] px-8 py-4 rounded-[3px]
-                       hover:bg-[#ff6a44] transition-colors duration-300 ease-cinematic
-                       shadow-[0_0_40px_-8px_rgba(255,79,35,0.6)]"
+                       hover:bg-white transition-colors duration-300 ease-cinematic
+                       shadow-[0_0_40px_-8px_rgba(224,224,224,0.35)]"
           >
             Run a diagnostic
             <ArrowRight />

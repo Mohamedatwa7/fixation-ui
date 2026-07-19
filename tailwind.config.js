@@ -7,7 +7,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        accent: '#ff4f23',     // brand pop + low-score alert
+        accent: '#e0e0e0',     // halide silver — brand chrome (score alert colors stay in lib/score.ts)
         noir: '#0a0a0a',       // app background (true near-black) — not "base" (collides with text-base)
         panel: '#141414',      // card / panel surface
         elevated: '#1c1c1c',   // hover / raised surface

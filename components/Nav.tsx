@@ -2,12 +2,15 @@ import Link from 'next/link'
 
 interface NavProps {
   active?: 'upload' | 'results'
+  /** Transparent, logo-only nav that blends into the page (landing) */
+  minimal?: boolean
 }
 
-export default function Nav({ active }: NavProps) {
+export default function Nav({ active, minimal }: NavProps) {
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-10 border-b border-white/10 bg-[#0a0a0a]/85 backdrop-blur-md"
+      className={`fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-10
+        ${minimal ? 'bg-transparent' : 'border-b border-white/10 bg-[#0a0a0a]/85 backdrop-blur-md'}`}
       aria-label="Main navigation"
     >
       <Link
@@ -18,6 +21,7 @@ export default function Nav({ active }: NavProps) {
         F<span className="text-accent">1</span>X<span className="text-accent">8</span>
       </Link>
 
+      {!minimal && (
       <div className="flex items-center gap-7">
         {active === 'results' && (
           <Link
@@ -38,6 +42,7 @@ export default function Nav({ active }: NavProps) {
           Run a diagnostic
         </Link>
       </div>
+      )}
     </nav>
   )
 }

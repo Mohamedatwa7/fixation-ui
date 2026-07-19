@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import type { DiagnosticResult } from '@/lib/mock-data'
-import { scoreColor, SCORE_MID } from '@/lib/score'
+import { scoreColor, SCORE_LOW, SCORE_MID } from '@/lib/score'
 import TimelineGraph from './TimelineGraph'
 
 interface Props {
@@ -150,7 +150,7 @@ function SignalTimelines({ result }: { result: DiagnosticResult }) {
         <TimelineGraph
           title="Attention over time"
           values={attention}
-          color="#ff4f23"
+          color={SCORE_LOW}
           fixedMax={10}
           caption="saliency · 0–10"
         />
