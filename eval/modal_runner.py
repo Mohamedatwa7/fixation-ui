@@ -21,13 +21,13 @@ app = modal.App("f1x8-judge-eval")
 image = modal.Image.debian_slim(python_version="3.12").pip_install("anthropic")
 
 
-@app.function(image=image, secrets=[modal.Secret.from_name("anthropic")], timeout=7200)
+@app.function(image=image, secrets=[modal.Secret.from_name("anthropic-eval")], timeout=7200)
 def submit_batch(requests: list) -> str:
     import anthropic
     return anthropic.Anthropic().messages.batches.create(requests=requests).id
 
 
-@app.function(image=image, secrets=[modal.Secret.from_name("anthropic")], timeout=7200)
+@app.function(image=image, secrets=[modal.Secret.from_name("anthropic-eval")], timeout=7200)
 def wait_and_fetch(batch_id: str) -> dict:
     import time
     import anthropic
@@ -60,7 +60,7 @@ def main(images_dir: str = "", fetch_run: str = "", repeats: int = 8, variant_re
     if fetch_run:  # resume an interrupted run
         run_dir = fetch_run
         with open(os.path.join(run_dir, "batch_id.txt")) as f:
-            batch_id = f.read().strip()
+            batch_ids = f.read().split()
     else:
         images_dir = images_dir or os.path.join(REPO_ROOT, "eval", "assets")
         if not os.path.isdir(images_dir) or not os.listdir(images_dir):
@@ -70,13 +70,18 @@ def main(images_dir: str = "", fetch_run: str = "", repeats: int = 8, variant_re
                                datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S"))
         os.makedirs(run_dir, exist_ok=True)
         _, requests = build_run(images_dir, run_dir, repeats, variant_repeats)
-        print(f"{len(requests)} judge calls → submitting batch via Modal…")
-        batch_id = submit_batch.remote(requests)
+        # Chunked submission: one giant POST with hundreds of embedded images
+        # trips Cloudflare 502s at the gateway. ~60 requests/batch stays small.
+        chunks = [requests[i:i + 60] for i in range(0, len(requests), 60)]
+        print(f"{len(requests)} judge calls → submitting {len(chunks)} batches via Modal…")
+        batch_ids = [submit_batch.remote(c) for c in chunks]
         with open(os.path.join(run_dir, "batch_id.txt"), "w") as f:
-            f.write(batch_id)
-        print(f"Batch {batch_id} submitted; polling until done (typically minutes)…")
+            f.write("\n".join(batch_ids))
+        print(f"Batches {batch_ids} submitted; polling until done…")
 
-    results = wait_and_fetch.remote(batch_id)
+    results = {}
+    for bid in batch_ids:
+        results.update(wait_and_fetch.remote(bid))
     with open(os.path.join(run_dir, "results.json"), "w") as f:
         json.dump(results, f, indent=2)
     print("Report written:", write_report(run_dir))
