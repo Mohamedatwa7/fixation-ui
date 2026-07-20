@@ -2,7 +2,7 @@
 import { getLastResult } from '@/lib/resultStore'
 import { useEffect, useState } from 'react'
 import Nav from '@/components/Nav'
-import VerdictBlock from '@/components/results/VerdictBlock'
+import SpecimenVerdict from '@/components/results/SpecimenVerdict'
 import FixCard from '@/components/results/FixCard'
 import KpiStrip from '@/components/results/KpiStrip'
 import CustomMetricPanel from '@/components/results/CustomMetricPanel'
@@ -109,7 +109,7 @@ export default function ResultsPage() {
           </div>
 
           {result.metadata && <VideoMetadataStrip meta={result.metadata} />}
-          <VerdictBlock result={result} />
+          <SpecimenVerdict result={result} />
           <FixCard fix={result.fix} />
 
           <section aria-label="KPI diagnostics">

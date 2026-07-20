@@ -105,8 +105,20 @@ export default function UploadPage() {
       setLoadingStep(s => Math.min(s + 1, steps.length - 1))
     }, 4000)
 
+    // Data-URL preview of the analyzed image for the results specimen plate.
+    // Kept in memory only (resultStore) — never written to sessionStorage.
+    const previewOf = (f: File): Promise<string | undefined> =>
+      new Promise(resolve => {
+        if (!f.type.startsWith('image/')) { resolve(undefined); return }
+        const r = new FileReader()
+        r.onload = () => resolve(typeof r.result === 'string' ? r.result : undefined)
+        r.onerror = () => resolve(undefined)
+        r.readAsDataURL(f)
+      })
+
     try {
       let result
+      let sourcePreview: string | undefined
       const sharedMeta = { title, description: context, format, role }
 
       if (inputMode === 'url' && mediaType === 'video') {
@@ -122,14 +134,17 @@ export default function UploadPage() {
             `Could not fetch URL: ${err instanceof Error ? err.message : 'unknown error'}`
           )
         }
+        sourcePreview = await previewOf(fetchedFile)
         result = await analyzeCreative(fetchedFile, { ...sharedMeta, mediaType: 'image' })
       } else {
         // Uploaded file
+        sourcePreview = await previewOf(file!)
         result = await analyzeCreative(file!, { ...sharedMeta, mediaType })
       }
 
+      result = { ...result, sourcePreview }
       setLastResult(result)
-      try { sessionStorage.setItem('f1x8_result', JSON.stringify({ ...result, heatmap: undefined })) } catch {}
+      try { sessionStorage.setItem('f1x8_result', JSON.stringify({ ...result, heatmap: undefined, sourcePreview: undefined })) } catch {}
       router.push('/results')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed. Please try again.')

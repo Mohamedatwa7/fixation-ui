@@ -62,6 +62,8 @@ export interface DiagnosticResult {
   strengths: string[]
   risks: Risk[]
   heatmapDataUrl?: string
+  /** Data URL preview of the uploaded creative (kept in memory only; never persisted) */
+  sourcePreview?: string
   metadata?: VideoMetadata
   timelines?: Timelines
 }
