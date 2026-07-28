@@ -40,6 +40,8 @@ REPORT_PATH = os.path.join(DATA_DIR, "REPORT.md")
 
 MIN_COHORT = 8          # smaller cohorts get merged across quarters
 MIN_VIEWS = 100         # below this, per-view rates are noise
+MIN_AGE_DAYS = 14       # engagement accumulates for days after posting; younger
+                        # posts carry an immature (biased-low) label
 UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 
 # Engagement on these posts is driven by the mechanic or the news moment, not
@@ -47,7 +49,7 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 # posts (Unpacked etc.) are kept out of the pool but counted in the report.
 CONTEST_RE = re.compile(
     r"giveaway|give\s?away|contest|competition|\bwinners?\b|\bprizes?\b|"
-    r"\bwin\b|tag a friend|سحب|مسابقة|"
+    r"\bwin\b|tag a friend|comment\s+#?\w+ (with|if|and)|سحب|مسابقة|"
     r"اربح|جائزة", re.I)
 EVENT_RE = re.compile(r"unpacked|أنباكد", re.I)
 
@@ -139,6 +141,14 @@ def quarter(iso):
     return f"{iso[:4]}Q{(int(iso[5:7]) - 1) // 3 + 1}" if iso else "?"
 
 
+def _dt(iso):
+    from datetime import datetime
+    try:
+        return datetime.fromisoformat((iso or "").replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
 def _percentiles(group):
     """Average-rank percentile (0-100) of each post's metric within its cohort."""
     ranked = sorted(range(len(group)), key=lambda i: group[i]["metric"])
@@ -160,16 +170,26 @@ def cmd_build():
     with open(POSTS_PATH, encoding="utf-8") as f:
         posts = json.load(f)
 
-    eligible, dropped = [], {"no_media": 0, "no_engagement": 0, "contest": 0, "event": 0}
+    # age is measured against the newest post in the snapshot, not wall clock,
+    # so a rebuild from the same export is deterministic
+    from datetime import timedelta
+    newest = max(filter(None, (_dt(p.get("published_at")) for p in posts)), default=None)
+    cutoff = newest - timedelta(days=MIN_AGE_DAYS) if newest else None
+
+    eligible, dropped = [], {"no_media": 0, "no_engagement": 0, "too_recent": 0,
+                             "contest": 0, "event": 0}
     for p in posts:
         kind = media_kind(p)
         eng = (p.get("likes_count") or 0) + (p.get("comments_count") or 0) + (p.get("shares_count") or 0)
         views = p.get("views_count") or 0
         caption = p.get("caption") or ""
+        published = _dt(p.get("published_at"))
         if kind is None:
             dropped["no_media"] += 1
         elif eng + views == 0:  # all-zero rows are scrape gaps, not real duds
             dropped["no_engagement"] += 1
+        elif cutoff and published and published > cutoff:
+            dropped["too_recent"] += 1
         elif CONTEST_RE.search(caption):
             dropped["contest"] += 1
         elif EVENT_RE.search(caption):
@@ -481,9 +501,9 @@ def cmd_report():
         "not absolute calibration.",
         "- Sample is stratified to quartile extremes, so Spearman on this sample "
         "overstates full-distribution correlation; AUC is the honest headline.",
-        "- The deployed backend is the pre-ensemble single-judge build "
-        "(median-of-3 not yet deployed), so judge noise attenuates correlations — "
-        "true association is likely somewhat higher.",
+        "- The deployed backend is the median-of-3 ensemble judge (deployed "
+        "2026-07-28, before this scoring run). Residual judge noise still "
+        "attenuates correlations, but less than the single-judge build would.",
         "- Labels are cohort-normalized (platform x kind x basis x quarter, merged "
         f"when n<{MIN_COHORT}) — but confounds like posting time and celebrity "
         "presence remain.",
