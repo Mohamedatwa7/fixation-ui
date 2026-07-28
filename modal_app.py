@@ -314,9 +314,11 @@ def _neutral_engagement():
 
 
 def _parse_engagement_json(text):
-    """Strip accidental code fences / prose and json.loads the object. Neutral on failure."""
+    """Strip accidental code fences / prose and json.loads the object. None on
+    failure — a failed parse must not enter the ensemble as a fake neutral vote;
+    assess_engagement falls back to neutral only when every sample fails."""
     if not text:
-        return _neutral_engagement()
+        return None
     try:
         t = text.strip()
         if t.startswith("```"):
@@ -326,7 +328,7 @@ def _parse_engagement_json(text):
         start = t.find("{")
         end = t.rfind("}")
         if start == -1 or end == -1:
-            return _neutral_engagement()
+            return None
         t = t[start:end + 1]
         try:
             return json.loads(t)
@@ -337,7 +339,7 @@ def _parse_engagement_json(text):
             return json.loads(re.sub(r",(\s*[}\]])", r"\1", t))
     except Exception as e:
         print(f"engagement JSON parse failed: {e}")
-        return _neutral_engagement()
+        return None
 
 
 def _media_type(path):
@@ -376,14 +378,11 @@ def _sample_frames(video_path, n=3):
         return []
 
 
-def assess_engagement(images):
-    """Send asset image(s) to the vision LLM with the engagement prompt; parse JSON robustly.
-    images: list of (media_type, base64_data). Returns the parsed judgment or a neutral default."""
-    if not images:
-        print("[engagement] no images supplied -> neutral default")
-        return _neutral_engagement()
-    print(f"[engagement] calling vision LLM with {len(images)} image(s); "
-          f"ANTHROPIC_API_KEY set={bool(os.environ.get('ANTHROPIC_API_KEY'))}")
+JUDGE_SAMPLES = 3  # median-of-N judge ensemble; see eval/ reliability harness
+
+
+def _assess_engagement_once(images):
+    """One vision-LLM judge call. Returns the parsed judgment, or None on failure."""
     try:
         import anthropic
         client = anthropic.Anthropic()
@@ -403,15 +402,119 @@ def assess_engagement(images):
             output_config={"format": {"type": "json_schema", "schema": ENGAGEMENT_SCHEMA}},
         )
         text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
-        parsed = _parse_engagement_json(text)
-        print(f"[engagement] OK funnel={parsed.get('funnel_stage')} "
+        return _parse_engagement_json(text)
+    except Exception as e:
+        import traceback
+        print(f"[engagement] sample FAILED ({type(e).__name__}): {e}")
+        print(traceback.format_exc()[-600:])
+        return None
+
+
+_JUDGED_KPI_FIELDS = ["emotional_pull", "brand_strength", "distinctiveness",
+                      "persuasive_power", "trust_credibility"]
+
+
+def _kpi_score(judgment, kpi):
+    try:
+        return float((judgment.get(kpi) or {}).get("score", 5))
+    except (TypeError, ValueError, AttributeError):
+        return 5.0
+
+
+def _majority(values, tie_breaker=None):
+    """Most common non-None value. Ties go to tie_breaker when it is among the
+    tied values, else to a sorted pick — never to arrival order, which would
+    make the aggregate depend on which parallel API call returned first."""
+    from collections import Counter
+    vals = [v for v in values if v is not None]
+    if not vals:
+        return None
+    counts = Counter(vals)
+    top = max(counts.values())
+    tied = [v for v, c in counts.items() if c == top]
+    if len(tied) == 1:
+        return tied[0]
+    if tie_breaker in tied:
+        return tie_breaker
+    return min(tied, key=repr)
+
+
+def _aggregate_judgments(judgments):
+    """Component-wise median/majority across judge samples. Text fields are
+    copied from the sample nearest the aggregate so reasoning always matches
+    a real judgment rather than a stitched-together one. Vote ties are broken
+    by the medoid sample (the one closest to the KPI medians)."""
+    if len(judgments) == 1:
+        return judgments[0]
+    import json  # local, so AST-extracted copies (eval/) stay self-contained
+    import statistics
+
+    # Canonical order so every tie-break (medoid, nearest-sample, vote counts)
+    # is independent of which parallel API call happened to return first.
+    judgments = sorted(judgments, key=lambda j: json.dumps(j, sort_keys=True))
+
+    medians = {k: statistics.median(_kpi_score(j, k) for j in judgments)
+               for k in _JUDGED_KPI_FIELDS}
+    medoid = min(judgments, key=lambda j: sum(abs(_kpi_score(j, k) - medians[k])
+                                              for k in _JUDGED_KPI_FIELDS))
+
+    agg = {}
+    for field in ("funnel_stage", "product_tier", "asset_intent"):
+        agg[field] = _majority([j.get(field) for j in judgments], medoid.get(field))
+    stage_src = next((j for j in judgments if j.get("funnel_stage") == agg["funnel_stage"]),
+                     judgments[0])
+    agg["funnel_reasoning"] = stage_src.get("funnel_reasoning", "")
+
+    for k in _JUDGED_KPI_FIELDS:
+        src = min(judgments, key=lambda j: abs(_kpi_score(j, k) - medians[k]))
+        agg[k] = dict(src.get(k) or {})
+        agg[k]["score"] = medians[k]
+
+    passes = [(j.get("message_clarity_judgment") or {}).get("three_second_pass")
+              for j in judgments]
+    vote = _majority(passes,
+                     (medoid.get("message_clarity_judgment") or {}).get("three_second_pass"))
+    clarity_src = next((j for j in judgments
+                        if (j.get("message_clarity_judgment") or {}).get("three_second_pass") == vote),
+                       judgments[0])
+    agg["message_clarity_judgment"] = dict(clarity_src.get("message_clarity_judgment") or {})
+
+    for field in ("primary_engagement_driver", "primary_engagement_risk"):
+        agg[field] = medoid.get(field, "Not detected")
+    return agg
+
+
+def assess_engagement(images):
+    """Median-of-N ensemble over the vision-LLM judge; parse JSON robustly.
+    images: list of (media_type, base64_data). Returns the aggregated judgment
+    or a neutral default.
+
+    A single judge call shows per-KPI test-retest std up to ~0.5 (±1-point
+    swings on the KPIs the site displays — see eval/README.md); the
+    component-wise median of JUDGE_SAMPLES parallel calls suppresses those
+    swings at unchanged latency."""
+    if not images:
+        print("[engagement] no images supplied -> neutral default")
+        return _neutral_engagement()
+    print(f"[engagement] calling vision LLM x{JUDGE_SAMPLES} with {len(images)} image(s); "
+          f"ANTHROPIC_API_KEY set={bool(os.environ.get('ANTHROPIC_API_KEY'))}")
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=JUDGE_SAMPLES) as ex:
+        samples = [s for s in ex.map(lambda _: _assess_engagement_once(images),
+                                     range(JUDGE_SAMPLES)) if s is not None]
+    if not samples:
+        print("[engagement] all samples FAILED -> neutral default")
+        return _neutral_engagement()
+    try:
+        parsed = _aggregate_judgments(samples)
+        print(f"[engagement] OK n={len(samples)} funnel={parsed.get('funnel_stage')} "
               f"emo={parsed.get('emotional_pull', {}).get('score')} "
               f"brand={parsed.get('brand_strength', {}).get('score')} "
               f"persuasive={parsed.get('persuasive_power', {}).get('score')}")
         return parsed
     except Exception as e:
         import traceback
-        print(f"[engagement] FAILED ({type(e).__name__}): {e}")
+        print(f"[engagement] aggregation FAILED ({type(e).__name__}): {e}")
         print(traceback.format_exc()[-600:])
         return _neutral_engagement()
 

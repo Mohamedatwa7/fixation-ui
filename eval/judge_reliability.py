@@ -61,7 +61,7 @@ DEGRADED_VARIANTS = ["blur", "lowcontrast", "occlude"]
 
 def _extract_assign(name, required=True):
     """Pull a top-level literal assignment out of modal_app.py without importing it."""
-    with open(MODAL_APP_PATH) as f:
+    with open(MODAL_APP_PATH, encoding="utf-8") as f:
         tree = ast.parse(f.read())
     for node in ast.walk(tree):
         if isinstance(node, ast.Assign):
@@ -366,7 +366,7 @@ def write_report(run_dir):
     lines.append("")
 
     report_path = os.path.join(run_dir, "REPORT.md")
-    with open(report_path, "w") as f:
+    with open(report_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     return report_path
 
