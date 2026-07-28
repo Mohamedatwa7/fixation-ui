@@ -89,8 +89,13 @@ def cmd_export():
     requests = get_requests()
     base, key = require("SUPABASE_URL").rstrip("/"), require("SUPABASE_KEY")
     headers = {"apikey": key, "Authorization": f"Bearer {key}"}
+    # owner columns mirror BRAND_POST_COLUMNS in SamsungSentiment's
+    # apify-sync.ts: social_posts also holds retailer/operator and influencer
+    # accounts from other scrapes, which must not enter the brand cohorts.
     fields = ("id,platform,external_id,post_url,caption,media_type,media_url,"
-              "likes_count,comments_count,shares_count,views_count,published_at")
+              "likes_count,comments_count,shares_count,views_count,published_at,"
+              "owner_ig:raw_data->>ownerUsername,owner_tt:raw_data->authorMeta->>name,"
+              "owner_fb:raw_data->>pageName,owner_tw:raw_data->author->>userName")
     posts, offset, page = [], 0, 1000
     while True:
         r = requests.get(
@@ -149,6 +154,14 @@ def _dt(iso):
         return None
 
 
+BRAND_OWNERS = {"samsunggulf", "samsung gulf", "samsunggulf.official"}
+
+
+def owner_of(post):
+    return (post.get("owner_ig") or post.get("owner_tt") or post.get("owner_fb")
+            or post.get("owner_tw") or "").strip().lower()
+
+
 def _percentiles(group):
     """Average-rank percentile (0-100) of each post's metric within its cohort."""
     ranked = sorted(range(len(group)), key=lambda i: group[i]["metric"])
@@ -176,7 +189,8 @@ def cmd_build():
     newest = max(filter(None, (_dt(p.get("published_at")) for p in posts)), default=None)
     cutoff = newest - timedelta(days=MIN_AGE_DAYS) if newest else None
 
-    eligible, dropped = [], {"no_media": 0, "no_engagement": 0, "too_recent": 0,
+    eligible, dropped = [], {"other_account": 0, "owner_unknown": 0, "no_media": 0,
+                             "no_engagement": 0, "too_recent": 0,
                              "contest": 0, "event": 0}
     for p in posts:
         kind = media_kind(p)
@@ -184,7 +198,12 @@ def cmd_build():
         views = p.get("views_count") or 0
         caption = p.get("caption") or ""
         published = _dt(p.get("published_at"))
-        if kind is None:
+        owner = owner_of(p)
+        if owner and owner not in BRAND_OWNERS:
+            dropped["other_account"] += 1
+        elif not owner:
+            dropped["owner_unknown"] += 1
+        elif kind is None:
             dropped["no_media"] += 1
         elif eng + views == 0:  # all-zero rows are scrape gaps, not real duds
             dropped["no_engagement"] += 1
