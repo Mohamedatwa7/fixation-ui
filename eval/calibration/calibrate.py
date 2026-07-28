@@ -507,6 +507,11 @@ def cmd_report():
         "- Labels are cohort-normalized (platform x kind x basis x quarter, merged "
         f"when n<{MIN_COHORT}) — but confounds like posting time and celebrity "
         "presence remain.",
+        "- Many Supabase 'image' rows are actually reels (media_type reflects the "
+        "thumbnail): ~56% of the extreme-quartile candidates scraped for URL "
+        "refresh were videos. Reels are excluded from the scored sample, but they "
+        "contaminate the image cohorts' percentile ranks, and top-stratum images "
+        "are specifically images that out-competed reels.",
     ]
     with open(REPORT_PATH, "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
