@@ -14,3 +14,4 @@ __pycache__/
 # eval harness artifacts (generated)
 eval/runs/
 eval/assets/
+eval/finetune/data/
