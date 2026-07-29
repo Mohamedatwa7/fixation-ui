@@ -53,6 +53,7 @@ export interface DiagnosticResult {
   role: Role
   mediaType: MediaType
   score: number
+  organicEngagement?: number // beta: KPI weighting calibrated vs realized organic engagement
   benchmarkPercentile: number
   funnelStage?: string       // 'upper' | 'mid' | 'lower' — inferred from format (image)
   productTier?: string       // 'mass-market' | 'mid-market' | 'premium' | 'luxury'

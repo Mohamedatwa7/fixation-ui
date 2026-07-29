@@ -201,6 +201,18 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
                 {FUNNEL_LABEL[result.funnelStage] ?? result.funnelStage}
               </span>
             )}
+            {typeof result.organicEngagement === 'number' && (
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
+                style={{
+                  color: scoreColor(result.organicEngagement),
+                  borderColor: `${scoreColor(result.organicEngagement)}40`,
+                }}
+                title="Organic pull (beta): KPI weighting calibrated against realized organic social engagement — reads in-feed appeal, not paid-media craft"
+              >
+                Organic {result.organicEngagement.toFixed(1)}
+              </span>
+            )}
             <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35 pl-1">
               Better than <span className="text-accent">{result.benchmarkPercentile}%</span> of category
             </span>

@@ -45,7 +45,8 @@ def load_tried():
 
 
 def record_items(items, by_shortcode, tried):
-    """Fold scraped items into the tried map (post id -> {type, url})."""
+    """Fold scraped items into the tried map (post id -> {type, url}).
+    For videos the url is the playable videoUrl (reels calibration input)."""
     unmatched = 0
     for it in items:
         sc = it.get("shortCode") or shortcode(it.get("url"))
@@ -54,8 +55,11 @@ def record_items(items, by_shortcode, tried):
             unmatched += 1
             continue
         kind = "video" if (it.get("type") or "").lower() == "video" else "image"
-        url = it.get("displayUrl") or (it.get("images") or [None])[0]
-        tried[e["id"]] = {"type": kind, "url": url if kind == "image" else None}
+        if kind == "image":
+            url = it.get("displayUrl") or (it.get("images") or [None])[0]
+        else:
+            url = it.get("videoUrl")
+        tried[e["id"]] = {"type": kind, "url": url}
     return unmatched
 
 
@@ -72,8 +76,10 @@ def patch_dataset(ds, tried):
             fresh += 1
     full = ds.get("candidates_full") or ds["candidates"]
     ds["candidates_full"] = full
-    ok = {pid for pid, t in tried.items() if t.get("url")}
-    ds["candidates"] = {k: [pid for pid in v if pid in ok] for k, v in full.items()}
+    ok_img = {pid for pid, t in tried.items() if t.get("url") and t["type"] == "image"}
+    ok_vid = {pid for pid, t in tried.items() if t.get("url") and t["type"] == "video"}
+    ds["candidates"] = {k: [pid for pid in v if pid in (ok_vid if "-video" in k else ok_img)]
+                        for k, v in full.items()}
     ds["candidates"] = {k: v for k, v in ds["candidates"].items() if v}
     return fresh
 

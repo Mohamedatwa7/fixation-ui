@@ -134,10 +134,15 @@ def media_kind(post):
         return "video"  # media_url is only the cover thumbnail
     if mt in ("image", "photo", "sidecar"):
         return "image"
+    # media_type video/reel wins over the URL heuristic: IG reels carry a .jpg
+    # thumbnail as media_url and must NOT be classified as images (they used
+    # to be, contaminating the image cohorts' percentiles).
+    if mt in ("video", "reel"):
+        return "video"
     # twitter's media_type says 'video' for any media array — trust the URL
     if IMAGE_URL_RE.search(url):
         return "image"
-    if mt in ("video", "reel") or VIDEO_URL_RE.search(url):
+    if VIDEO_URL_RE.search(url):
         return "video"
     return None
 
@@ -247,14 +252,21 @@ def cmd_build():
     # so the fine-tune data sweep can widen beyond the default quartiles.
     top_th = float(os.environ.get("STRATA_TOP", "75"))
     bot_th = float(os.environ.get("STRATA_BOTTOM", "25"))
+    include_video = os.environ.get("INCLUDE_VIDEO") == "1"
     queues = {}
     for e in eligible:
-        if e["kind"] != "image" or e["cohort_n"] < MIN_COHORT:
+        if e["cohort_n"] < MIN_COHORT:
+            continue
+        if e["kind"] == "image":
+            qbase = e["platform"]
+        elif include_video:
+            qbase = f"{e['platform']}-video"
+        else:
             continue
         stratum = "top" if e["percentile"] >= top_th else "bottom" if e["percentile"] <= bot_th else None
         if stratum:
             e["stratum"] = stratum
-            queues.setdefault(f"{e['platform']}|{stratum}", []).append(e)
+            queues.setdefault(f"{qbase}|{stratum}", []).append(e)
     for q in queues.values():
         q.sort(key=lambda e: abs(e["percentile"] - 50), reverse=True)
     candidates = {k: [e["id"] for e in q] for k, q in sorted(queues.items())}

@@ -87,6 +87,7 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     role: (meta.role as any) || 'Marketer',
     mediaType: (meta.mediaType as any) || 'video',
     score: Number(Number(score).toFixed(1)),
+    organicEngagement: typeof raw.organic_engagement === 'number' ? raw.organic_engagement : undefined,
     benchmarkPercentile,
     funnelStage: raw.funnel_stage ?? undefined,
     productTier: raw.product_tier ?? undefined,
