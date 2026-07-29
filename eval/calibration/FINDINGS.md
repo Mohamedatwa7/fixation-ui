@@ -1,6 +1,6 @@
-# Engagement-score calibration & fine-tune findings — 2026-07-28
+# Engagement-score calibration & fine-tune findings — 2026-07-28/29
 
-One-day study: does the deployed Engagement Potential score track realized
+Two-day study: does the deployed Engagement Potential score track realized
 organic engagement on @samsunggulf Instagram image creatives, and what is the
 best path to making it accurate? All AUCs are top-vs-bottom quartile
 discrimination (0.5 = chance) on cohort-normalized engagement percentiles.
@@ -9,10 +9,26 @@ discrimination (0.5 = chance) on cohort-normalized engagement percentiles.
 
 | scorer | holdout AUC |
 |---|---|
-| **Qwen2.5-VL-3B LoRA pairwise ranker (trained on 60 images)** | **0.838** |
+| **Qwen2.5-VL-3B LoRA ranker, 142 train images (2026-07-29)** | **0.851** |
+| Qwen2.5-VL-3B LoRA ranker, 60 train images (first run) | 0.838 |
 | Judge KPIs, holdout-validated refit weights | 0.694 |
 | Judge brand_strength KPI alone | 0.609 |
 | Deployed judge score (median-of-3 ensemble, anchored prompt) | 0.591 |
+
+## Shipped (2026-07-29)
+
+- **`organic_engagement` response field** on the main API (additive; funnel
+  score and KPI cards untouched): sigmoid-squashed refit-weight combo,
+  constants from the 142-creative sample. Verified live.
+- **Ranker serving endpoint** `https://mohamedymay7--rank.modal.run`
+  (separate Modal app `fixation-ranker-api`, A10G, volume-loaded adapter):
+  POST JSON `{"image_b64": ...}` -> `{"rank_score": 0-10}`. Verified live
+  (known top creative 8.05 vs known dud 3.25).
+- **Data scaling**: strata widened to 60/40 bands (STRATA_TOP/STRATA_BOTTOM
+  env), percentile-gap (>=30) pairwise training; train set 60 -> 142 images,
+  holdout frozen at the original 82 for comparability. Retrain: holdout AUC
+  0.838 -> 0.851 — the data-scaling curve is positive; more images should
+  keep helping.
 
 ## What was measured
 
@@ -55,14 +71,19 @@ discrimination (0.5 = chance) on cohort-normalized engagement percentiles.
 
 ## Recommended next steps
 
-1. **Grow the labeled set** — score the remaining ~350 aged brand-image
-   candidates (queues still hold them) and re-train the ranker on the larger
-   set with a proper val split; target holdout AUC >= 0.85 with train/holdout
-   gap closing.
-2. **Ship an organic-context weighting profile** (product decision): the
-   refit weights are a validated +0.10 AUC for social-organic use; keep the
-   current weights for paid-KV assessment.
+1. ~~Grow the labeled set~~ — done to queue exhaustion (224 images with live
+   URLs; brand image pool is ~984 but CDN expiry caps what is retrievable).
+   Next data unlock: ingest fresh nightly scrapes as they mature past 14
+   days (each week adds mature posts with live URLs), and periodically
+   re-run the refresh + retrain loop.
+2. ~~Ship an organic-context weighting profile~~ — shipped as the additive
+   `organic_engagement` field.
 3. **Reels support** — most Samsung social content is video; an image-only
-   scorer misses the majority class.
-4. **Ranker as a KPI** — expose the ranker score as a new "organic
-   engagement" signal alongside the judge KPIs rather than replacing them.
+   scorer misses the majority class. Largest remaining gap.
+4. ~~Ranker as a KPI~~ — served at the standalone endpoint; wiring it into
+   the fixation-ui frontend as a display card remains a UI task.
+5. **Cross-brand validation** — all labels are one account; before selling
+   the ranker signal as general, validate on a second brand's feed.
+6. **Weekly retrain loop** — schedule: refresh URLs for newly-matured posts,
+   download, retrain, eval vs the frozen 82; promote adapter only on
+   holdout-AUC improvement.

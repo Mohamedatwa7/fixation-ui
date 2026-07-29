@@ -5,7 +5,7 @@ relative organic-engagement rank signal (higher = more likely to out-engage
 peer creatives from the same feed), NOT a calibrated 0-10 quality score.
 
     python -m modal deploy eval/finetune/serve_ranker_modal.py
-    curl -F "file=@creative.jpg" https://<workspace>--fixation-ranker-api-rank.modal.run
+    POST https://<workspace>--rank.modal.run  with JSON {"image_b64": "<base64 jpeg/png>"}
 
 Returns {"rank_score": float, "note": ...}. Scores are comparable between
 creatives scored by the same adapter version; sigmoid-squashed to 0-10 using
@@ -70,14 +70,13 @@ class Ranker:
             messages, tokenize=False, add_generation_prompt=True)
 
     @modal.fastapi_endpoint(method="POST", label="rank")
-    async def rank(self, request):
+    def rank(self, item: dict):
+        import base64
         import io
 
         from PIL import Image as PILImage
 
-        form = await request.form()
-        upload = form["file"]
-        img = PILImage.open(io.BytesIO(await upload.read())).convert("RGB")
+        img = PILImage.open(io.BytesIO(base64.b64decode(item["image_b64"]))).convert("RGB")
         inputs = self.processor(text=[self.chat_text], images=[img],
                                 return_tensors="pt").to("cuda")
         with self.torch.no_grad():
