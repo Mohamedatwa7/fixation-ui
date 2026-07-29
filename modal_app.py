@@ -148,6 +148,18 @@ How much the asset stands apart from the visual conventions of its product categ
   2-3: interchangeable with any competitor; template feel; nothing to remember it by.
   0-1: derivative to the point of confusion with another brand's work.
 
+TALKABILITY (0-10) [surfaced for upper funnel]
+Would a scrolling viewer interact with this — comment, share, tag someone, save? This is the mechanism that actually moves feeds; it is validated against realized organic engagement.
+- Is there a conversation hook: a question, a take, an in-joke, a "which one are you" identity prompt, something to disagree with?
+- Would someone send this to a specific friend, and why? Name the friend-shaped reason (relatable situation, shared fandom, useful flex, humor).
+- Is there a cultural or moment hook (trend format, event tie-in, celebrity/fandom signal) that gives it social currency?
+- Band anchors:
+  8-10: a built-in reason to respond or share that you can name in one sentence (identity prompt, fandom signal, genuinely funny or provocative take). The interaction is the point of the asset.
+  6-7: clear social currency — a moment, meme format, or fandom cue — but the viewer is a spectator, not invited into the conversation.
+  4-5: pleasant and well-made with nothing to say back to it; would earn a pause, not a comment. The median production ad lives here.
+  2-3: purely informational; interacting with it would feel odd.
+  0-1: actively repels interaction (corporate wall of text, stock-photo sterility).
+
 PERSUASIVE POWER (0-10) [surfaced for lower and mid funnel]
 Strength of the asset's pull toward action. Absorbs all offer and CTA logic. Main engagement driver for lower-funnel assets.
 - offer_present: discount, price, promotion, bundle, or value claim?
@@ -164,12 +176,15 @@ Strength of trust signals that reduce friction to action.
 - For a pure-brand awareness asset with no conversion intent, score 5 (neutral, not applicable) and note "N/A for awareness".
 
 STEP 3: MESSAGE CLARITY JUDGMENT (supports the measured clarity KPI)
-- three_second_pass: can a cold viewer extract the core message (brand, product, benefit or offer, action) within 3 seconds? (true/false)
-- biggest_blocker: the single biggest comprehension blocker (competing messages, buried hook, illegible key text), or "None".
+- three_second_pass: can a cold viewer extract this stage's core message within 3 seconds? The core message is FUNNEL-CONDITIONAL — judge only against what this stage owes the viewer:
+  upper: brand + the idea or feeling. NO action or offer is required; a deliberate teaser that withholds product detail still passes if the brand and intrigue land.
+  mid: brand + product + the key benefit or feature.
+  lower: brand + offer + the action to take.
+- biggest_blocker: the single biggest comprehension blocker (competing messages, buried hook, illegible key text), or "None". A missing CTA/offer is NEVER the blocker for an upper-funnel asset.
 
 STEP 4: ENGAGEMENT DRIVERS
 - primary_engagement_driver: the single strongest reason this asset will earn engagement.
-- primary_engagement_risk: the single biggest reason it may underperform.
+- primary_engagement_risk: the single biggest reason it may underperform AT ITS OWN FUNNEL STAGE. Never name the absence of another stage's device (missing CTA/offer/price on upper funnel; density or commercial tone on lower funnel) as the risk — find the weakness within the job this asset is doing.
 
 OUTPUT FORMAT (return only this object):
 
@@ -192,6 +207,11 @@ OUTPUT FORMAT (return only this object):
   },
   "distinctiveness": {
     "score": 0,
+    "reasoning": "string"
+  },
+  "talkability": {
+    "score": 0,
+    "conversation_hook": "string",
     "reasoning": "string"
   },
   "persuasive_power": {
@@ -261,6 +281,16 @@ ENGAGEMENT_SCHEMA = {
             "required": ["score", "reasoning"],
             "additionalProperties": False,
         },
+        "talkability": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "conversation_hook": {"type": "string"},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "conversation_hook", "reasoning"],
+            "additionalProperties": False,
+        },
         "persuasive_power": {
             "type": "object",
             "properties": {
@@ -298,8 +328,8 @@ ENGAGEMENT_SCHEMA = {
         "primary_engagement_risk": {"type": "string"},
     },
     "required": ["funnel_stage", "funnel_reasoning", "product_tier", "asset_intent",
-                 "emotional_pull", "brand_strength", "distinctiveness", "persuasive_power",
-                 "trust_credibility", "message_clarity_judgment",
+                 "emotional_pull", "brand_strength", "distinctiveness", "talkability",
+                 "persuasive_power", "trust_credibility", "message_clarity_judgment",
                  "primary_engagement_driver", "primary_engagement_risk"],
     "additionalProperties": False,
 }
@@ -315,6 +345,7 @@ def _neutral_engagement():
         "emotional_pull": dict(judgment),
         "brand_strength": dict(judgment),
         "distinctiveness": dict(judgment),
+        "talkability": dict(judgment),
         "persuasive_power": dict(judgment),
         "trust_credibility": dict(judgment),
         "message_clarity_judgment": {"three_second_pass": True, "biggest_blocker": "None"},
@@ -421,7 +452,7 @@ def _assess_engagement_once(images):
 
 
 _JUDGED_KPI_FIELDS = ["emotional_pull", "brand_strength", "distinctiveness",
-                      "persuasive_power", "trust_credibility"]
+                      "talkability", "persuasive_power", "trust_credibility"]
 
 
 def _kpi_score(judgment, kpi):
@@ -555,13 +586,18 @@ def _blend(measured, weights):
 _ATTENTION_SRC = {"image": "hierarchy", "video": "first_fixation"}
 _CLARITY_SRC = {"image": "text_balance", "video": "cognitive_load"}
 
+# Upper funnel surfaces talkability instead of message_clarity: clarity was
+# zero-to-negative signal for realized organic engagement on awareness assets
+# (calibration study, eval/calibration/FINDINGS.md), while share/comment
+# provocation is the mechanism feeds actually reward. Clarity still gates the
+# score indirectly via three_second_pass and remains surfaced for mid/lower.
 _FUNNEL_SELECT = {
-    "upper": ["attention_capture", "emotional_pull", "brand_strength", "distinctiveness", "message_clarity"],
+    "upper": ["attention_capture", "emotional_pull", "brand_strength", "distinctiveness", "talkability"],
     "lower": ["persuasive_power", "message_clarity", "attention_capture", "trust_credibility", "brand_strength"],
     "mid": ["attention_capture", "persuasive_power", "message_clarity", "emotional_pull", "brand_strength"],
 }
 _FUNNEL_WEIGHTS = {
-    "upper": {"attention_capture": .28, "emotional_pull": .28, "brand_strength": .18, "distinctiveness": .14, "message_clarity": .12},
+    "upper": {"attention_capture": .24, "emotional_pull": .26, "brand_strength": .18, "distinctiveness": .14, "talkability": .18},
     "lower": {"persuasive_power": .34, "message_clarity": .22, "attention_capture": .18, "trust_credibility": .16, "brand_strength": .10},
     "mid": {"attention_capture": .22, "persuasive_power": .22, "message_clarity": .20, "emotional_pull": .18, "brand_strength": .18},
 }
@@ -614,6 +650,7 @@ def aggregate_engagement(measured, judgment, media_type, funnel):
         "emotional_pull": {"score": round(jscore("emotional_pull"), 1), "label": "Emotional Pull", "methodology": jreason("emotional_pull")},
         "brand_strength": {"score": round(jscore("brand_strength"), 1), "label": "Brand Strength", "methodology": jreason("brand_strength")},
         "distinctiveness": {"score": round(jscore("distinctiveness"), 1), "label": "Distinctiveness", "methodology": jreason("distinctiveness")},
+        "talkability": {"score": round(jscore("talkability"), 1), "label": "Talkability", "methodology": jreason("talkability")},
         "persuasive_power": {"score": round(jscore("persuasive_power"), 1), "label": "Persuasive Power", "methodology": jreason("persuasive_power")},
         "trust_credibility": {"score": round(jscore("trust_credibility"), 1), "label": "Trust & Credibility", "methodology": jreason("trust_credibility")},
     }

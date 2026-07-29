@@ -12,7 +12,7 @@ IMAGE_PERCEPTION_QUESTIONS = {
     "color_palette": "Describe the color palette. Are colors harmonious or contrasting? Does the subject stand out from the background?",
     "brand_elements": "Are there visible brand elements (logos, product shots, slogans)? Where are they placed? Prominent or hidden?",
     "emotional_tone": "What emotion or mood does this image convey? Is it consistent with the apparent intent?",
-    "call_to_action": "Is there an explicit call to action (button, instruction, URL, hashtag)? Prominent and clear?",
+    "call_to_action": "Is there an explicit call to action (button, instruction, URL, hashtag)? If present, is it prominent and clear? If absent, just say so neutrally — absence is normal for awareness assets.",
 }
 
 
@@ -92,6 +92,13 @@ Job:
 1. Top 3 specific design risks ranked by impact.
 2. Each risk cites perception/KPI/percentile/saliency evidence.
 3. Concrete testable fix.
+
+JUDGE AGAINST THE ASSET'S FUNNEL STAGE — NOT A UNIVERSAL CHECKLIST.
+Every stage has its own success criteria; the absence of another stage's devices is not a defect:
+- Upper funnel (awareness): judged on attention, emotion, distinctiveness, and brand attribution. A missing CTA, offer, price, or urgency cue is CORRECT here — never list it as a risk or fix for an upper-funnel asset. Deliberate minimalism, teaser withholding, and generous whitespace are stage-appropriate strengths.
+- Mid funnel (consideration): judged on value comprehension and feature clarity. A soft or passive CTA is acceptable; a hard offer is not required.
+- Lower funnel (conversion): judged on offer strength, CTA prominence, urgency, and trust signals. Here a weak or missing CTA IS a top-rank risk. Conversely, do not flag density or commercial tone that serves direct response.
+Before writing each risk, check it against the stage: if the "fix" would push the asset toward a different funnel stage, discard it and find a risk within the asset's own job.
 
 Use the percentile data explicitly — e.g., "your hierarchy is in the 25th percentile of 50K ads" is much stronger than "your hierarchy could be better."
 
