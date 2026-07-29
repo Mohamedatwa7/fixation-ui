@@ -358,7 +358,10 @@ def score_one(requests, url, e):
     name = os.path.basename(e["local_path"])
     for attempt in (1, 2):
         try:
-            r = requests.post(url, files={"file": (name, content)}, timeout=900)
+            # lite: judge + CV KPIs only — skips the diagnosis LLM call and
+            # perception pass, which calibration never reads
+            r = requests.post(url, files={"file": (name, content)},
+                              data={"lite": "1"}, timeout=900)
             r.raise_for_status()
             body = r.json()
             if "error" in body:

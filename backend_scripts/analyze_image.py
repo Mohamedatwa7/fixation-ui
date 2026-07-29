@@ -158,7 +158,10 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
 
     print(f"Sending to Claude (role: {role_key})...")
     response = client.messages.create(
-        model="claude-opus-4-7", max_tokens=2500, system=system_prompt,
+        model="claude-opus-4-7", max_tokens=2500,
+        # constant per role -> prompt-cache it; hits cost ~10% of the input
+        system=[{"type": "text", "text": system_prompt,
+                 "cache_control": {"type": "ephemeral"}}],
         messages=[{"role": "user", "content": user_message}])
     raw = response.content[0].text.strip()
     if raw.startswith("```"):
@@ -175,11 +178,15 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
 def analyze_image(image_path, title=None, description=None, format_type=None,
                   output_path="image_report.json", model_cache=None,
                   benchmark_path=None, role_key="creative_director",
-                  enable_localization=True):
+                  enable_localization=True, lite=False):
     """
     Main pipeline. Now includes:
       - Localization assessment (Arabic + Urdu)
       - Role-aware diagnosis
+    lite=True skips Qwen perception, localization, and the Claude diagnosis —
+    saliency + CV KPIs only. Used by calibration/eval scoring where only the
+    engagement score is needed; cuts the per-image LLM cost to the judge calls
+    alone and removes the slowest pipeline steps.
     """
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     sys.path.insert(0, "/content")
@@ -203,37 +210,47 @@ def analyze_image(image_path, title=None, description=None, format_type=None,
                                   benchmark_path=benchmark_path,
                                   format_type=format_type)
 
-    print("\n--- STEP 3: Qwen perception ---")
-    perception = run_image_perception(image_path, model_cache=model_cache)
-    image_bgr = cv2.imread(image_path)
-    # Refine text-balance now that we have the VLM's read of on-screen text.
-    # The magnitude stays pixel-based (estimate_text_area_ratio); perception is
-    # only a presence/absence tie-breaker inside text_image_balance.
-    profile = get_format_profile(format_type)
-    kpi_data["kpis"]["text_balance"] = text_image_balance(
-        image_bgr, perception.get("text_overlays", ""), text_max=profile["text_max"])
-    overall = sum(kpi_data["kpis"][k]["score"] * w
-                  for k, w in kpi_data["weights"].items())
-    kpi_data["overall"] = round(overall, 1)
+    if lite:
+        print("\n--- lite mode: skipping perception / localization / diagnosis ---")
+        perception = {}
+        overall = sum(kpi_data["kpis"][k]["score"] * w
+                      for k, w in kpi_data["weights"].items())
+        kpi_data["overall"] = round(overall, 1)
+        localization = None
+        diagnosis = {"summary": "(lite mode: diagnosis skipped)", "risks": [],
+                     "strengths": []}
+    else:
+        print("\n--- STEP 3: Qwen perception ---")
+        perception = run_image_perception(image_path, model_cache=model_cache)
+        image_bgr = cv2.imread(image_path)
+        # Refine text-balance now that we have the VLM's read of on-screen text.
+        # The magnitude stays pixel-based (estimate_text_area_ratio); perception is
+        # only a presence/absence tie-breaker inside text_image_balance.
+        profile = get_format_profile(format_type)
+        kpi_data["kpis"]["text_balance"] = text_image_balance(
+            image_bgr, perception.get("text_overlays", ""), text_max=profile["text_max"])
+        overall = sum(kpi_data["kpis"][k]["score"] * w
+                      for k, w in kpi_data["weights"].items())
+        kpi_data["overall"] = round(overall, 1)
 
-    # === NEW: Localization assessment ===
-    localization = None
-    if enable_localization:
-        print("\n--- STEP 4a: Localization analysis ---")
-        try:
-            from localization import assess_localization
-            localization = assess_localization(
-                perception.get("text_overlays", ""), format_type)
-            risk = localization.get("market_fit_risk", "unknown")
-            print(f"  Market-fit risk: {risk}")
-        except Exception as e:
-            print(f"  Localization failed: {e}")
-            localization = {"error": str(e)}
+        # === NEW: Localization assessment ===
+        localization = None
+        if enable_localization:
+            print("\n--- STEP 4a: Localization analysis ---")
+            try:
+                from localization import assess_localization
+                localization = assess_localization(
+                    perception.get("text_overlays", ""), format_type)
+                risk = localization.get("market_fit_risk", "unknown")
+                print(f"  Market-fit risk: {risk}")
+            except Exception as e:
+                print(f"  Localization failed: {e}")
+                localization = {"error": str(e)}
 
-    print(f"\n--- STEP 4b: Role-aware synthesis (role: {role_key}) ---")
-    diagnosis = run_image_diagnosis(perception, kpi_data, saliency_info,
-                                    image_path, title, description, format_type,
-                                    role_key=role_key)
+        print(f"\n--- STEP 4b: Role-aware synthesis (role: {role_key}) ---")
+        diagnosis = run_image_diagnosis(perception, kpi_data, saliency_info,
+                                        image_path, title, description, format_type,
+                                        role_key=role_key)
 
     report = {
         "image_path": image_path, "title": title, "description": description,

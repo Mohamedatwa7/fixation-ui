@@ -497,7 +497,11 @@ def _assess_engagement_once(images):
         resp = client.messages.create(
             model="claude-opus-4-8",
             max_tokens=1500,
-            system=ENGAGEMENT_PROMPT,
+            # cache_control: the ~4k-token prompt is identical across all
+            # ensemble calls and all creatives — cache hits cut its input
+            # cost ~90% for every call after the first in a 5-min window.
+            system=[{"type": "text", "text": ENGAGEMENT_PROMPT,
+                     "cache_control": {"type": "ephemeral"}}],
             messages=[{"role": "user", "content": content}],
             output_config={"format": {"type": "json_schema", "schema": ENGAGEMENT_SCHEMA}},
         )
@@ -780,6 +784,7 @@ def fastapi_app():
         file: UploadFile = File(...),
         title: str = Form(None), description: str = Form(None),
         format_type: str = Form("KV"), role: str = Form("creative_director"),
+        lite: str = Form(None),
     ):
         tmp = f"/tmp/upload_{file.filename}"
         with open(tmp, "wb") as f:
@@ -795,6 +800,7 @@ def fastapi_app():
                 model_cache=MODEL_CACHE,
                 benchmark_path=benchmark_for(format_type),
                 role_key=role,
+                lite=bool(lite),
             )
             overlay = report.get("saliency", {}).get("overlay_path")
             kpi_data = report.get("kpis", {})
