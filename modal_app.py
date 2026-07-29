@@ -74,6 +74,8 @@ def _setup_paths():
 
 ENGAGEMENT_PROMPT = """You are the F1X8 engagement assessor. You evaluate an advertising asset (static KV, social creative, display, OOH, or video) and predict its ENGAGEMENT POTENTIAL: how likely it is to earn attention and interaction in-feed.
 
+If you receive MULTIPLE images, they are sequential frames sampled from a VIDEO (start, middle, end). Judge hook_strength from the first frame, the retention arc (watch_pull) from the progression across frames, and the payoff from the last. If you receive a single image, it is a static asset — score hook_strength and watch_pull anyway (they are only surfaced for video).
+
 You do NOT score visual measurements. A separate computer-vision pipeline already measures attention concentration (saliency), contrast, layout density, edge complexity, and gaze behaviour. Your job is to assess only what cannot be measured: commercial context, emotional pull, brand attribution, distinctiveness, persuasive intent, and trust. Be decisive and concrete. Ground every judgment in something visible in the asset.
 
 Output a single valid JSON object. No preamble, no markdown fences, no commentary outside the JSON. Every field must be populated. Never return null for a text field; use "Not detected" or "N/A".
@@ -148,6 +150,30 @@ How much the asset stands apart from the visual conventions of its product categ
   2-3: interchangeable with any competitor; template feel; nothing to remember it by.
   0-1: derivative to the point of confusion with another brand's work.
 
+HOOK STRENGTH (0-10) [surfaced for video, all funnels]
+Does the first moment compel the next three seconds? Reels distribution is decided almost entirely here — a weak hook means nothing else gets seen.
+- Is there an open question, unresolved motion, or pattern break in frame one — something the viewer must resolve by watching on?
+- Are there stakes or a promise (transformation, reveal, punchline) legible instantly, before any brand message?
+- Would frame one stop a thumb WITHOUT the caption?
+- Band anchors:
+  8-10: frame one creates a genuine curiosity gap or interrupts the feed pattern (mid-action, wrong-scale, taboo-adjacent, direct address). You can name what question the viewer needs answered.
+  6-7: a visually strong opening (bold move, striking face or product moment) but the viewer could scroll on without feeling they left a question open.
+  4-5: the video opens on a establishing shot, logo, or slow build — competent but hookless. The median production video lives here.
+  2-3: opens like a TV ad (brand card, pack shot, title) — actively signals "ad, skip me".
+  0-1: first frame is empty, dark, or illegible.
+
+WATCH PULL (0-10) [surfaced for video, all funnels]
+Would a hooked viewer stay to the end — and does the end reward them? Watch-time is what the algorithm actually ranks.
+- Is there visible progression across the frames (setup -> development -> payoff), or does the middle repeat the beginning?
+- Is a payoff promised and delivered (reveal, result, punchline, loop point)?
+- Does pacing look dense (cuts, motion, new information) or static?
+- Band anchors:
+  8-10: clear narrative or transformation arc across the frames with a payoff worth waiting for; the end either lands the idea or loops cleanly into the start.
+  6-7: progression exists but the payoff is mild or predictable; a viewer stays out of momentum, not need.
+  4-5: the frames are interchangeable — mood footage with no arc. The median production video lives here.
+  2-3: visibly front-loaded; everything after the opening is filler or a static product card.
+  0-1: no discernible structure.
+
 TALKABILITY (0-10) [surfaced for upper funnel]
 Would a scrolling viewer interact with this — comment, share, tag someone, save? This is the mechanism that actually moves feeds; it is validated against realized organic engagement.
 - Is there a conversation hook: a question, a take, an in-joke, a "which one are you" identity prompt, something to disagree with?
@@ -212,6 +238,16 @@ OUTPUT FORMAT (return only this object):
   "talkability": {
     "score": 0,
     "conversation_hook": "string",
+    "reasoning": "string"
+  },
+  "hook_strength": {
+    "score": 0,
+    "open_question": "string",
+    "reasoning": "string"
+  },
+  "watch_pull": {
+    "score": 0,
+    "payoff": "string",
     "reasoning": "string"
   },
   "persuasive_power": {
@@ -291,6 +327,26 @@ ENGAGEMENT_SCHEMA = {
             "required": ["score", "conversation_hook", "reasoning"],
             "additionalProperties": False,
         },
+        "hook_strength": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "open_question": {"type": "string"},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "open_question", "reasoning"],
+            "additionalProperties": False,
+        },
+        "watch_pull": {
+            "type": "object",
+            "properties": {
+                "score": {"type": "number"},
+                "payoff": {"type": "string"},
+                "reasoning": {"type": "string"},
+            },
+            "required": ["score", "payoff", "reasoning"],
+            "additionalProperties": False,
+        },
         "persuasive_power": {
             "type": "object",
             "properties": {
@@ -329,6 +385,7 @@ ENGAGEMENT_SCHEMA = {
     },
     "required": ["funnel_stage", "funnel_reasoning", "product_tier", "asset_intent",
                  "emotional_pull", "brand_strength", "distinctiveness", "talkability",
+                 "hook_strength", "watch_pull",
                  "persuasive_power", "trust_credibility", "message_clarity_judgment",
                  "primary_engagement_driver", "primary_engagement_risk"],
     "additionalProperties": False,
@@ -346,6 +403,8 @@ def _neutral_engagement():
         "brand_strength": dict(judgment),
         "distinctiveness": dict(judgment),
         "talkability": dict(judgment),
+        "hook_strength": dict(judgment),
+        "watch_pull": dict(judgment),
         "persuasive_power": dict(judgment),
         "trust_credibility": dict(judgment),
         "message_clarity_judgment": {"three_second_pass": True, "biggest_blocker": "None"},
@@ -452,7 +511,8 @@ def _assess_engagement_once(images):
 
 
 _JUDGED_KPI_FIELDS = ["emotional_pull", "brand_strength", "distinctiveness",
-                      "talkability", "persuasive_power", "trust_credibility"]
+                      "talkability", "hook_strength", "watch_pull",
+                      "persuasive_power", "trust_credibility"]
 
 
 def _kpi_score(judgment, kpi):
@@ -586,20 +646,39 @@ def _blend(measured, weights):
 _ATTENTION_SRC = {"image": "hierarchy", "video": "first_fixation"}
 _CLARITY_SRC = {"image": "text_balance", "video": "cognitive_load"}
 
-# Upper funnel surfaces talkability instead of message_clarity: clarity was
+# KPI sets are media-aware. Images are judged on spatial levers (a single
+# frame must stop, land, attribute, stand apart, provoke); video is a
+# time-based medium whose distribution is priced on the hook (3s view-through)
+# and the hold (watch time), so hook_strength and watch_pull replace the
+# static-native attention_capture/distinctiveness there. Upper funnel
+# surfaces talkability instead of message_clarity on both media: clarity was
 # zero-to-negative signal for realized organic engagement on awareness assets
 # (calibration study, eval/calibration/FINDINGS.md), while share/comment
 # provocation is the mechanism feeds actually reward. Clarity still gates the
 # score indirectly via three_second_pass and remains surfaced for mid/lower.
 _FUNNEL_SELECT = {
-    "upper": ["attention_capture", "emotional_pull", "brand_strength", "distinctiveness", "talkability"],
-    "lower": ["persuasive_power", "message_clarity", "attention_capture", "trust_credibility", "brand_strength"],
-    "mid": ["attention_capture", "persuasive_power", "message_clarity", "emotional_pull", "brand_strength"],
+    "image": {
+        "upper": ["attention_capture", "emotional_pull", "brand_strength", "distinctiveness", "talkability"],
+        "lower": ["persuasive_power", "message_clarity", "attention_capture", "trust_credibility", "brand_strength"],
+        "mid": ["attention_capture", "persuasive_power", "message_clarity", "emotional_pull", "brand_strength"],
+    },
+    "video": {
+        "upper": ["hook_strength", "watch_pull", "emotional_pull", "brand_strength", "talkability"],
+        "lower": ["persuasive_power", "message_clarity", "hook_strength", "trust_credibility", "brand_strength"],
+        "mid": ["hook_strength", "watch_pull", "message_clarity", "persuasive_power", "brand_strength"],
+    },
 }
 _FUNNEL_WEIGHTS = {
-    "upper": {"attention_capture": .24, "emotional_pull": .26, "brand_strength": .18, "distinctiveness": .14, "talkability": .18},
-    "lower": {"persuasive_power": .34, "message_clarity": .22, "attention_capture": .18, "trust_credibility": .16, "brand_strength": .10},
-    "mid": {"attention_capture": .22, "persuasive_power": .22, "message_clarity": .20, "emotional_pull": .18, "brand_strength": .18},
+    "image": {
+        "upper": {"attention_capture": .24, "emotional_pull": .26, "brand_strength": .18, "distinctiveness": .14, "talkability": .18},
+        "lower": {"persuasive_power": .34, "message_clarity": .22, "attention_capture": .18, "trust_credibility": .16, "brand_strength": .10},
+        "mid": {"attention_capture": .22, "persuasive_power": .22, "message_clarity": .20, "emotional_pull": .18, "brand_strength": .18},
+    },
+    "video": {
+        "upper": {"hook_strength": .26, "watch_pull": .20, "emotional_pull": .18, "brand_strength": .18, "talkability": .18},
+        "lower": {"persuasive_power": .30, "message_clarity": .20, "hook_strength": .18, "trust_credibility": .16, "brand_strength": .16},
+        "mid": {"hook_strength": .22, "watch_pull": .20, "message_clarity": .20, "persuasive_power": .20, "brand_strength": .18},
+    },
 }
 
 # Bradley-Terry weights refit against realized organic engagement
@@ -651,13 +730,16 @@ def aggregate_engagement(measured, judgment, media_type, funnel):
         "brand_strength": {"score": round(jscore("brand_strength"), 1), "label": "Brand Strength", "methodology": jreason("brand_strength")},
         "distinctiveness": {"score": round(jscore("distinctiveness"), 1), "label": "Distinctiveness", "methodology": jreason("distinctiveness")},
         "talkability": {"score": round(jscore("talkability"), 1), "label": "Talkability", "methodology": jreason("talkability")},
+        "hook_strength": {"score": round(jscore("hook_strength"), 1), "label": "Hook Strength", "methodology": jreason("hook_strength")},
+        "watch_pull": {"score": round(jscore("watch_pull"), 1), "label": "Watch Pull", "methodology": jreason("watch_pull")},
         "persuasive_power": {"score": round(jscore("persuasive_power"), 1), "label": "Persuasive Power", "methodology": jreason("persuasive_power")},
         "trust_credibility": {"score": round(jscore("trust_credibility"), 1), "label": "Trust & Credibility", "methodology": jreason("trust_credibility")},
     }
 
-    stage = funnel if funnel in _FUNNEL_SELECT else "mid"
-    five = {kid: all_kpis[kid] for kid in _FUNNEL_SELECT[stage]}
-    engagement_potential = round(sum(all_kpis[kid]["score"] * w for kid, w in _FUNNEL_WEIGHTS[stage].items()), 1)
+    medium = media_type if media_type in _FUNNEL_SELECT else "image"
+    stage = funnel if funnel in _FUNNEL_SELECT[medium] else "mid"
+    five = {kid: all_kpis[kid] for kid in _FUNNEL_SELECT[medium][stage]}
+    engagement_potential = round(sum(all_kpis[kid]["score"] * w for kid, w in _FUNNEL_WEIGHTS[medium][stage].items()), 1)
 
     # Organic-context score (beta, additive): KPI weights refit against
     # realized organic engagement on brand social creatives, holdout AUC 0.69
