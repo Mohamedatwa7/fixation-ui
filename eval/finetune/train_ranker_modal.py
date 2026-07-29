@@ -24,8 +24,8 @@ MANIFEST = os.path.join(FT_DIR, "data", "manifest.json")
 
 MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
 MAX_PIXELS = 512 * 28 * 28   # bound visual tokens so a pair fits on A10G
-PAIRS_PER_EPOCH = 600
-EPOCHS = 2
+PAIRS_PER_EPOCH = int(os.environ.get("PAIRS_PER_EPOCH", "1200"))
+EPOCHS = int(os.environ.get("EPOCHS", "2"))
 GRAD_ACCUM = 8
 
 app = modal.App("fixation-ranker-train")
@@ -92,10 +92,13 @@ def train():
             idx = int(inputs["attention_mask"].sum(1).item()) - 1
             return head(hs[0, idx]).squeeze()
 
+    # Pairs by percentile gap (>= MIN_GAP points) rather than stratum, so
+    # widened-band images contribute; label direction stays unambiguous.
+    MIN_GAP = 30
     train_items = splits["train"]
-    tops = [i for i in train_items if i["stratum"] == "top"]
-    bots = [i for i in train_items if i["stratum"] == "bottom"]
-    all_pairs = [(t, b) for t in tops for b in bots]
+    all_pairs = [(a, b) for a in train_items for b in train_items
+                 if a["percentile"] - b["percentile"] >= MIN_GAP]
+    print(f"{len(train_items)} train images -> {len(all_pairs)} pairs (gap>={MIN_GAP})")
     rng = random.Random(13)
 
     params = [p for p in model.parameters() if p.requires_grad]

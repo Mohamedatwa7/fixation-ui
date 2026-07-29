@@ -240,15 +240,18 @@ def cmd_build():
             e["cohort"] = "|".join(map(str, key))
             e["cohort_n"] = len(group)
 
-    # stratified candidates: image creatives from top + bottom quartiles, most
+    # stratified candidates: image creatives from top + bottom bands, most
     # extreme first per platform x stratum queue. The download step fills the
     # actual sample from these, skipping expired-CDN posts, so selection is
-    # download-aware.
+    # download-aware. Band thresholds are env-tunable (STRATA_TOP/STRATA_BOTTOM)
+    # so the fine-tune data sweep can widen beyond the default quartiles.
+    top_th = float(os.environ.get("STRATA_TOP", "75"))
+    bot_th = float(os.environ.get("STRATA_BOTTOM", "25"))
     queues = {}
     for e in eligible:
         if e["kind"] != "image" or e["cohort_n"] < MIN_COHORT:
             continue
-        stratum = "top" if e["percentile"] >= 75 else "bottom" if e["percentile"] <= 25 else None
+        stratum = "top" if e["percentile"] >= top_th else "bottom" if e["percentile"] <= bot_th else None
         if stratum:
             e["stratum"] = stratum
             queues.setdefault(f"{e['platform']}|{stratum}", []).append(e)

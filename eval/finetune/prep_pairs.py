@@ -28,10 +28,13 @@ def main():
     with open(os.path.join(CAL_DATA, "dataset.json"), encoding="utf-8") as f:
         ds = json.load(f)
     posts = {e["id"]: e for e in ds["posts"]}
-    design = set()
-    pre = os.path.join(CAL_DATA, "results-preanchor")
-    if os.path.isdir(pre):
-        design = {fn[:-5] for fn in os.listdir(pre) if fn.endswith(".json")}
+
+    # The holdout is FROZEN (the 82 creatives never seen during anchor design
+    # or the first training run) so every ranker iteration is comparable.
+    # Everything else sampled goes to train.
+    frozen_path = os.path.join(FT_DIR, "data", "holdout_ids.json")
+    with open(frozen_path, encoding="utf-8") as f:
+        holdout_ids = set(json.load(f))
 
     splits = {"train": [], "holdout": []}
     for pid in ds["sample"]:
@@ -39,7 +42,7 @@ def main():
         path = e.get("local_path")
         if not path or not os.path.exists(path):
             continue
-        split = "train" if pid in design else "holdout"
+        split = "holdout" if pid in holdout_ids else "train"
         splits[split].append({
             "id": pid, "image": os.path.abspath(path),
             "stratum": e["stratum"], "percentile": e["percentile"],

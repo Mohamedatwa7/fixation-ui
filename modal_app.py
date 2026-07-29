@@ -1,4 +1,5 @@
 import modal
+import math
 import os
 import re
 import json
@@ -565,6 +566,15 @@ _FUNNEL_WEIGHTS = {
     "mid": {"attention_capture": .22, "persuasive_power": .22, "message_clarity": .20, "emotional_pull": .18, "brand_strength": .18},
 }
 
+# Bradley-Terry weights refit against realized organic engagement
+# (eval/finetune/analyze_weights.py, 2026-07-28 study). Negative weights are
+# real: in-feed, clarity/attention polish anti-correlates with organic pull.
+_ORGANIC_WEIGHTS = {
+    "attention_capture": -0.347, "emotional_pull": 0.409, "brand_strength": 1.107,
+    "distinctiveness": 0.363, "persuasive_power": 0.525, "trust_credibility": 0.209,
+    "message_clarity": -0.371,
+}
+
 
 def aggregate_engagement(measured, judgment, media_type, funnel):
     """Map measured CV KPIs + LLM judgment into 5 funnel-specific KPIs and one
@@ -611,10 +621,18 @@ def aggregate_engagement(measured, judgment, media_type, funnel):
     stage = funnel if funnel in _FUNNEL_SELECT else "mid"
     five = {kid: all_kpis[kid] for kid in _FUNNEL_SELECT[stage]}
     engagement_potential = round(sum(all_kpis[kid]["score"] * w for kid, w in _FUNNEL_WEIGHTS[stage].items()), 1)
+
+    # Organic-context score (beta, additive): KPI weights refit against
+    # realized organic engagement on brand social creatives, holdout AUC 0.69
+    # vs 0.59 for the funnel-weighted score (eval/calibration/FINDINGS.md).
+    # Sigmoid constants derive from the 142-creative calibration sample.
+    combo = sum(all_kpis[k]["score"] * w for k, w in _ORGANIC_WEIGHTS.items())
+    organic = round(10.0 / (1.0 + math.exp(-(combo - 6.989) * 0.4067)), 1)
+
     print(f"[engagement] aggregate stage={stage} measured_keys={list(measured.keys())} "
           f"attention={all_kpis['attention_capture']['score']} clarity={all_kpis['message_clarity']['score']} "
-          f"-> engagement_potential={engagement_potential}")
-    return engagement_potential, five
+          f"-> engagement_potential={engagement_potential} organic={organic}")
+    return engagement_potential, five, organic
 
 
 @app.function(
@@ -664,11 +682,12 @@ def fastapi_app():
             measured = kpi_data.get("kpis", {})
             judgment = assess_engagement([(_media_type(tmp), b64(tmp))])
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
-            engagement_potential, five_kpis = aggregate_engagement(measured, judgment, "image", funnel)
+            engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
             return {
                 "verdict": report.get("diagnosis", {}),
                 "engagement_potential": engagement_potential,
                 "score": engagement_potential,
+                "organic_engagement": organic,
                 "kpis": five_kpis,
                 "kpis_overall": engagement_potential,
                 "funnel_stage": funnel,
@@ -703,13 +722,14 @@ def fastapi_app():
             measured = kpi_data.get("kpis", {})
             judgment = assess_engagement([(_media_type(image_path), b64(image_path))])
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
-            engagement_potential, five_kpis = aggregate_engagement(measured, judgment, "image", funnel)
+            engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
             JOBS[job_id] = {
                 "status": "done",
                 "result": {
                     "verdict": report.get("diagnosis", {}),
                     "engagement_potential": engagement_potential,
                     "score": engagement_potential,
+                    "organic_engagement": organic,
                     "kpis": five_kpis,
                     "kpis_overall": engagement_potential,
                     "funnel_stage": funnel,
@@ -776,13 +796,14 @@ def fastapi_app():
 
             judgment = assess_engagement(_sample_frames(video_path, 3))
             funnel = judgment.get("funnel_stage") or "mid"
-            engagement_potential, five_kpis = aggregate_engagement(kpis_block, judgment, "video", funnel)
+            engagement_potential, five_kpis, organic = aggregate_engagement(kpis_block, judgment, "video", funnel)
             JOBS[job_id] = {
                 "status": "done",
                 "result": {
                     "verdict": report.get("diagnosis", {}),
                     "engagement_potential": engagement_potential,
                     "score": engagement_potential,
+                    "organic_engagement": organic,
                     "kpis": five_kpis,
                     "kpis_overall": engagement_potential,
                     "funnel_stage": funnel,
