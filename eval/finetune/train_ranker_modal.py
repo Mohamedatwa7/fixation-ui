@@ -26,6 +26,10 @@ MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
 MAX_PIXELS = 512 * 28 * 28   # bound visual tokens so a pair fits on A10G
 PAIRS_PER_EPOCH = int(os.environ.get("PAIRS_PER_EPOCH", "1200"))
 EPOCHS = int(os.environ.get("EPOCHS", "2"))
+# Adapter is promoted (written to /out/adapter, where the serving endpoint
+# loads from) only when holdout AUC clears this bar; otherwise it is parked
+# in /out/candidate. The weekly loop passes the best AUC to date.
+PROMOTE_MIN_AUC = float(os.environ.get("PROMOTE_MIN_AUC", "0"))
 GRAD_ACCUM = 8
 
 app = modal.App("fixation-ranker-train")
@@ -143,16 +147,23 @@ def train():
 
     train_auc, _ = evaluate(train_items)
     holdout_auc, holdout_scores = evaluate(splits["holdout"])
+    promoted = holdout_auc >= PROMOTE_MIN_AUC
     metrics = {"model": MODEL_ID, "lora_active_at_end": lora_active,
                "train_auc": round(train_auc, 3),
                "holdout_auc": round(holdout_auc, 3),
+               "promoted": promoted, "promote_min_auc": PROMOTE_MIN_AUC,
                "n_train": len(train_items), "n_holdout": len(splits["holdout"]),
                "holdout_scores": holdout_scores}
     print(json.dumps({k: v for k, v in metrics.items() if k != "holdout_scores"}))
 
-    model.save_pretrained("/out/adapter")
-    torch.save(head.state_dict(), "/out/head.pt")
-    with open("/out/metrics.json", "w") as f:
+    dest = "/out/adapter" if promoted else "/out/candidate"
+    model.save_pretrained(dest)
+    torch.save(head.state_dict(),
+               "/out/head.pt" if promoted else "/out/candidate_head.pt")
+    if promoted:
+        with open("/out/metrics.json", "w") as f:
+            json.dump(metrics, f)
+    with open("/out/last_run_metrics.json", "w") as f:
         json.dump(metrics, f)
     out_vol.commit()
     return metrics
