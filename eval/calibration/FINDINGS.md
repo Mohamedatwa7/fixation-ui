@@ -69,6 +69,27 @@ discrimination (0.5 = chance) on cohort-normalized engagement percentiles.
   generalization unmeasured. Train AUC 1.0 says it will overfit hard as is;
   more data before trusting it further.
 
+## Phase-2 results (2026-07-29, second session)
+
+- **media_kind root-cause fix**: IG reels carry .jpg thumbnails as media_url
+  and were classified as images. The brand pool is really **265 images +
+  ~719 reels**, not 984 images. Image cohorts are now decontaminated; the
+  ranker re-baselines at **0.850** on the 62 still-valid holdout creatives
+  (zero strata flips) — the benchmark survives.
+- **Reels calibration (n=36 brand reels via the deployed video pipeline):
+  AUC 0.731, Spearman 0.38** — the video path discriminates the majority
+  content class better than the image judge does images. Likely helped by
+  per-view label basis on videos. 4/40 pipeline errors.
+- **Cross-account validation (xcitealghanim retailer, n=80, 40/40): ranker
+  AUC 0.621** — transfers weakly-positively; the adapter carries real
+  general signal plus substantial Samsung-specific aesthetics. Multi-account
+  training data is the path to a general model.
+- **Weekly retrain loop built** (`weekly_retrain.py` + promote-on-improvement
+  in the trainer; adapter only reaches the serving volume path when holdout
+  AUC clears the best-so-far bar). Task Scheduler registration pending user
+  approval (`run_weekly.cmd`).
+- **UI**: Organic chip shipped on the results verdict panel.
+
 ## Recommended next steps
 
 1. ~~Grow the labeled set~~ — done to queue exhaustion (224 images with live
@@ -78,12 +99,15 @@ discrimination (0.5 = chance) on cohort-normalized engagement percentiles.
    re-run the refresh + retrain loop.
 2. ~~Ship an organic-context weighting profile~~ — shipped as the additive
    `organic_engagement` field.
-3. **Reels support** — most Samsung social content is video; an image-only
-   scorer misses the majority class. Largest remaining gap.
-4. ~~Ranker as a KPI~~ — served at the standalone endpoint; wiring it into
-   the fixation-ui frontend as a display card remains a UI task.
-5. **Cross-brand validation** — all labels are one account; before selling
-   the ranker signal as general, validate on a second brand's feed.
-6. **Weekly retrain loop** — schedule: refresh URLs for newly-matured posts,
-   download, retrain, eval vs the frozen 82; promote adapter only on
-   holdout-AUC improvement.
+3. ~~Reels support phase 1~~ — measured (AUC 0.731 via existing video
+   pipeline). Phase 2: reels ranker (train on sampled frames or cover +
+   motion features) and reels-aware UI.
+4. ~~Ranker as a KPI~~ — served at the standalone endpoint; Organic chip
+   shipped. A dedicated rank_score card wired to the ranker endpoint remains
+   optional UI work.
+5. ~~Cross-brand validation phase 1~~ — measured (0.621 on a retailer feed).
+   Phase 2: add non-brand accounts' extremes to ranker training for a
+   general model (the export already holds 12.5k non-brand posts).
+6. **Weekly retrain loop** — built; register the scheduled task (user
+   approval), then let it run. Extend it to reels once the reels ranker
+   exists.
