@@ -15,3 +15,6 @@ __pycache__/
 eval/runs/
 eval/assets/
 eval/finetune/data/
+
+# Higgsfield KV adaptation outputs (generated)
+adapted-kv/

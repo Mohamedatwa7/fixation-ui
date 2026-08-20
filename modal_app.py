@@ -90,6 +90,7 @@ You are a demanding, discriminating critic, not a brand-friendly reviewer. Score
 - Before scoring each dimension, name the single biggest weakness of THIS asset on that dimension, then score. A high score must be justified by something specifically visible, never granted by default.
 - Score each dimension independently and decisively. Two different assets should rarely receive identical scores - if you find yourself repeating the same numbers, look harder for what separates them.
 - Score dimensions independently of each other: a strong brand must not lift emotional_pull, and a hard offer must not lift trust_credibility. Before output, re-read your five scores - if three or more share the same value, you have defaulted; re-differentiate using the band anchors.
+- Score every dimension to ONE DECIMAL place (e.g. 4.7, 6.3) - never a bare integer. The integer selects the band from the anchors; the decimal places the asset WITHIN the band (x.0-x.2 barely qualifies for the band, x.5 sits solidly in it, x.8-x.9 presses against the next band). A revision that improves a dimension without crossing a band boundary must still register in the decimal.
 - Each band anchor below describes something you can literally point to in the asset. Score to the band whose description matches what you see, not to a general impression of quality.
 
 IN-FEED CALIBRATION - GROUNDED IN MEASURED ORGANIC ENGAGEMENT
@@ -791,6 +792,9 @@ def fastapi_app():
             f.write(await file.read())
         try:
             from analyze_image import analyze_image
+            # Judge first: the diagnosis critic needs the judge's funnel stage to
+            # rank risks by that stage's actual score weights.
+            judgment = assess_engagement([(_media_type(tmp), b64(tmp))])
             report = analyze_image(
                 image_path=tmp,
                 title=title or None,
@@ -801,11 +805,12 @@ def fastapi_app():
                 benchmark_path=benchmark_for(format_type),
                 role_key=role,
                 lite=bool(lite),
+                funnel_hint=judgment.get("funnel_stage"),
+                score_weights={"funnel": _FUNNEL_WEIGHTS["image"], "organic": _ORGANIC_WEIGHTS},
             )
             overlay = report.get("saliency", {}).get("overlay_path")
             kpi_data = report.get("kpis", {})
             measured = kpi_data.get("kpis", {})
-            judgment = assess_engagement([(_media_type(tmp), b64(tmp))])
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
             return {
@@ -832,6 +837,9 @@ def fastapi_app():
         try:
             JOBS[job_id] = {"status": "analyzing"}
             from analyze_image import analyze_image
+            # Judge first: the diagnosis critic needs the judge's funnel stage to
+            # rank risks by that stage's actual score weights.
+            judgment = assess_engagement([(_media_type(image_path), b64(image_path))])
             report = analyze_image(
                 image_path=image_path,
                 title=title or None,
@@ -841,11 +849,12 @@ def fastapi_app():
                 model_cache=MODEL_CACHE,
                 benchmark_path=benchmark_for(format_type),
                 role_key=role,
+                funnel_hint=judgment.get("funnel_stage"),
+                score_weights={"funnel": _FUNNEL_WEIGHTS["image"], "organic": _ORGANIC_WEIGHTS},
             )
             overlay = report.get("saliency", {}).get("overlay_path")
             kpi_data = report.get("kpis", {})
             measured = kpi_data.get("kpis", {})
-            judgment = assess_engagement([(_media_type(image_path), b64(image_path))])
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
             JOBS[job_id] = {

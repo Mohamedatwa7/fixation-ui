@@ -100,6 +100,13 @@ Every stage has its own success criteria; the absence of another stage's devices
 - Lower funnel (conversion): judged on offer strength, CTA prominence, urgency, and trust signals. Here a weak or missing CTA IS a top-rank risk. Conversely, do not flag density or commercial tone that serves direct response.
 Before writing each risk, check it against the stage: if the "fix" would push the asset toward a different funnel stage, discard it and find a risk within the asset's own job.
 
+RANK RISKS BY EXPECTED SCORE IMPACT, NOT BY VISUAL SEVERITY.
+When the user message includes ENGAGEMENT SCORE WEIGHTS, they are the exact weights that produce this asset's Engagement Potential score at its funnel stage, plus organic-engagement weights refit against realized in-feed engagement (a NEGATIVE organic weight means polishing that dimension anti-correlates with organic engagement). Use them:
+- Estimate each candidate risk's impact as (weight of the KPI its fix would move) x (realistic points of movement), and rank risks by that product.
+- Name the KPI each risk targets in a "score_lever" field, e.g. "emotional_pull (weight 0.26)".
+- On upper-funnel assets, most of the score sits in concept-level judged KPIs (emotional pull, distinctiveness, talkability, brand strength). At least one of your top-2 risks must target a concept lever, with a suggested_fix executable as a creative revision — a nameable emotional idea, a distinctive visual device, a share/comment hook — not only execution polish (contrast, alignment, watermark cleanup).
+- When a fix is pure attention/clarity polish and that KPI's organic weight is negative, state the tradeoff in "impact" and rank it accordingly; it must never be risk #1 on an upper-funnel asset.
+
 Use the percentile data explicitly — e.g., "your hierarchy is in the 25th percentile of 50K ads" is much stronger than "your hierarchy could be better."
 
 Be direct. If the design is strong, say so. Frame issues as hypotheses, not certainties.
@@ -108,7 +115,7 @@ Output strict JSON:
 {
   "summary": "1-2 sentence overall assessment",
   "strengths": ["..."],
-  "risks": [{"rank": 1, "issue": "...", "evidence": "...", "impact": "...", "suggested_fix": "...", "confidence": "high|medium|low"}],
+  "risks": [{"rank": 1, "issue": "...", "evidence": "...", "impact": "...", "suggested_fix": "...", "score_lever": "kpi_name (weight 0.00)", "confidence": "high|medium|low"}],
   "hierarchy_analysis": "Where the eye lands vs. where it should",
   "brand_visibility": "How well brand element is positioned",
   "benchmark_context": "What the percentile rankings tell us",
@@ -117,9 +124,30 @@ Output strict JSON:
 """
 
 
+def _score_weight_text(stage, score_weights):
+    """Render the engagement-score weight tables for the diagnosis prompt so the
+    critic can rank risks by expected score impact (weight x movement)."""
+    if not score_weights:
+        return ""
+    funnel_tables = score_weights.get("funnel") or {}
+    fw = funnel_tables.get(stage) or funnel_tables.get("mid") or {}
+    lines = [f"ENGAGEMENT SCORE WEIGHTS (funnel stage: {stage}) — the final score "
+             "is the weighted sum of these five KPIs; a fix that cannot move one "
+             "of them cannot move the score:"]
+    lines += [f"- {k}: {w:.2f}" for k, w in fw.items()]
+    ow = score_weights.get("organic") or {}
+    if ow:
+        lines.append("ORGANIC ENGAGEMENT WEIGHTS (refit against realized in-feed "
+                     "engagement; NEGATIVE weight = polishing this dimension "
+                     "anti-correlates with organic engagement):")
+        lines += [f"- {k}: {w:+.3f}" for k, w in ow.items()]
+    return "\n".join(lines)
+
+
 def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
                         title=None, description=None, format_type=None,
-                        role_key="creative_director"):
+                        role_key="creative_director",
+                        funnel_hint=None, score_weights=None):
     """Role-aware Claude diagnosis."""
     from anthropic import Anthropic
     sys.path.insert(0, "/content")
@@ -131,9 +159,12 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
     client = Anthropic(api_key=api_key)
 
     perception_text = "\n\n".join(f"## {k.upper()}\n{v}" for k, v in perception.items())
+    # The judge's funnel call (when available) wins over the CV-inferred stage so
+    # the critique is ranked against the same weights that produce the score.
+    stage = funnel_hint or kpi_data.get("funnel_stage") or "mid"
     kpi_text = ""
-    if kpi_data.get("funnel_stage"):
-        kpi_text += (f"Inferred funnel stage: {kpi_data['funnel_stage']} "
+    if stage:
+        kpi_text += (f"Inferred funnel stage: {stage} "
                      f"(product tier: {kpi_data.get('product_tier', 'n/a')}). "
                      f"Interpret every score relative to this — e.g. generous whitespace "
                      f"and low text are correct for upper funnel, denser layouts are correct "
@@ -148,12 +179,14 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
     saliency_text = saliency_info.get("summary", "(saliency unavailable)")
     system_prompt = build_role_aware_system_prompt(BASE_SYS_PROMPT, role_key, "image")
 
+    weights_text = _score_weight_text(stage, score_weights)
     user_message = (
         f"Image: {os.path.basename(image_path)}\nTitle: {title or '(none)'}\n"
         f"Format: {format_type or '(unspecified)'}\nBrief: {description or '(none)'}\n\n"
         f"PERCEPTION (Qwen2.5-VL):\n\n{perception_text}\n\n"
         f"DESIGN KPIs (with industry percentiles):\n\n{kpi_text}\n\n"
-        f"SALIENCY:\n\n{saliency_text}\n\nProduce diagnostic JSON."
+        + (f"{weights_text}\n\n" if weights_text else "")
+        + f"SALIENCY:\n\n{saliency_text}\n\nProduce diagnostic JSON."
     )
 
     print(f"Sending to Claude (role: {role_key})...")
@@ -178,7 +211,8 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
 def analyze_image(image_path, title=None, description=None, format_type=None,
                   output_path="image_report.json", model_cache=None,
                   benchmark_path=None, role_key="creative_director",
-                  enable_localization=True, lite=False):
+                  enable_localization=True, lite=False,
+                  funnel_hint=None, score_weights=None):
     """
     Main pipeline. Now includes:
       - Localization assessment (Arabic + Urdu)
@@ -250,7 +284,9 @@ def analyze_image(image_path, title=None, description=None, format_type=None,
         print(f"\n--- STEP 4b: Role-aware synthesis (role: {role_key}) ---")
         diagnosis = run_image_diagnosis(perception, kpi_data, saliency_info,
                                         image_path, title, description, format_type,
-                                        role_key=role_key)
+                                        role_key=role_key,
+                                        funnel_hint=funnel_hint,
+                                        score_weights=score_weights)
 
     report = {
         "image_path": image_path, "title": title, "description": description,
