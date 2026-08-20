@@ -6,6 +6,7 @@ import SpecimenVerdict from '@/components/results/SpecimenVerdict'
 import FixCard from '@/components/results/FixCard'
 import KpiStrip from '@/components/results/KpiStrip'
 import CustomMetricPanel from '@/components/results/CustomMetricPanel'
+import AdaptPanel from '@/components/results/AdaptPanel'
 import FullDiagnostic from '@/components/results/FullDiagnostic'
 import ExportButton from '@/components/results/ExportButton'
 import { getDiagnostic } from '@/lib/api'
@@ -111,6 +112,10 @@ export default function ResultsPage() {
           {result.metadata && <VideoMetadataStrip meta={result.metadata} />}
           <SpecimenVerdict result={result} />
           <FixCard fix={result.fix} />
+
+          <section aria-label="Revised KV generation">
+            <AdaptPanel result={result} />
+          </section>
 
           <section aria-label="KPI diagnostics">
             <KpiStrip kpis={result.kpis} />

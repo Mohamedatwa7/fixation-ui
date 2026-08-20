@@ -159,6 +159,53 @@ export async function analyzeVideoUrl(url: string, meta: AnalysisMeta): Promise<
 }
 
 /**
+ * Generate a revised KV via Higgsfield: applies the diagnostic's suggested
+ * fixes to the original creative (image-to-image edit). Returns the revised
+ * image as a same-origin proxied URL plus the edit prompt used.
+ */
+export async function adaptCreative(
+  result: DiagnosticResult,
+  extra?: string,
+): Promise<{ url: string; prompt: string }> {
+  if (!result.sourcePreview) throw new Error('Original image unavailable — re-run the diagnostic to enable revision.')
+  const res = await fetch('/api/adapt', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      image: result.sourcePreview,
+      risks: result.risks,
+      strengths: result.strengths,
+      extra,
+    }),
+  })
+  const submitted = await res.json().catch(() => ({}))
+  if (!res.ok) throw new Error(submitted.error || `Revision failed (${res.status})`)
+  const { request_id, prompt } = submitted
+  if (!request_id) throw new Error('No request_id returned')
+
+  let attempts = 0
+  const maxAttempts = 100 // ~5 min at 3s intervals
+  while (attempts < maxAttempts) {
+    await new Promise(r => setTimeout(r, 3000))
+    let statusRes: Response
+    try { statusRes = await fetch(`/api/adapt?request_id=${request_id}`) }
+    catch { attempts++; continue }
+    if (!statusRes.ok) { attempts++; continue }
+    const status = await statusRes.json()
+    if (status.status === 'completed') {
+      const remote = status.images?.[0]
+      if (!remote) throw new Error('Generation completed but returned no image')
+      return { url: `/api/adapt?download=${encodeURIComponent(remote)}`, prompt }
+    }
+    if (status.status === 'failed') throw new Error(`Generation failed: ${status.error || 'unknown error'}`)
+    if (status.status === 'nsfw') throw new Error('Generation rejected by content moderation')
+    if (status.status === 'canceled') throw new Error('Generation was canceled')
+    attempts++
+  }
+  throw new Error('Revision timed out')
+}
+
+/**
  * Fallback diagnostic used when the results page has no live result in memory
  * or session storage (e.g. a direct visit to /results). Returns mock data.
  */
