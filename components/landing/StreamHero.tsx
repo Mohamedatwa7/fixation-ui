@@ -5,7 +5,7 @@ import ImageStreamHero from '@/components/ui/image-stream-hero'
  * Landing hero — the ImageStreamHero corridor in its stock presentation:
  * flat background, full-colour imagery (vivid gradients interleaved with
  * campaign-style photography), headline riding above the stream and the
- * supporting line + CTA anchored below it.
+ * CTA anchored below it.
  */
 
 const CDN = 'https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev'
@@ -70,18 +70,13 @@ export default function StreamHero() {
       >
         <div className="relative z-10 flex h-full flex-col items-center justify-between py-12 text-center">
           <div className="px-6">
-            <h1 className="text-balance text-4xl font-medium tracking-tight text-foreground sm:text-5xl md:text-6xl">
+            <h1 className="text-balance font-sans text-4xl font-medium tracking-tight text-foreground sm:text-5xl md:text-6xl">
               See what
               <br />
               they see.
             </h1>
           </div>
-          <div className="flex flex-col items-center gap-6 px-6">
-            <p className="max-w-md text-balance text-sm text-muted-foreground">
-              F1X8 maps attention before launch — every creative in the stream
-              has been through the diagnostic engine. Run yours and see where
-              the eyes actually go.
-            </p>
+          <div className="flex flex-col items-center px-6">
             <Link
               href="/upload"
               className="group inline-flex items-center gap-3 bg-accent text-[#0a0a0a] font-mono text-[11px]
@@ -92,9 +87,6 @@ export default function StreamHero() {
               Run a diagnostic
               <ArrowRight />
             </Link>
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-              No account required · Results in &lt; 30s
-            </span>
           </div>
         </div>
       </ImageStreamHero>
