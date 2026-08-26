@@ -11,6 +11,14 @@ module.exports = {
         noir: '#0a0a0a',       // app background (true near-black) — not "base" (collides with text-base)
         panel: '#141414',      // card / panel surface
         elevated: '#1c1c1c',   // hover / raised surface
+        // shadcn-style tokens so components/ui/* can use their stock classes
+        background: '#0a0a0a',
+        foreground: '#fafafa',
+        border: 'rgba(255, 255, 255, 0.1)',
+        muted: {
+          DEFAULT: '#141414',
+          foreground: '#a1a1a1',
+        },
       },
       fontFamily: {
         // Geist Mono is the hero/display + label/data face (console aesthetic)
