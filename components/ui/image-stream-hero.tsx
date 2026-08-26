@@ -121,10 +121,16 @@ export type StreamImage = {
 
 export type ImageStreamHeroProps = {
   /**
-   * Images cycled onto the rails. Both rails run the same sequence, so the
-   * corridor reads as one mirrored stream. Fewer than `cards` simply repeat.
+   * Images cycled onto the rails. Without `imagesLeft`, both rails run this
+   * sequence and the corridor reads as one mirrored stream. Fewer than
+   * `cards` simply repeat.
    */
   images: StreamImage[];
+  /**
+   * Separate sequence for the left rail. Provide it to break the mirror so
+   * the two sides show different art at every depth.
+   */
+  imagesLeft?: StreamImage[];
   /**
    * Cards on each rail at once. More cards means a denser corridor, not a
    * faster one — spacing is derived from this and `speed`. Drop it far below
@@ -152,6 +158,7 @@ export type ImageStreamHeroProps = {
 
 export function ImageStreamHero({
   images,
+  imagesLeft,
   cards = 9,
   speed = 18,
   axis = 55,
@@ -199,9 +206,9 @@ export function ImageStreamHero({
         >
           {[right, left].map((name) =>
             Array.from({ length: cards }, (_, i) => {
-              // Both rails walk the same sequence, so the left side mirrors
-              // the right at every depth.
-              const img = images[i % Math.max(images.length, 1)];
+              const pool =
+                name === left && imagesLeft?.length ? imagesLeft : images;
+              const img = pool[i % Math.max(pool.length, 1)];
               return (
                 <div
                   key={`${name}-${i}`}
