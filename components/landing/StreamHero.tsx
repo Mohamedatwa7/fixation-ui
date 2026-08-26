@@ -68,15 +68,15 @@ export default function StreamHero() {
         images={STREAM_IMAGES}
         className="h-screen min-h-[560px] w-full bg-background"
       >
-        <div className="relative z-10 flex h-full flex-col items-center justify-between py-12 text-center">
-          <div className="flex flex-col items-center gap-3 px-6">
+        <div className="relative z-10 flex h-full flex-col items-center pb-12 text-center">
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6">
             <h1
-              className="font-mono text-6xl font-bold tracking-tightest text-foreground sm:text-7xl md:text-8xl"
+              className="font-mono text-7xl font-bold tracking-tightest text-foreground sm:text-8xl md:text-9xl"
               aria-label="F1X8"
             >
               F<span className="text-accent">1</span>X<span className="text-accent">8</span>
             </h1>
-            <p className="font-sans text-lg font-medium tracking-tight text-white/60 sm:text-xl md:text-2xl">
+            <p className="font-sans text-xl font-medium tracking-tight text-white/60 sm:text-2xl md:text-3xl">
               See what they see.
             </p>
           </div>
