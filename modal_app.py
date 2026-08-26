@@ -18,6 +18,9 @@ image = (
         "yt-dlp", "anthropic>=0.117.0", "Pillow", "scipy",
     )
     .run_commands("apt-get update && apt-get install -y ffmpeg")
+    # yt-dlp must track upstream closely or YouTube/Instagram extraction breaks.
+    # The date comment busts Modal's layer cache — bump it to pull a newer release.
+    .run_commands("pip install --no-cache-dir --upgrade yt-dlp  # 2026-08-26")
 )
 
 assets_volume = modal.Volume.from_name("fixation-assets")
@@ -966,7 +969,16 @@ def fastapi_app():
 
         def work():
             try:
+                # Warm containers cache both the volume snapshot and the
+                # imported module — reload both so a `modal volume put` of
+                # fetch_video.py takes effect without cycling containers.
+                try:
+                    assets_volume.reload()
+                except Exception:
+                    pass
+                import importlib
                 import fetch_video
+                importlib.reload(fetch_video)
                 fetched = fetch_video.fetch_video(url)
                 if "error" in fetched:
                     JOBS[job_id] = {"status": "error", "error": fetched.get("error")}

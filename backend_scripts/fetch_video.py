@@ -23,15 +23,37 @@ def fetch_video(url, output_dir="/content/fetched_videos", filename_prefix=None)
         filename_prefix = re.sub(r"[^a-zA-Z0-9_]", "_", url.split("/")[-1])[:40]
     output_template = os.path.join(output_dir, f"{filename_prefix}.%(ext)s")
 
-    cmd = [
-        "yt-dlp", "--no-playlist", "-f", "mp4/best[ext=mp4]/best",
+    # Merge best video + audio explicitly: YouTube's adaptive streams are
+    # split, and a bare "best" can land a video-only file that kills the audio
+    # stage. Prefer h264/m4a — the analysis pipeline can't decode AV1.
+    base = [
+        "yt-dlp", "--no-playlist", "-f", "bv*+ba/b",
+        "-S", "vcodec:h264,acodec:m4a",
+        "--merge-output-format", "mp4",
         "--write-info-json", "--no-warnings", "--quiet", "--progress",
-        "-o", output_template, url,
+        "--force-ipv4", "-o", output_template,
     ]
+    # Retry ladder: datacenter IPs trip YouTube's web-client bot checks far more
+    # often than the app clients, so a plain failure retries with those.
+    attempts = [base + [url]]
+    if platform == "youtube":
+        attempts += [
+            base + ["--extractor-args", "youtube:player_client=android", url],
+            base + ["--extractor-args", "youtube:player_client=ios", url],
+        ]
     print(f"Fetching from {platform}: {url}")
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    if result.returncode != 0:
-        return {"error": "yt-dlp failed", "stdout": result.stdout, "stderr": result.stderr}
+    result = None
+    for cmd in attempts:
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0:
+            break
+    if result is None or result.returncode != 0:
+        tail = (result.stderr or result.stdout or "").strip()[-400:] if result else ""
+        return {
+            "error": f"yt-dlp failed: {tail}" if tail else "yt-dlp failed",
+            "stdout": result.stdout if result else "",
+            "stderr": result.stderr if result else "",
+        }
 
     video_path = None
     info_path = None
