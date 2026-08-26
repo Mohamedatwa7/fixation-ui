@@ -1,14 +1,14 @@
 import Link from 'next/link'
 import Nav from '@/components/Nav'
-import ParallaxHero from '@/components/landing/ParallaxHero'
+import StreamHero from '@/components/landing/StreamHero'
 
 export default function LandingPage() {
   return (
     <main className="bg-noir text-[#fafafa]">
       <Nav minimal />
 
-      {/* ── Hero (3D parallax specimen plate) ────────────────── */}
-      <ParallaxHero />
+      {/* ── Hero (perspective corridor of diagnosed creatives) ── */}
+      <StreamHero />
 
       {/* ── Method grid ──────────────────────────────────────── */}
       <section className="relative border-t border-white/10 bg-noir" aria-label="Why F1X8">
