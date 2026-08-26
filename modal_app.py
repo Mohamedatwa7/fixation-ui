@@ -21,7 +21,9 @@ image = (
     # yt-dlp must track upstream closely or YouTube/Instagram extraction breaks.
     # The date comment busts Modal's layer cache — bump it to pull a newer release.
     # curl-cffi enables yt-dlp's --impersonate for TikTok/Instagram bot checks.
-    .run_commands("pip install --no-cache-dir --upgrade yt-dlp curl-cffi  # 2026-08-26b")
+    # decord: video reader for qwen-vl-utils — recent torchvision removed the
+    # read_video API it fell back on, which silently blinded Qwen perception.
+    .run_commands("pip install --no-cache-dir --upgrade yt-dlp curl-cffi decord  # 2026-08-26c")
 )
 
 assets_volume = modal.Volume.from_name("fixation-assets")
@@ -893,6 +895,9 @@ def fastapi_app():
 
     def _run_video(job_id, video_path):
         try:
+            # Bumped per deploy — proves in the logs which build ran a job,
+            # since warm containers can briefly keep serving old code.
+            print(f"[build] 2026-08-26-perception-logging job={job_id}")
             JOBS[job_id] = {"status": "analyzing"}
             out = f"/tmp/video_{job_id}.json"
             cmd = [
@@ -905,6 +910,8 @@ def fastapi_app():
             env = os.environ.copy()
             env["MPLBACKEND"] = "Agg"
             env["PYTHONPATH"] = f"{SCRIPTS_DIR}:{TASED_REPO}"
+            # torchvision dropped read_video; make qwen-vl-utils use decord.
+            env["FORCE_QWENVL_VIDEO_READER"] = "decord"
             r = subprocess.run(cmd, capture_output=True, text=True, timeout=1500, env=env)
             if r.returncode != 0 or not os.path.exists(out):
                 JOBS[job_id] = {"status": "error", "error": (r.stderr or "no output")[-1200:]}
