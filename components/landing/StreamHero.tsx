@@ -4,8 +4,8 @@ import ImageStreamHero from '@/components/ui/image-stream-hero'
 /**
  * Landing hero — the ImageStreamHero corridor in its stock presentation:
  * flat background, full-colour imagery (vivid gradients interleaved with
- * campaign-style photography), headline riding above the stream and the
- * CTA anchored below it.
+ * campaign-style photography), the F1X8 wordmark + slogan riding above the
+ * stream and the CTA anchored below it.
  */
 
 const CDN = 'https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev'
@@ -63,18 +63,22 @@ const STREAM_IMAGES = [
 
 export default function StreamHero() {
   return (
-    <section className="relative bg-background pt-16" aria-label="Hero">
+    <section className="relative bg-background" aria-label="Hero">
       <ImageStreamHero
         images={STREAM_IMAGES}
-        className="h-[calc(100vh-4rem)] min-h-[560px] w-full bg-background"
+        className="h-screen min-h-[560px] w-full bg-background"
       >
         <div className="relative z-10 flex h-full flex-col items-center justify-between py-12 text-center">
-          <div className="px-6">
-            <h1 className="text-balance font-sans text-4xl font-medium tracking-tight text-foreground sm:text-5xl md:text-6xl">
-              See what
-              <br />
-              they see.
+          <div className="flex flex-col items-center gap-3 px-6">
+            <h1
+              className="font-mono text-6xl font-bold tracking-tightest text-foreground sm:text-7xl md:text-8xl"
+              aria-label="F1X8"
+            >
+              F<span className="text-accent">1</span>X<span className="text-accent">8</span>
             </h1>
+            <p className="font-sans text-lg font-medium tracking-tight text-white/60 sm:text-xl md:text-2xl">
+              See what they see.
+            </p>
           </div>
           <div className="flex flex-col items-center px-6">
             <Link

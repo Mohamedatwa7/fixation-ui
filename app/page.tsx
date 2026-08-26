@@ -1,12 +1,9 @@
 import Link from 'next/link'
-import Nav from '@/components/Nav'
 import StreamHero from '@/components/landing/StreamHero'
 
 export default function LandingPage() {
   return (
     <main className="bg-noir text-[#fafafa]">
-      <Nav minimal />
-
       {/* ── Hero (perspective corridor of diagnosed creatives) ── */}
       <StreamHero />
 
