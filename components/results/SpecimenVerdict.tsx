@@ -159,13 +159,13 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
         {/* ── Verdict readout ────────────────────────────── */}
         <div className="relative p-7 md:p-10 flex flex-col justify-center">
           <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
-            Engagement Potential
+            {result.scoreLabel ?? 'Engagement Potential'}
           </span>
           <div className="flex items-end gap-4 mt-2">
             <span
               className="font-mono font-semibold leading-[0.85] tracking-tightest tabular-nums"
               style={{ fontSize: 'clamp(4rem, 8vw, 6.5rem)', color }}
-              aria-label={`Engagement Potential: ${score} out of 10`}
+              aria-label={`${result.scoreLabel ?? 'Engagement Potential'}: ${score} out of 10`}
             >
               {shown.toFixed(1)}
             </span>
@@ -201,7 +201,18 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
                 {FUNNEL_LABEL[result.funnelStage] ?? result.funnelStage}
               </span>
             )}
-            {typeof result.organicEngagement === 'number' && (
+            {typeof result.craftScore === 'number' ? (
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
+                style={{
+                  color: scoreColor(result.craftScore),
+                  borderColor: `${scoreColor(result.craftScore)}40`,
+                }}
+                title="Craft: funnel-weighted execution quality — how well the creative is built for its funnel job, independent of in-feed pull"
+              >
+                Craft {result.craftScore.toFixed(1)}
+              </span>
+            ) : typeof result.organicEngagement === 'number' && (
               <span
                 className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
                 style={{

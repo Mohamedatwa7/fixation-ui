@@ -696,6 +696,25 @@ _FUNNEL_WEIGHTS = {
     },
 }
 
+# Samsung Gulf reels calibration cohort (2026-07-29 study, n=36): the organic
+# scores the deployed video pipeline gave the brand's real Instagram reels.
+# A new video's percentile against this distribution reads as "better than X%
+# of the brand's own feed" — an honest, brand-relative placement, unlike the
+# former hardcoded 50.
+_REELS_ORGANIC_COHORT = sorted([
+    1.7, 2.5, 2.9, 3.5, 4.3, 4.4, 4.5, 4.8, 5.2, 5.2, 5.2, 5.2,
+    5.3, 5.3, 5.4, 5.6, 5.7, 5.8, 5.9, 6.1, 6.1, 6.1, 6.1, 6.1,
+    6.3, 6.3, 6.3, 6.5, 7.0, 7.2, 7.2, 7.3, 7.4, 7.5, 7.9, 7.9,
+])
+
+
+def _cohort_percentile(score, cohort=_REELS_ORGANIC_COHORT):
+    """Midrank percentile of a score within the calibration cohort."""
+    below = sum(1 for v in cohort if v < score)
+    equal = sum(1 for v in cohort if v == score)
+    return round(100 * (below + equal / 2) / len(cohort))
+
+
 # Bradley-Terry weights refit against realized organic engagement
 # (eval/finetune/analyze_weights.py, 2026-07-28 study). Negative weights are
 # real: in-feed, clarity/attention polish anti-correlates with organic pull.
@@ -973,6 +992,7 @@ def fastapi_app():
                     "organic_engagement": organic,
                     "kpis": five_kpis,
                     "kpis_overall": engagement_potential,
+                    "benchmarkPercentile": _cohort_percentile(organic),
                     "funnel_stage": funnel,
                     "product_tier": judgment.get("product_tier"),
                     "heatmap": heatmap_b64,

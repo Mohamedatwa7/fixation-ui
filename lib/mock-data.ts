@@ -53,12 +53,19 @@ export interface DiagnosticResult {
   role: Role
   mediaType: MediaType
   score: number
+  /** What the headline `score` measures — 'Predicted Organic Pull' for in-feed
+   *  creatives (weights calibrated vs realized engagement), else 'Engagement Potential'. */
+  scoreLabel?: string
+  /** Funnel-weighted craft score, shown as a secondary badge when organic pull is primary */
+  craftScore?: number
   organicEngagement?: number // beta: KPI weighting calibrated vs realized organic engagement
   benchmarkPercentile: number
   funnelStage?: string       // 'upper' | 'mid' | 'lower' — inferred from format (image)
   productTier?: string       // 'mass-market' | 'mid-market' | 'premium' | 'luxury'
   verdict: string
   fix: { issue: string; action: string }
+  /** Detailed end-to-end remake plan (video diagnostics) */
+  revisionBrief?: { objective?: string; sections: { title: string; detail: string }[] }
   kpis: KPI[]
   strengths: string[]
   risks: Risk[]

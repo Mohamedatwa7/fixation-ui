@@ -8,7 +8,13 @@ export interface AnalysisMeta {
   format?: string
   role?: string
   mediaType?: string
+  /** Force in-feed scoring (organic pull as headline) regardless of format — set for social-URL analyses */
+  inFeed?: boolean
 }
+
+/** Formats that live in a social feed, where the organic-calibrated score is
+ *  the better predictor of real performance than the craft score. */
+const IN_FEED_FORMATS = new Set(['Social', 'Reel', 'Story', 'Banner'])
 
 const KPI_LABELS: Record<string, string> = {
   hook: 'Hook Strength',
@@ -72,6 +78,31 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
   const fix = { issue: topRisk.evidence || topRisk.issue || verdictText, action: topRisk.suggested_fix || diagnosis.recommendation || 'See detailed risks below.' }
   let score = raw.engagement_potential ?? raw.score ?? raw.kpis_overall ?? raw.kpis?.overall ?? 0
   if (score > 10) score = score / 10
+  // In-feed creatives lead with the organic-calibrated score — its weights are
+  // fit against realized engagement (holdout AUC 0.69 vs 0.59 for the craft
+  // score) — and keep the funnel-weighted craft score as a secondary badge.
+  const organic = typeof raw.organic_engagement === 'number' ? raw.organic_engagement : undefined
+  const inFeed = meta.inFeed ?? IN_FEED_FORMATS.has((meta.format as string) || 'Social')
+  const organicPrimary = inFeed && organic !== undefined
+  const craftScore = Number(Number(score).toFixed(1))
+  if (organicPrimary) score = organic
+  const briefRaw = diagnosis.revision_brief
+  const BRIEF_SECTIONS: [string, string][] = [
+    ['hook_0_3s', 'Hook (0–3s)'],
+    ['body', 'Body'],
+    ['text_overlays', 'Text overlays'],
+    ['audio', 'Audio'],
+    ['ending_cta', 'Ending & CTA'],
+    ['measurement', 'Measurement'],
+  ]
+  const revisionBrief =
+    briefRaw && typeof briefRaw === 'object'
+      ? {
+          objective: typeof briefRaw.objective === 'string' ? briefRaw.objective : undefined,
+          sections: BRIEF_SECTIONS.filter(([k]) => typeof briefRaw[k] === 'string' && briefRaw[k])
+            .map(([k, title]) => ({ title, detail: briefRaw[k] as string })),
+        }
+      : undefined
   const heatmap = raw.heatmap ? `data:${raw.heatmap_type || 'image/png'};base64,${raw.heatmap}` : undefined
   const kpis = toKpiArray(raw.kpis)
   // The backend returns per-KPI percentiles vs. the MAdVerse benchmark, not a
@@ -87,12 +118,15 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     role: (meta.role as any) || 'Marketer',
     mediaType: (meta.mediaType as any) || 'video',
     score: Number(Number(score).toFixed(1)),
-    organicEngagement: typeof raw.organic_engagement === 'number' ? raw.organic_engagement : undefined,
+    scoreLabel: organicPrimary ? 'Predicted Organic Pull' : 'Engagement Potential',
+    craftScore: organicPrimary ? craftScore : undefined,
+    organicEngagement: organic,
     benchmarkPercentile,
     funnelStage: raw.funnel_stage ?? undefined,
     productTier: raw.product_tier ?? undefined,
     verdict: verdictText,
     fix,
+    revisionBrief,
     kpis,
     strengths,
     risks,
@@ -150,7 +184,8 @@ export async function analyzeVideoUrl(url: string, meta: AnalysisMeta): Promise<
     catch { attempts++; continue }
     if (!statusRes.ok) { attempts++; continue }
     const status = await statusRes.json()
-    if (status.status === 'done') return adaptResult(status.result, { ...meta, mediaType: 'video' })
+    // A social-platform URL is in-feed by definition, whatever format is selected.
+    if (status.status === 'done') return adaptResult(status.result, { ...meta, mediaType: 'video', inFeed: true })
     if (status.status === 'error') throw new Error(`Video analysis error: ${status.error}`)
     if (status.status === 'not_found') throw new Error('Job lost (backend restarted). Please resubmit.')
     attempts++

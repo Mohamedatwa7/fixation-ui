@@ -111,7 +111,7 @@ export default function ResultsPage() {
 
           {result.metadata && <VideoMetadataStrip meta={result.metadata} />}
           <SpecimenVerdict result={result} />
-          <FixCard fix={result.fix} />
+          <FixCard fix={result.fix} revisionBrief={result.revisionBrief} />
 
           <section aria-label="Revised KV generation">
             <AdaptPanel result={result} />

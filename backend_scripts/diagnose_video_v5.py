@@ -86,6 +86,11 @@ Your job:
 1. Identify the top 3 specific risks to engagement, ranked by likely impact.
 2. For each risk, cite specific evidence from across the four signals.
 3. Suggest a concrete, testable fix.
+4. Produce a "revision_brief": a complete end-to-end remake plan a creative
+   team could execute without asking follow-up questions. It must be specific
+   to THIS video — reference timestamps, on-screen elements, and evidence from
+   the four signals, never generic advice ("improve the hook") without saying
+   exactly what to change, to what, and when.
 
 Pay special attention to GAZE-CONTENT MISMATCH:
 - Where do the predicted eyes go vs. where the important content is?
@@ -107,7 +112,16 @@ Output strict JSON:
   "gaze_analysis": "Where eyes are predicted to land vs. where the important content is",
   "audio_visual_alignment": "Whether audio and visuals work together",
   "key_moments_analysis": "Whether high-attention timestamps align with good patterns",
-  "diagnostic_caveats": "What this analysis cannot tell you, including saliency model limitations"
+  "diagnostic_caveats": "What this analysis cannot tell you, including saliency model limitations",
+  "revision_brief": {
+    "objective": "The single engagement problem this revision must solve, in one sentence",
+    "hook_0_3s": "Exactly what the first 3 seconds should show and say instead, and why it will hold better",
+    "body": "Timestamped shot-by-shot changes to structure, pacing, and visuals through the middle of the video",
+    "text_overlays": "Copy, placement, size, and timing changes for on-screen text",
+    "audio": "Music, voiceover, and SFX changes with timing",
+    "ending_cta": "The last 2 seconds: payoff, CTA, and loop behaviour",
+    "measurement": "Which KPI(s) the revision should move and how to A/B verify it"
+  }
 }
 """
 
@@ -140,7 +154,7 @@ def run_diagnosis(perception, keyframe_meta, audio_report, saliency_meta,
     )
     print("Sending to Claude for diagnostic synthesis...")
     response = client.messages.create(
-        model="claude-opus-4-7", max_tokens=3500,
+        model="claude-opus-4-7", max_tokens=6000,
         system=DIAGNOSTIC_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": user_message}],
     )
