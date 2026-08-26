@@ -4,8 +4,12 @@ import { NextRequest, NextResponse } from 'next/server'
 export const maxDuration = 300
 export const dynamic = 'force-dynamic'
 
+// Deployed Modal backend — used when NEXT_PUBLIC_API_URL is not set so a
+// missing/clobbered .env.local doesn't silently break every diagnostic.
+const DEFAULT_API_URL = 'https://mohamedymay7--fixation-api-fastapi-app.modal.run'
+
 export async function POST(req: NextRequest) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL
   if (!apiUrl) {
     return NextResponse.json({ error: 'API URL not configured' }, { status: 503 })
   }
@@ -40,7 +44,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL
   if (!apiUrl) {
     return NextResponse.json({ error: 'API URL not configured' }, { status: 503 })
   }
