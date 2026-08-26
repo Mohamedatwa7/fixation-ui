@@ -20,7 +20,8 @@ image = (
     .run_commands("apt-get update && apt-get install -y ffmpeg")
     # yt-dlp must track upstream closely or YouTube/Instagram extraction breaks.
     # The date comment busts Modal's layer cache — bump it to pull a newer release.
-    .run_commands("pip install --no-cache-dir --upgrade yt-dlp  # 2026-08-26")
+    # curl-cffi enables yt-dlp's --impersonate for TikTok/Instagram bot checks.
+    .run_commands("pip install --no-cache-dir --upgrade yt-dlp curl-cffi  # 2026-08-26b")
 )
 
 assets_volume = modal.Volume.from_name("fixation-assets")
@@ -500,7 +501,9 @@ def _assess_engagement_once(images):
         })
         resp = client.messages.create(
             model="claude-opus-4-8",
-            max_tokens=1500,
+            # 1500 truncated the JSON mid-field once the funnel-conditional
+            # critique fields landed — every sample died at ~4k chars.
+            max_tokens=3000,
             # cache_control: the ~4k-token prompt is identical across all
             # ensemble calls and all creatives — cache hits cut its input
             # cost ~90% for every call after the first in a 5-min window.
@@ -509,6 +512,8 @@ def _assess_engagement_once(images):
             messages=[{"role": "user", "content": content}],
             output_config={"format": {"type": "json_schema", "schema": ENGAGEMENT_SCHEMA}},
         )
+        if resp.stop_reason == "max_tokens":
+            print(f"[engagement] response truncated at max_tokens ({len(resp.content)} blocks) — raise the cap")
         text = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text")
         return _parse_engagement_json(text)
     except Exception as e:
@@ -907,6 +912,14 @@ def fastapi_app():
             with open(out) as f:
                 report = json.load(f)
 
+            # Qwen perception failures are swallowed into the report as
+            # "[error: ...]" strings and never surface in logs — print them.
+            bad = {k: v for k, v in (report.get("perception") or {}).items()
+                   if isinstance(v, str) and v.startswith("[error")}
+            if bad:
+                print(f"perception errors ({len(bad)}/{len(report.get('perception') or {})}): "
+                      f"{json.dumps(bad)[:1500]}")
+
             kpis_block = {}
             overall = 0
             try:
@@ -922,9 +935,13 @@ def fastapi_app():
             sal_web = None
             if sal and os.path.exists(sal):
                 sal_web = sal + "_web.mp4"
+                # Aggressive compression: the overlay is stored base64 inside the
+                # JOBS dict, whose entries cap at 100MB — a long video at full
+                # resolution blows past that after 15 minutes of analysis.
                 tx = subprocess.run(
-                    ["ffmpeg", "-y", "-i", sal, "-c:v", "libx264", "-pix_fmt", "yuv420p",
-                     "-movflags", "+faststart", "-an", sal_web],
+                    ["ffmpeg", "-y", "-i", sal, "-vf", "scale=-2:480",
+                     "-c:v", "libx264", "-crf", "32", "-preset", "veryfast",
+                     "-pix_fmt", "yuv420p", "-movflags", "+faststart", "-an", sal_web],
                     capture_output=True, text=True,
                 )
                 if tx.returncode != 0 or not os.path.exists(sal_web):
@@ -934,6 +951,12 @@ def fastapi_app():
             judgment = assess_engagement(_sample_frames(video_path, 3))
             funnel = judgment.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(kpis_block, judgment, "video", funnel)
+            # A result that exceeds the 100MB dict-entry cap kills the whole
+            # job at the very end; better to ship it without the heatmap.
+            heatmap_b64 = b64(sal_web)
+            if heatmap_b64 and len(heatmap_b64) > 60_000_000:
+                print(f"Overlay too large to store ({len(heatmap_b64)} b64 chars); dropping heatmap")
+                heatmap_b64 = None
             JOBS[job_id] = {
                 "status": "done",
                 "result": {
@@ -945,7 +968,7 @@ def fastapi_app():
                     "kpis_overall": engagement_potential,
                     "funnel_stage": funnel,
                     "product_tier": judgment.get("product_tier"),
-                    "heatmap": b64(sal_web),
+                    "heatmap": heatmap_b64,
                     "heatmap_type": "video/mp4",
                     "timelines": {
                         "attention": report.get("key_frames", {}).get("metadata", {}).get("score_timeline", []),

@@ -33,9 +33,14 @@ def fetch_video(url, output_dir="/content/fetched_videos", filename_prefix=None)
         "--write-info-json", "--no-warnings", "--quiet", "--progress",
         "--force-ipv4", "-o", output_template,
     ]
-    # Retry ladder: datacenter IPs trip YouTube's web-client bot checks far more
-    # often than the app clients, so a plain failure retries with those.
-    attempts = [base + [url]]
+    # Retry ladder: datacenter IPs trip bot checks that a retry or a browser
+    # TLS fingerprint (--impersonate, via curl-cffi) usually clears. TikTok's
+    # "Unexpected response from webpage request" in particular is transient.
+    attempts = [
+        base + [url],
+        base + [url],
+        base + ["--impersonate", "chrome", url],
+    ]
     if platform == "youtube":
         attempts += [
             base + ["--extractor-args", "youtube:player_client=android", url],
@@ -67,6 +72,16 @@ def fetch_video(url, output_dir="/content/fetched_videos", filename_prefix=None)
 
     if not video_path:
         return {"error": "Downloaded file not found", "looked_in": output_dir}
+
+    # Photo/slideshow posts download as audio-only; fail early with a clear
+    # message instead of crashing the analysis pipeline downstream.
+    probe = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "v",
+         "-show_entries", "stream=codec_type", "-of", "csv=p=0", video_path],
+        capture_output=True, text=True,
+    )
+    if probe.returncode == 0 and "video" not in probe.stdout:
+        return {"error": "The URL has no video stream (photo/slideshow post?) — use a video post"}
 
     metadata = {}
     if info_path and os.path.exists(info_path):
