@@ -132,12 +132,16 @@ export default function FullDiagnostic({ result }: Props) {
 
 /* ── Video signal timelines (attention + audio energy) ──────────────────────── */
 function SignalTimelines({ result }: { result: DiagnosticResult }) {
-  const attention = (result.timelines?.attention ?? [])
-    .map(p => p.score)
-    .filter((v): v is number => typeof v === 'number')
-  const audio = (result.timelines?.audio_energy ?? [])
-    .map(p => p.energy)
-    .filter((v): v is number => typeof v === 'number')
+  // Keep value/time pairs aligned: filter as pairs, then split.
+  const attentionPts = (result.timelines?.attention ?? [])
+    .filter(p => typeof p.score === 'number' && isFinite(p.score))
+  const audioPts = (result.timelines?.audio_energy ?? [])
+    .filter(p => typeof p.energy === 'number' && isFinite(p.energy))
+
+  const attention = attentionPts.map(p => p.score)
+  const attentionT = attentionPts.every(p => typeof p.t === 'number') ? attentionPts.map(p => p.t as number) : undefined
+  const audio = audioPts.map(p => p.energy)
+  const audioT = audioPts.every(p => typeof p.t === 'number') ? audioPts.map(p => p.t as number) : undefined
 
   if (attention.length < 2 && audio.length < 2) return null
 
@@ -150,6 +154,7 @@ function SignalTimelines({ result }: { result: DiagnosticResult }) {
         <TimelineGraph
           title="Attention over time"
           values={attention}
+          times={attentionT}
           color={SCORE_LOW}
           fixedMax={10}
           caption="saliency · 0–10"
@@ -159,6 +164,7 @@ function SignalTimelines({ result }: { result: DiagnosticResult }) {
         <TimelineGraph
           title="Audio energy over time"
           values={audio}
+          times={audioT}
           color={SCORE_MID}
           caption="relative energy"
         />
