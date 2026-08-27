@@ -72,7 +72,7 @@ export default function TimelineGraph({ title, values, times, color, fixedMax, c
       <div className="flex gap-2">
         {/* Y axis */}
         <div
-          className="flex flex-col justify-between items-end py-0.5 font-mono text-[9px] tabular-nums text-white/35 select-none w-6 flex-shrink-0"
+          className="flex h-20 flex-col justify-between items-end py-0.5 font-mono text-[9px] tabular-nums text-white/35 select-none w-6 flex-shrink-0"
           aria-hidden="true"
         >
           <span>{yLabel(max)}</span>
@@ -80,13 +80,17 @@ export default function TimelineGraph({ title, values, times, color, fixedMax, c
           <span>{yLabel(min)}</span>
         </div>
 
-        {/* Plot */}
-        <div
-          ref={chartRef}
-          className="relative flex-1 cursor-crosshair"
-          onMouseMove={onMove}
-          onMouseLeave={() => setHover(null)}
-        >
+        {/* Plot column */}
+        <div className="flex-1 min-w-0">
+          {/* Hover overlays live in this wrapper so their percentage offsets
+              map onto the SVG box alone — including the x-axis row below
+              shifted the dot off the line. */}
+          <div
+            ref={chartRef}
+            className="relative cursor-crosshair"
+            onMouseMove={onMove}
+            onMouseLeave={() => setHover(null)}
+          >
           <svg
             viewBox={`0 0 ${W} ${H}`}
             preserveAspectRatio="none"
@@ -143,6 +147,7 @@ export default function TimelineGraph({ title, values, times, color, fixedMax, c
               </div>
             </>
           )}
+          </div>
 
           {/* X axis */}
           <div
