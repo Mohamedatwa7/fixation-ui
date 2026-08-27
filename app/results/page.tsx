@@ -9,6 +9,7 @@ import CustomMetricPanel from '@/components/results/CustomMetricPanel'
 import AdaptPanel from '@/components/results/AdaptPanel'
 import FullDiagnostic from '@/components/results/FullDiagnostic'
 import ExportButton from '@/components/results/ExportButton'
+import { DotSpiral } from '@/components/ui/bento-features'
 import { getDiagnostic } from '@/lib/api'
 import type { DiagnosticResult, VideoMetadata } from '@/lib/mock-data'
 import Link from 'next/link'
@@ -87,6 +88,14 @@ export default function ResultsPage() {
       <Nav active="results" />
       <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
       <div className="absolute inset-0 spotlight pointer-events-none" aria-hidden="true" />
+      {/* Golden-angle dot spiral — instrument-panel ambience behind the verdict */}
+      <div
+        className="absolute inset-x-0 top-10 flex justify-center pointer-events-none opacity-[0.16]
+                   [mask-image:radial-gradient(circle_at_center,white,transparent_70%)]"
+        aria-hidden="true"
+      >
+        <DotSpiral points={600} color="#e0e0e0" duration={4} />
+      </div>
 
       <div className="relative pt-16 flex flex-col min-h-screen">
 
@@ -126,22 +135,20 @@ export default function ResultsPage() {
             <SpecimenVerdict result={result} />
           </div>
 
-          {/* Analysis band — fix + revision on the left, instrument readouts right */}
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 items-start animate-rise" style={{ animationDelay: '0.16s' }}>
-            <div className="xl:col-span-3 space-y-5">
+          {/* Analysis bento — varied spans, fix leading the grid */}
+          <div className="grid grid-cols-1 xl:grid-cols-6 gap-5 items-start animate-rise" style={{ animationDelay: '0.16s' }}>
+            <div className="xl:col-span-4">
               <FixCard fix={result.fix} revisionBrief={result.revisionBrief} />
-              <section aria-label="Revised KV generation">
-                <AdaptPanel result={result} />
-              </section>
             </div>
-            <div className="xl:col-span-2 space-y-5">
-              <section aria-label="KPI diagnostics">
-                <KpiStrip kpis={result.kpis} />
-              </section>
-              <section aria-label="Custom metric analysis">
-                <CustomMetricPanel diagnosticId={result.id} />
-              </section>
-            </div>
+            <section aria-label="KPI diagnostics" className="xl:col-span-2">
+              <KpiStrip kpis={result.kpis} />
+            </section>
+            <section aria-label="Revised KV generation" className="xl:col-span-3">
+              <AdaptPanel result={result} />
+            </section>
+            <section aria-label="Custom metric analysis" className="xl:col-span-3">
+              <CustomMetricPanel diagnosticId={result.id} />
+            </section>
           </div>
 
           <section aria-label="Full diagnostic details" className="animate-rise" style={{ animationDelay: '0.24s' }}>

@@ -1,17 +1,14 @@
 import Link from 'next/link'
-import Nav from '@/components/Nav'
 import StreamHero from '@/components/landing/StreamHero'
 
 export default function LandingPage() {
   return (
-    <main className="bg-noir text-[#fafafa]">
-      <Nav minimal />
-
+    <main className="bg-black text-[#fafafa]">
       {/* ── Hero (perspective corridor of diagnosed creatives) ── */}
       <StreamHero />
 
       {/* ── Method grid ──────────────────────────────────────── */}
-      <section className="relative border-t border-white/10 bg-noir" aria-label="Why F1X8">
+      <section className="relative border-t border-white/10 bg-black" aria-label="Why F1X8">
         <div className="max-w-5xl mx-auto px-6 py-20 md:py-28">
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40 mb-14 text-center">
             ── The Method ──
@@ -20,7 +17,7 @@ export default function LandingPage() {
             {groundingItems.map(item => (
               <article
                 key={item.label}
-                className="flex flex-col items-center text-center bg-noir px-6 py-10 hover:bg-panel transition-colors duration-300"
+                className="flex flex-col items-center text-center bg-black px-6 py-10 hover:bg-panel transition-colors duration-300"
               >
                 <span className="font-mono text-xs tracking-[0.2em] text-accent mb-5">
                   {item.numeral}
