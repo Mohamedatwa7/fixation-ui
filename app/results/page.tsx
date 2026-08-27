@@ -135,20 +135,24 @@ export default function ResultsPage() {
             <SpecimenVerdict result={result} />
           </div>
 
-          {/* Analysis bento — varied spans, fix leading the grid */}
-          <div className="grid grid-cols-1 xl:grid-cols-6 gap-5 items-start animate-rise" style={{ animationDelay: '0.16s' }}>
-            <div className="xl:col-span-4">
+          {/* Analysis band — two independently flowing columns so cards pack
+              tight regardless of height (a shared grid left large voids
+              under short cards next to the tall revision brief). */}
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 items-start animate-rise" style={{ animationDelay: '0.16s' }}>
+            <div className="xl:col-span-3 space-y-5">
               <FixCard fix={result.fix} revisionBrief={result.revisionBrief} />
+              <section aria-label="Revised KV generation">
+                <AdaptPanel result={result} />
+              </section>
             </div>
-            <section aria-label="KPI diagnostics" className="xl:col-span-2">
-              <KpiStrip kpis={result.kpis} />
-            </section>
-            <section aria-label="Revised KV generation" className="xl:col-span-3">
-              <AdaptPanel result={result} />
-            </section>
-            <section aria-label="Custom metric analysis" className="xl:col-span-3">
-              <CustomMetricPanel diagnosticId={result.id} />
-            </section>
+            <div className="xl:col-span-2 space-y-5">
+              <section aria-label="KPI diagnostics">
+                <KpiStrip kpis={result.kpis} />
+              </section>
+              <section aria-label="Custom metric analysis">
+                <CustomMetricPanel diagnosticId={result.id} />
+              </section>
+            </div>
           </div>
 
           <section aria-label="Full diagnostic details" className="animate-rise" style={{ animationDelay: '0.24s' }}>
