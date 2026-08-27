@@ -86,50 +86,78 @@ export default function ResultsPage() {
     <main className="relative bg-noir min-h-screen text-[#fafafa]">
       <Nav active="results" />
       <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
+      <div className="absolute inset-0 spotlight pointer-events-none" aria-hidden="true" />
 
-      <div className="relative pt-16 px-4 sm:px-6 py-12">
-        <div className="max-w-4xl mx-auto space-y-5">
+      <div className="relative pt-16 flex flex-col min-h-screen">
 
-          {/* Breadcrumb */}
-          <div className="flex items-center gap-2.5 pb-2">
+        {/* ── Top strip — breadcrumb chip left, readout + export right ── */}
+        <div className="flex items-center justify-between gap-4 px-5 md:px-10 py-5 border-b border-white/10 animate-rise">
+          <div className="flex items-center gap-2.5 min-w-0">
             <Link
               href="/upload"
-              className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40 hover:text-accent transition-colors duration-300"
+              className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full border border-white/10 bg-noir/60
+                         font-mono text-[10px] uppercase tracking-[0.16em] text-white/55 hover:text-accent hover:border-accent/40
+                         transition-colors duration-300 flex-shrink-0"
             >
               ← New diagnostic
             </Link>
             {result.title && (
               <>
                 <span className="font-mono text-[10px] text-white/20">/</span>
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/55">{result.title}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/55 truncate">{result.title}</span>
               </>
             )}
-            <div className="ml-auto">
-              <ExportButton result={result} />
+          </div>
+          <div className="flex items-center gap-5 flex-shrink-0">
+            <div className="hidden sm:block text-right font-mono text-[10px] uppercase tracking-[0.18em] text-white/40 leading-relaxed">
+              <div>specimen: {result.format} · {result.mediaType}</div>
+              <div>engine: diagnostic complete</div>
+            </div>
+            <ExportButton result={result} />
+          </div>
+        </div>
+
+        {/* ── Full-bleed diagnostic body ── */}
+        <div className="flex-1 w-full px-5 md:px-10 py-8 space-y-5">
+
+          {result.metadata && <VideoMetadataStrip meta={result.metadata} />}
+
+          <div className="animate-rise" style={{ animationDelay: '0.08s' }}>
+            <SpecimenVerdict result={result} />
+          </div>
+
+          {/* Analysis band — fix + revision on the left, instrument readouts right */}
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 items-start animate-rise" style={{ animationDelay: '0.16s' }}>
+            <div className="xl:col-span-3 space-y-5">
+              <FixCard fix={result.fix} revisionBrief={result.revisionBrief} />
+              <section aria-label="Revised KV generation">
+                <AdaptPanel result={result} />
+              </section>
+            </div>
+            <div className="xl:col-span-2 space-y-5">
+              <section aria-label="KPI diagnostics">
+                <KpiStrip kpis={result.kpis} />
+              </section>
+              <section aria-label="Custom metric analysis">
+                <CustomMetricPanel diagnosticId={result.id} />
+              </section>
             </div>
           </div>
 
-          {result.metadata && <VideoMetadataStrip meta={result.metadata} />}
-          <SpecimenVerdict result={result} />
-          <FixCard fix={result.fix} revisionBrief={result.revisionBrief} />
-
-          <section aria-label="Revised KV generation">
-            <AdaptPanel result={result} />
-          </section>
-
-          <section aria-label="KPI diagnostics">
-            <KpiStrip kpis={result.kpis} />
-          </section>
-
-          <section aria-label="Custom metric analysis">
-            <CustomMetricPanel diagnosticId={result.id} />
-          </section>
-
-          <section aria-label="Full diagnostic details">
+          <section aria-label="Full diagnostic details" className="animate-rise" style={{ animationDelay: '0.24s' }}>
             <FullDiagnostic result={result} />
           </section>
-
         </div>
+
+        {/* ── Footer strip (landing treatment) ── */}
+        <footer className="border-t border-white/10 px-5 md:px-10 py-6 flex items-center justify-between">
+          <span className="font-mono text-xs tracking-tightest text-white/60">
+            F<span className="text-accent">1</span>X<span className="text-accent">8</span>
+          </span>
+          <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/30">
+            Attention, measured
+          </span>
+        </footer>
       </div>
     </main>
   )

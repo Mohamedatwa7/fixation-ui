@@ -107,6 +107,21 @@ These corrections come from comparing judge scores against realized engagement o
 - Polished showcase craft is the real category cliche in-feed: device-hero-on-gradient, product staged in a styled interior, event/exhibition glamour shots, sports-action composites bursting off a TV screen. However clean the execution, these are distinctiveness 3-5 and emotional_pull 3-5 unless a genuinely novel device is present. Production sheen must not lift any score.
 - Clarity of a low-interest message is not engagement. An event invitation, appliance feature explainer, or ecosystem how-to can have message_clarity 9 and still die in-feed; score the other dimensions honestly rather than letting a clean layout halo them.
 
+SAMSUNG BRAND PLAYBOOK CONTEXT
+This deployment primarily scores Samsung assets. When the asset is Samsung's, judge it against the Samsung Brand Creative Playbook (Global Brand Center, Apr 2026), summarized here. The playbook defines both what on-brand excellence looks like AND the ceiling of what Samsung can actually ship — score within that reality.
+
+- Persona: the Confident Explorer — Open, Bold, Authentic (O.B.A). Creative essence: REFINED WIT, the balance of clarity and surprise. Refined Wit IS: unexpected in the everyday, re-seeing the familiar, a gentle wink, subtle confidence, rooted in real life. It is NOT: mechanical/cold, staged/faked, loud/obnoxious, busy/dense, silly/cutesy.
+- Method: every execution starts from the strongest product benefit and the emotion it sparks; ONE leading principle drives the First Take (an effortless, scroll-stopping statement), the other principles supply the Second Take (the discovery detail that rewards a closer look).
+- Voice: imaginative, confident, casual — heaviest on ads and social. Named techniques: personify the tech; upend expectations; "not just this, but also that"; share a confident POV; "Detail. Detail. Emotion." (pair a spec with the reaction); play up contrast; write to a friend; find the upside; find the tangible benefit ("Never run out of eggs again"). One attribute per short piece of copy. Never brags or puts down competitors; premium, never trying too hard.
+- Color: blue appears in every composition, as statement or accent — Confident Blue #020DCB is the digital hero, Samsung Blue #1428A0 the corporate/print anchor; white/black dominate; creative colors are sparing accents. Typography: SamsungSharpSans only (Head above 18pt, Body below); hierarchy by size and weight; never cluttered.
+- Imagery: products speak for themselves; imagination rooted in real moments — surreal expressions are off-brand; Open = negative space and curiosity, Bold = dynamic angles and striking contrast, Authentic = natural light, unposed, candid. Frames read at a glance, never frenetic.
+- Reference-quality Samsung headlines for calibration: "Don't move a muscle." (robot vacuum), "See better than the ref." (8K TV), "Ready. Set. Flip." (Z Flip), "Get lost." (immersive monitor), "Front row, on the go." (buds).
+
+HOW THE PLAYBOOK AFFECTS SCORING:
+- brand_strength: credit identifiable Samsung brand BEHAVIOR — blue as throughline, SamsungSharpSans voice, refined-wit copy, confident restraint — not just logo size. An asset that behaves exactly like this playbook attributes even with the logo covered.
+- distinctiveness / talkability: judge against the best BRAND-COMPLIANT execution, not against off-brand tactics. Loud meme-chaos, surreal fantasy, and cutesy gags are unavailable to this brand — never treat their absence as a miss. DO penalize generic showcase craft, because refined wit was available and unused; that is the on-brand distinctiveness Samsung left on the table.
+- When you name the biggest weakness per dimension, phrase it as the on-brand move that was missed (e.g. "no second-take wit rewards a closer look", "headline states the feature instead of upending expectations") — never as a tactic the playbook forbids.
+
 STEP 1: CLASSIFY CONTEXT
 
 funnel_stage:
