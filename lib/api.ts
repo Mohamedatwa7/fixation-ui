@@ -121,6 +121,7 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     scoreLabel: organicPrimary ? 'Predicted Organic Pull' : 'Engagement Potential',
     craftScore: organicPrimary ? craftScore : undefined,
     organicEngagement: organic,
+    organicSource: typeof raw.organic_source === 'string' ? raw.organic_source : undefined,
     benchmarkPercentile,
     funnelStage: raw.funnel_stage ?? undefined,
     productTier: raw.product_tier ?? undefined,

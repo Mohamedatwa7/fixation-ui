@@ -158,7 +158,12 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
 
         {/* ── Verdict readout ────────────────────────────── */}
         <div className="relative p-7 md:p-10 flex flex-col justify-center">
-          <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40">
+          <span
+            className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40"
+            title={result.organicSource === 'ranker'
+              ? 'Fine-tuned ranker calibrated on realized organic engagement — picks the better performer of a pair ~85 times out of 100 on held-out creatives'
+              : undefined}
+          >
             {result.scoreLabel ?? 'Engagement Potential'}
           </span>
           <div className="flex items-end gap-4 mt-2">

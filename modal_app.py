@@ -476,6 +476,26 @@ def _media_type(path):
         return "image/jpeg"
 
 
+RANKER_URL = "https://mohamedymay7--rank.modal.run"
+
+
+def _rank_score(image_path):
+    """Fine-tuned pairwise ranker (fixation-ranker-api) — the strongest
+    validated predictor of realized organic engagement for stills (holdout
+    AUC 0.851 vs 0.694 for the weight refit). Returns None on any failure so
+    callers can fall back to the weight-based score."""
+    try:
+        import requests
+        img_b64 = base64.b64encode(open(image_path, "rb").read()).decode()
+        r = requests.post(RANKER_URL, json={"image_b64": img_b64}, timeout=180)
+        r.raise_for_status()
+        v = r.json().get("rank_score")
+        return round(float(v), 1) if isinstance(v, (int, float)) else None
+    except Exception as e:
+        print(f"[ranker] unavailable, using weight-based organic: {e}")
+        return None
+
+
 def _sample_frames(video_path, n=3):
     """Sample n evenly-spaced keyframes as (media_type, base64) for the vision LLM."""
     try:
@@ -857,11 +877,14 @@ def fastapi_app():
             measured = kpi_data.get("kpis", {})
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
+            rank = _rank_score(tmp)
             return {
                 "verdict": report.get("diagnosis", {}),
                 "engagement_potential": engagement_potential,
                 "score": engagement_potential,
-                "organic_engagement": organic,
+                "organic_engagement": rank if rank is not None else organic,
+                "organic_source": "ranker" if rank is not None else "weights",
+                "organic_weights_score": organic,
                 "kpis": five_kpis,
                 "kpis_overall": engagement_potential,
                 "funnel_stage": funnel,
@@ -901,13 +924,16 @@ def fastapi_app():
             measured = kpi_data.get("kpis", {})
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
+            rank = _rank_score(image_path)
             JOBS[job_id] = {
                 "status": "done",
                 "result": {
                     "verdict": report.get("diagnosis", {}),
                     "engagement_potential": engagement_potential,
                     "score": engagement_potential,
-                    "organic_engagement": organic,
+                    "organic_engagement": rank if rank is not None else organic,
+                    "organic_source": "ranker" if rank is not None else "weights",
+                    "organic_weights_score": organic,
                     "kpis": five_kpis,
                     "kpis_overall": engagement_potential,
                     "funnel_stage": funnel,
