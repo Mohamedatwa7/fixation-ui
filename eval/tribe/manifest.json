@@ -1,0 +1,1850 @@
+[
+ {
+  "id": "04b7a1a4-4882-4aa4-a870-5321877c81d3",
+  "percentile": 97.4,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\04b7a1a4-4882-4aa4-a870-5321877c81d3.jpg"
+ },
+ {
+  "id": "0582466c-8759-4ac4-a0b7-c8e08e895a6f",
+  "percentile": 32.4,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0582466c-8759-4ac4-a0b7-c8e08e895a6f.jpg"
+ },
+ {
+  "id": "05946b8f-6313-41b2-8699-ae1d5d6756d0",
+  "percentile": 69.2,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\05946b8f-6313-41b2-8699-ae1d5d6756d0.jpg"
+ },
+ {
+  "id": "0648216a-270b-4b60-85c9-19ba1cf8e6cc",
+  "percentile": 70.4,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0648216a-270b-4b60-85c9-19ba1cf8e6cc.jpg"
+ },
+ {
+  "id": "09b26ab4-4c8f-4329-aafd-b18a7231892e",
+  "percentile": 97.4,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\09b26ab4-4c8f-4329-aafd-b18a7231892e.jpg"
+ },
+ {
+  "id": "09c324be-aa24-42e5-ac14-a65a8afbd81b",
+  "percentile": 92.3,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\09c324be-aa24-42e5-ac14-a65a8afbd81b.jpg"
+ },
+ {
+  "id": "0b8ede52-3e76-48d1-b8c2-0ce36afad09a",
+  "percentile": 7.4,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0b8ede52-3e76-48d1-b8c2-0ce36afad09a.jpg"
+ },
+ {
+  "id": "0c051be1-72ca-44ef-8435-c8072f013b14",
+  "percentile": 85.7,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0c051be1-72ca-44ef-8435-c8072f013b14.jpg"
+ },
+ {
+  "id": "0c3cfff9-2b99-49e8-a93c-fe6ecbb5d89c",
+  "percentile": 26.5,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0c3cfff9-2b99-49e8-a93c-fe6ecbb5d89c.jpg"
+ },
+ {
+  "id": "0c877872-d0ee-471a-b80b-ffc99d286a0a",
+  "percentile": 63.0,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0c877872-d0ee-471a-b80b-ffc99d286a0a.jpg"
+ },
+ {
+  "id": "0ce227d2-7305-4c0f-8cf7-cf49eb943471",
+  "percentile": 23.1,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0ce227d2-7305-4c0f-8cf7-cf49eb943471.jpg"
+ },
+ {
+  "id": "0d03ef24-7684-4949-ad53-a64e68e3f64b",
+  "percentile": 89.7,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0d03ef24-7684-4949-ad53-a64e68e3f64b.jpg"
+ },
+ {
+  "id": "0efa4c8c-f3ad-4386-b631-3753ba5cddcb",
+  "percentile": 22.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\0efa4c8c-f3ad-4386-b631-3753ba5cddcb.jpg"
+ },
+ {
+  "id": "0f7c9df9-8c4d-4aff-8ca1-f1084f974bfc",
+  "percentile": 99.4,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DXcXqO3Dkzq/"
+ },
+ {
+  "id": "114616fb-8485-4211-b53a-a1807c835a81",
+  "percentile": 61.8,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\114616fb-8485-4211-b53a-a1807c835a81.jpg"
+ },
+ {
+  "id": "11b6a1ff-7a8d-40c9-8ad5-e81b27500f91",
+  "percentile": 6.4,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\11b6a1ff-7a8d-40c9-8ad5-e81b27500f91.jpg"
+ },
+ {
+  "id": "11fedfda-ccba-42c3-b356-f2caa683d67e",
+  "percentile": 79.5,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\11fedfda-ccba-42c3-b356-f2caa683d67e.jpg"
+ },
+ {
+  "id": "13206926-196a-414e-8ee6-90e1d5565238",
+  "percentile": 0.0,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DWClz2rDR6R/"
+ },
+ {
+  "id": "13d0b7c9-fffa-4c0d-a7e3-04149876d66d",
+  "percentile": 47.4,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\13d0b7c9-fffa-4c0d-a7e3-04149876d66d.jpg"
+ },
+ {
+  "id": "157234dd-1ce9-4074-a00f-be2dfb7f433a",
+  "percentile": 89.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\157234dd-1ce9-4074-a00f-be2dfb7f433a.jpg"
+ },
+ {
+  "id": "1743bc96-d168-4fdf-8de6-ae4f213b6053",
+  "percentile": 72.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\1743bc96-d168-4fdf-8de6-ae4f213b6053.jpg"
+ },
+ {
+  "id": "17638321-cdde-4d3d-b7cd-030930d7866f",
+  "percentile": 64.7,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\17638321-cdde-4d3d-b7cd-030930d7866f.jpg"
+ },
+ {
+  "id": "178680bb-4dd0-4d78-9e08-af22eac9cefa",
+  "percentile": 84.6,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\178680bb-4dd0-4d78-9e08-af22eac9cefa.jpg"
+ },
+ {
+  "id": "1803e4b5-df03-45a0-8c14-e87f123cc368",
+  "percentile": 76.6,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\1803e4b5-df03-45a0-8c14-e87f123cc368.jpg"
+ },
+ {
+  "id": "19997caf-217c-4833-8a01-001a9ecfdc3b",
+  "percentile": 0.0,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\19997caf-217c-4833-8a01-001a9ecfdc3b.jpg"
+ },
+ {
+  "id": "1f611546-46be-4765-af6d-0c1d0d307313",
+  "percentile": 22.1,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\1f611546-46be-4765-af6d-0c1d0d307313.jpg"
+ },
+ {
+  "id": "1fb71857-8451-43fa-a9e6-d4cdde3a9570",
+  "percentile": 0.0,
+  "cohort": "instagram|video|per_view|2025Q4",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DQeAdrJj9wU/"
+ },
+ {
+  "id": "20372db1-c1a1-4707-9f5e-0eda49b9e0fe",
+  "percentile": 100.0,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DUJAYpUgu3S/"
+ },
+ {
+  "id": "214fe07c-9e14-4a96-b04c-696a38efd043",
+  "percentile": 5.9,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\214fe07c-9e14-4a96-b04c-696a38efd043.jpg"
+ },
+ {
+  "id": "21de4095-b46e-4c6a-8c01-19c5c5baf3eb",
+  "percentile": 29.6,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\21de4095-b46e-4c6a-8c01-19c5c5baf3eb.jpg"
+ },
+ {
+  "id": "224ea890-71a8-4809-8cd5-83c102b68b8a",
+  "percentile": 90.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\224ea890-71a8-4809-8cd5-83c102b68b8a.jpg"
+ },
+ {
+  "id": "22f5f768-7bf2-41e7-a112-3c4ffb7c7994",
+  "percentile": 0.0,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\22f5f768-7bf2-41e7-a112-3c4ffb7c7994.jpg"
+ },
+ {
+  "id": "2324ffd7-2319-44eb-bfd4-b6149417a894",
+  "percentile": 79.5,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2324ffd7-2319-44eb-bfd4-b6149417a894.jpg"
+ },
+ {
+  "id": "2386b790-c8f6-4d41-99e7-504b18cf57b2",
+  "percentile": 11.8,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2386b790-c8f6-4d41-99e7-504b18cf57b2.jpg"
+ },
+ {
+  "id": "23d738a0-fffe-46a2-b524-1499a66a51b0",
+  "percentile": 26.6,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\23d738a0-fffe-46a2-b524-1499a66a51b0.jpg"
+ },
+ {
+  "id": "265eaa82-ddc4-41f1-9be2-c634406204d0",
+  "percentile": 16.7,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\265eaa82-ddc4-41f1-9be2-c634406204d0.jpg"
+ },
+ {
+  "id": "27bce765-63d1-4a60-97b3-fc5b637c295c",
+  "percentile": 2.2,
+  "cohort": "instagram|video|per_view|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DIJHdAft9lw/"
+ },
+ {
+  "id": "281e2eeb-fa81-4809-bfb1-5d275a10d5c9",
+  "percentile": 11.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\281e2eeb-fa81-4809-bfb1-5d275a10d5c9.jpg"
+ },
+ {
+  "id": "298e19e5-eed6-4586-8ab0-668dfb790321",
+  "percentile": 0.9,
+  "cohort": "instagram|video|raw|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DKZgulmNnU9/"
+ },
+ {
+  "id": "2a272bc9-d2f6-491e-9122-100f9ea7b3b3",
+  "percentile": 55.8,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2a272bc9-d2f6-491e-9122-100f9ea7b3b3.jpg"
+ },
+ {
+  "id": "2a7457f3-2faf-4760-8d4b-ca898180b95d",
+  "percentile": 20.8,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2a7457f3-2faf-4760-8d4b-ca898180b95d.jpg"
+ },
+ {
+  "id": "2affa98a-cefd-4393-aac5-91d94b8d839a",
+  "percentile": 20.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2affa98a-cefd-4393-aac5-91d94b8d839a.jpg"
+ },
+ {
+  "id": "2b10fa8b-dfce-427f-bae3-2389ac77b1fc",
+  "percentile": 89.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2b10fa8b-dfce-427f-bae3-2389ac77b1fc.jpg"
+ },
+ {
+  "id": "2b82388f-1ae1-41e6-b77b-ac0d495c48b2",
+  "percentile": 16.7,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2b82388f-1ae1-41e6-b77b-ac0d495c48b2.jpg"
+ },
+ {
+  "id": "2ba4303e-0d9e-42d4-84b9-0de3324678b0",
+  "percentile": 16.7,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2ba4303e-0d9e-42d4-84b9-0de3324678b0.jpg"
+ },
+ {
+  "id": "2c559b03-2d2f-4f09-b951-7c3af5cbb3f5",
+  "percentile": 0.0,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2c559b03-2d2f-4f09-b951-7c3af5cbb3f5.jpg"
+ },
+ {
+  "id": "2cb79e42-6000-4a9d-90a2-6f9754d16a68",
+  "percentile": 82.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2cb79e42-6000-4a9d-90a2-6f9754d16a68.jpg"
+ },
+ {
+  "id": "2dab73a5-4f4a-4a49-acb9-26075176c8f3",
+  "percentile": 30.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2dab73a5-4f4a-4a49-acb9-26075176c8f3.jpg"
+ },
+ {
+  "id": "2ec18903-8f69-4799-a12b-f1fccd5b6a5e",
+  "percentile": 8.8,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2ec18903-8f69-4799-a12b-f1fccd5b6a5e.jpg"
+ },
+ {
+  "id": "2f2e98c0-7b3b-4c01-8a28-28a7b0329a64",
+  "percentile": 47.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\2f2e98c0-7b3b-4c01-8a28-28a7b0329a64.jpg"
+ },
+ {
+  "id": "307db92d-fd38-4c8c-a163-7b16fe10837c",
+  "percentile": 89.7,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\307db92d-fd38-4c8c-a163-7b16fe10837c.jpg"
+ },
+ {
+  "id": "3099b233-6a9e-4ae3-98f8-2571bbb09cdb",
+  "percentile": 21.8,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\3099b233-6a9e-4ae3-98f8-2571bbb09cdb.jpg"
+ },
+ {
+  "id": "3164d687-aa96-40b6-bf3a-48f12b87e17c",
+  "percentile": 97.7,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DTOCiDdiLc-/"
+ },
+ {
+  "id": "319d86f7-3a50-4b8b-91bb-c939897f15f5",
+  "percentile": 20.5,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\319d86f7-3a50-4b8b-91bb-c939897f15f5.jpg"
+ },
+ {
+  "id": "3304517c-c899-4140-999e-44e861af7c18",
+  "percentile": 14.8,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\3304517c-c899-4140-999e-44e861af7c18.jpg"
+ },
+ {
+  "id": "355bdd45-11fe-4333-a681-c5acb4517c68",
+  "percentile": 37.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\355bdd45-11fe-4333-a681-c5acb4517c68.jpg"
+ },
+ {
+  "id": "357e6d01-5140-4807-9ddb-e67e08085ab5",
+  "percentile": 100.0,
+  "cohort": "instagram|video|per_view|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DJlS72qycEx/"
+ },
+ {
+  "id": "35b454b7-c7b7-4610-857a-0b5b23efb1cc",
+  "percentile": 16.2,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\35b454b7-c7b7-4610-857a-0b5b23efb1cc.jpg"
+ },
+ {
+  "id": "36a14e15-4080-450a-b04c-782e9ad1aa91",
+  "percentile": 5.2,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\36a14e15-4080-450a-b04c-782e9ad1aa91.jpg"
+ },
+ {
+  "id": "3c858746-e111-4397-838c-12e1a8b1b593",
+  "percentile": 6.4,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\3c858746-e111-4397-838c-12e1a8b1b593.jpg"
+ },
+ {
+  "id": "3db284b1-2659-4658-aab0-5f8572fedb55",
+  "percentile": 100.0,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DYkDl14lI6j/"
+ },
+ {
+  "id": "3f328746-772f-459b-bc71-670bcbb77e81",
+  "percentile": 98.4,
+  "cohort": "instagram|video|per_view|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DL5LoEVtu-M/"
+ },
+ {
+  "id": "3f37ecb7-892b-4db0-9f57-1dfbea8f2969",
+  "percentile": 22.2,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\3f37ecb7-892b-4db0-9f57-1dfbea8f2969.jpg"
+ },
+ {
+  "id": "3f47fd23-1ff4-4e84-88e1-149cb5a07322",
+  "percentile": 12.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\3f47fd23-1ff4-4e84-88e1-149cb5a07322.jpg"
+ },
+ {
+  "id": "3f74c644-a3f2-4ee0-b7a1-dc15c201744c",
+  "percentile": 98.3,
+  "cohort": "instagram|video|raw|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DKM-Z-vqRZy/"
+ },
+ {
+  "id": "41a1cae0-f1f7-4a98-832c-fb5acbf98e27",
+  "percentile": 35.9,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\41a1cae0-f1f7-4a98-832c-fb5acbf98e27.jpg"
+ },
+ {
+  "id": "426829e5-c5e2-4f3c-9347-9f268e71d2cb",
+  "percentile": 70.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\426829e5-c5e2-4f3c-9347-9f268e71d2cb.jpg"
+ },
+ {
+  "id": "43a80195-6475-40b0-b651-9779d00b8f5b",
+  "percentile": 98.7,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\43a80195-6475-40b0-b651-9779d00b8f5b.jpg"
+ },
+ {
+  "id": "479fd2e6-71f9-403b-a629-e00bbb77a348",
+  "percentile": 30.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\479fd2e6-71f9-403b-a629-e00bbb77a348.jpg"
+ },
+ {
+  "id": "48ce22dd-f8c3-43c1-9433-1768d34c4556",
+  "percentile": 100.0,
+  "cohort": "instagram|video|per_view|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DL5MTqHC7OL/"
+ },
+ {
+  "id": "4925e5ab-1514-41b9-a760-296e2c6ca6c2",
+  "percentile": 40.3,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4925e5ab-1514-41b9-a760-296e2c6ca6c2.jpg"
+ },
+ {
+  "id": "4948572b-57ce-4e23-9196-936875d9c4c3",
+  "percentile": 2.3,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DV31wBclJcq/"
+ },
+ {
+  "id": "498cb203-e636-4275-8abd-1fe06b233914",
+  "percentile": 0.6,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DXjTOEJgNvp/"
+ },
+ {
+  "id": "4ae3c36e-785f-45ab-b50b-45f53e6f26da",
+  "percentile": 73.1,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4ae3c36e-785f-45ab-b50b-45f53e6f26da.jpg"
+ },
+ {
+  "id": "4b42fe04-35ca-4941-92f3-7dcae2c97354",
+  "percentile": 29.4,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4b42fe04-35ca-4941-92f3-7dcae2c97354.jpg"
+ },
+ {
+  "id": "4be12f9a-9686-4e7e-9d2e-8bd8224c1263",
+  "percentile": 87.2,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4be12f9a-9686-4e7e-9d2e-8bd8224c1263.jpg"
+ },
+ {
+  "id": "4c7034c8-c1e7-4726-b2de-39d8ab5f03f3",
+  "percentile": 41.0,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4c7034c8-c1e7-4726-b2de-39d8ab5f03f3.jpg"
+ },
+ {
+  "id": "4cee5c74-c22d-48e8-8b40-c00e98347cbf",
+  "percentile": 96.3,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4cee5c74-c22d-48e8-8b40-c00e98347cbf.jpg"
+ },
+ {
+  "id": "4d8501d7-5075-417a-b08d-ac5cffb8fb47",
+  "percentile": 2.6,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4d8501d7-5075-417a-b08d-ac5cffb8fb47.jpg"
+ },
+ {
+  "id": "4ebea86a-80a9-4f7e-90e1-457da78eb56b",
+  "percentile": 28.2,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\4ebea86a-80a9-4f7e-90e1-457da78eb56b.jpg"
+ },
+ {
+  "id": "4f7875eb-582d-4ba5-9e01-52d1c152304b",
+  "percentile": 0.0,
+  "cohort": "instagram|video|per_view|2025Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DFdc6CSJwge/"
+ },
+ {
+  "id": "50590acf-079f-4e6c-86ea-9a08ea64a6dd",
+  "percentile": 90.9,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\50590acf-079f-4e6c-86ea-9a08ea64a6dd.jpg"
+ },
+ {
+  "id": "50b407ad-b742-486a-b07c-d5c0c1ef2de9",
+  "percentile": 55.8,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\50b407ad-b742-486a-b07c-d5c0c1ef2de9.jpg"
+ },
+ {
+  "id": "510063ae-3bb9-44af-9cd7-2943fe03156a",
+  "percentile": 81.8,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\510063ae-3bb9-44af-9cd7-2943fe03156a.jpg"
+ },
+ {
+  "id": "54338e38-8c0e-41e4-b3de-1a2bd5725875",
+  "percentile": 12.8,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\54338e38-8c0e-41e4-b3de-1a2bd5725875.jpg"
+ },
+ {
+  "id": "55050bcb-5577-4200-b891-e46433aa6275",
+  "percentile": 97.7,
+  "cohort": "instagram|video|per_view|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DMHvq2RokWs/"
+ },
+ {
+  "id": "56896ec7-194b-4c8c-b3d3-58db0b6afcfd",
+  "percentile": 43.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\56896ec7-194b-4c8c-b3d3-58db0b6afcfd.jpg"
+ },
+ {
+  "id": "56d5f903-8342-41df-b375-f9901efb77fb",
+  "percentile": 26.9,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\56d5f903-8342-41df-b375-f9901efb77fb.jpg"
+ },
+ {
+  "id": "59d214b5-b434-4b7b-8a04-28f9df16f5e2",
+  "percentile": 80.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\59d214b5-b434-4b7b-8a04-28f9df16f5e2.jpg"
+ },
+ {
+  "id": "5a262e6c-a73e-4565-b49e-d3cb5963265f",
+  "percentile": 51.5,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\5a262e6c-a73e-4565-b49e-d3cb5963265f.jpg"
+ },
+ {
+  "id": "5b8a6417-12b1-415b-b698-78d33cbda279",
+  "percentile": 41.2,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\5b8a6417-12b1-415b-b698-78d33cbda279.jpg"
+ },
+ {
+  "id": "5cffd754-c6f6-4156-bf9e-1e7d8f0198ac",
+  "percentile": 67.6,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\5cffd754-c6f6-4156-bf9e-1e7d8f0198ac.jpg"
+ },
+ {
+  "id": "5da20f11-b1f2-4bb9-9803-0ec79c55dc79",
+  "percentile": 52.6,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\5da20f11-b1f2-4bb9-9803-0ec79c55dc79.jpg"
+ },
+ {
+  "id": "5dbf2443-0bce-4039-a2a1-5661561a85a7",
+  "percentile": 87.2,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\5dbf2443-0bce-4039-a2a1-5661561a85a7.jpg"
+ },
+ {
+  "id": "5fe6ba1e-4193-4698-8b2a-4de7f3a1ac7b",
+  "percentile": 43.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\5fe6ba1e-4193-4698-8b2a-4de7f3a1ac7b.jpg"
+ },
+ {
+  "id": "60af91da-02a4-49d2-8775-292958792a0f",
+  "percentile": 1.1,
+  "cohort": "instagram|video|per_view|2025Q4",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DPYKAK0CSuo/"
+ },
+ {
+  "id": "618f0062-838a-499d-b191-d65bf29823a7",
+  "percentile": 43.6,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\618f0062-838a-499d-b191-d65bf29823a7.jpg"
+ },
+ {
+  "id": "61fe91e5-c6ac-45b0-9c4a-a571290be09b",
+  "percentile": 26.9,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\61fe91e5-c6ac-45b0-9c4a-a571290be09b.jpg"
+ },
+ {
+  "id": "64e021a1-2751-4e7b-b505-5aa569c485c0",
+  "percentile": 11.1,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\64e021a1-2751-4e7b-b505-5aa569c485c0.jpg"
+ },
+ {
+  "id": "6533cd9c-f6e0-4556-a26c-1c5ce2963274",
+  "percentile": 97.6,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DZwmLBhFXuP/"
+ },
+ {
+  "id": "69af36f8-6211-4da8-bcfd-17349aa262b6",
+  "percentile": 33.3,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\69af36f8-6211-4da8-bcfd-17349aa262b6.jpg"
+ },
+ {
+  "id": "69ceb564-2931-43c3-9286-b90c3fec46c4",
+  "percentile": 50.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\69ceb564-2931-43c3-9286-b90c3fec46c4.jpg"
+ },
+ {
+  "id": "69e6d4bc-055a-4d07-8136-2df1d87a0dfb",
+  "percentile": 32.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\69e6d4bc-055a-4d07-8136-2df1d87a0dfb.jpg"
+ },
+ {
+  "id": "6b8b3c35-e103-4eec-be2e-6befd9adaaea",
+  "percentile": 12.8,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\6b8b3c35-e103-4eec-be2e-6befd9adaaea.jpg"
+ },
+ {
+  "id": "6b980ab9-6255-4d45-94f2-709dfcad4aec",
+  "percentile": 17.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\6b980ab9-6255-4d45-94f2-709dfcad4aec.jpg"
+ },
+ {
+  "id": "6ce7be29-d126-44b4-b484-3238ea805d4e",
+  "percentile": 99.2,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DVMXfPqk4tR/"
+ },
+ {
+  "id": "6d1df31d-2d28-445a-ac0a-36a00920a1d8",
+  "percentile": 51.9,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\6d1df31d-2d28-445a-ac0a-36a00920a1d8.jpg"
+ },
+ {
+  "id": "6d5488bc-b6ae-4ebf-8e2b-6e4834525568",
+  "percentile": 17.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\6d5488bc-b6ae-4ebf-8e2b-6e4834525568.jpg"
+ },
+ {
+  "id": "6ead974a-c360-436b-aaf4-56cececbd0f5",
+  "percentile": 72.1,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\6ead974a-c360-436b-aaf4-56cececbd0f5.jpg"
+ },
+ {
+  "id": "6ed64ee8-8824-45ab-8ffb-e1219d720043",
+  "percentile": 85.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\6ed64ee8-8824-45ab-8ffb-e1219d720043.jpg"
+ },
+ {
+  "id": "6fd4bf6b-a6c4-468c-8eb5-f9aa53150270",
+  "percentile": 98.2,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DXeivbWAU9P/"
+ },
+ {
+  "id": "72a57c2c-b546-4090-ae8a-a90e418d0e69",
+  "percentile": 8.8,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\72a57c2c-b546-4090-ae8a-a90e418d0e69.jpg"
+ },
+ {
+  "id": "73460452-cc2b-40fa-9e86-3c4a02fc74dc",
+  "percentile": 87.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\73460452-cc2b-40fa-9e86-3c4a02fc74dc.jpg"
+ },
+ {
+  "id": "736fae8f-05eb-45e8-ae0c-6361359551be",
+  "percentile": 100.0,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\736fae8f-05eb-45e8-ae0c-6361359551be.jpg"
+ },
+ {
+  "id": "73fb2eb7-f0bb-45fc-bd32-7b82b805fee8",
+  "percentile": 74.1,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\73fb2eb7-f0bb-45fc-bd32-7b82b805fee8.jpg"
+ },
+ {
+  "id": "755ceb41-3992-405a-89b5-3f0078047f2a",
+  "percentile": 1.8,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DYqBrWtCRA6/"
+ },
+ {
+  "id": "77103976-31ad-439d-8823-6cefa0a24013",
+  "percentile": 21.8,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\77103976-31ad-439d-8823-6cefa0a24013.jpg"
+ },
+ {
+  "id": "7788fc69-c608-4b00-881e-6e0df22f8e45",
+  "percentile": 55.9,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\7788fc69-c608-4b00-881e-6e0df22f8e45.jpg"
+ },
+ {
+  "id": "77982d5f-2d06-44a4-a72b-f6b199910ec7",
+  "percentile": 10.3,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\77982d5f-2d06-44a4-a72b-f6b199910ec7.jpg"
+ },
+ {
+  "id": "783ff060-2004-4ab8-89cf-1dd0d4ef0e2e",
+  "percentile": 26.6,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\783ff060-2004-4ab8-89cf-1dd0d4ef0e2e.jpg"
+ },
+ {
+  "id": "7973f3c0-be86-4d0e-aab8-a7a30319963e",
+  "percentile": 97.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\7973f3c0-be86-4d0e-aab8-a7a30319963e.jpg"
+ },
+ {
+  "id": "79ad0232-1998-4d5d-b24f-30ff6fc7a376",
+  "percentile": 23.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\79ad0232-1998-4d5d-b24f-30ff6fc7a376.jpg"
+ },
+ {
+  "id": "79ef8f8c-a0dd-47ae-908f-ed68e474f653",
+  "percentile": 77.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\79ef8f8c-a0dd-47ae-908f-ed68e474f653.jpg"
+ },
+ {
+  "id": "7be4eb36-3ce0-4613-bded-2824259a4fe8",
+  "percentile": 11.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\7be4eb36-3ce0-4613-bded-2824259a4fe8.jpg"
+ },
+ {
+  "id": "7c81b474-b50c-48ab-a959-bf41be800997",
+  "percentile": 33.8,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\7c81b474-b50c-48ab-a959-bf41be800997.jpg"
+ },
+ {
+  "id": "7cd2a278-b24d-4b6c-b6e7-14f05080f18d",
+  "percentile": 88.9,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\7cd2a278-b24d-4b6c-b6e7-14f05080f18d.jpg"
+ },
+ {
+  "id": "7dc12ea5-9098-4afe-aa2c-2ae562b58c30",
+  "percentile": 22.1,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\7dc12ea5-9098-4afe-aa2c-2ae562b58c30.jpg"
+ },
+ {
+  "id": "7ff9d56b-a4f5-484b-ab04-89ebc4a8136d",
+  "percentile": 66.7,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\7ff9d56b-a4f5-484b-ab04-89ebc4a8136d.jpg"
+ },
+ {
+  "id": "82147ac6-caba-4ab2-b579-c4f272dbf5b4",
+  "percentile": 35.7,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\82147ac6-caba-4ab2-b579-c4f272dbf5b4.jpg"
+ },
+ {
+  "id": "8241d2c2-319f-44f9-8653-455d8c7d5378",
+  "percentile": 74.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8241d2c2-319f-44f9-8653-455d8c7d5378.jpg"
+ },
+ {
+  "id": "85c25111-ca91-49a6-8cd2-b4c054541991",
+  "percentile": 76.9,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\85c25111-ca91-49a6-8cd2-b4c054541991.jpg"
+ },
+ {
+  "id": "85ec7dab-532f-41e3-bb8b-68e7e8972299",
+  "percentile": 5.2,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\85ec7dab-532f-41e3-bb8b-68e7e8972299.jpg"
+ },
+ {
+  "id": "864a4d7f-cdee-4415-a26f-84aa784a81f3",
+  "percentile": 97.8,
+  "cohort": "instagram|video|per_view|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DKcKrKDyHi5/"
+ },
+ {
+  "id": "8702dea5-3b92-495f-9109-ef0675339843",
+  "percentile": 17.6,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8702dea5-3b92-495f-9109-ef0675339843.jpg"
+ },
+ {
+  "id": "88f6369e-f9f3-4fb2-b192-b48fd5165ae8",
+  "percentile": 1.5,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\88f6369e-f9f3-4fb2-b192-b48fd5165ae8.jpg"
+ },
+ {
+  "id": "89c49f01-bd09-4de5-b9a3-ec2f8d4bc258",
+  "percentile": 28.2,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\89c49f01-bd09-4de5-b9a3-ec2f8d4bc258.jpg"
+ },
+ {
+  "id": "89efe811-034b-4058-b308-69d4bc2ce90c",
+  "percentile": 51.5,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\89efe811-034b-4058-b308-69d4bc2ce90c.jpg"
+ },
+ {
+  "id": "8c627885-dd5f-4a36-b8e7-01c7d63f15f3",
+  "percentile": 1.5,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8c627885-dd5f-4a36-b8e7-01c7d63f15f3.jpg"
+ },
+ {
+  "id": "8ec32e7b-ba36-465f-a361-a8a49ddd4571",
+  "percentile": 79.4,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8ec32e7b-ba36-465f-a361-a8a49ddd4571.jpg"
+ },
+ {
+  "id": "8f700d84-724a-41b9-8fe4-391135babcba",
+  "percentile": 44.4,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8f700d84-724a-41b9-8fe4-391135babcba.jpg"
+ },
+ {
+  "id": "8fadf6f4-41d5-4ef8-9669-87742c24e066",
+  "percentile": 46.2,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8fadf6f4-41d5-4ef8-9669-87742c24e066.jpg"
+ },
+ {
+  "id": "8fb9614f-926d-45b8-b092-fdf1031b0abb",
+  "percentile": 3.7,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8fb9614f-926d-45b8-b092-fdf1031b0abb.jpg"
+ },
+ {
+  "id": "8fc0dfc4-57f6-4002-889e-5e1f648df8db",
+  "percentile": 76.5,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\8fc0dfc4-57f6-4002-889e-5e1f648df8db.jpg"
+ },
+ {
+  "id": "90891710-3f02-4602-b94a-2b8c117132c0",
+  "percentile": 2.2,
+  "cohort": "instagram|video|per_view|2025Q4",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DQgoYWsla49/"
+ },
+ {
+  "id": "91cbcad0-ab4b-4544-a9cf-cab11ec06e40",
+  "percentile": 11.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\91cbcad0-ab4b-4544-a9cf-cab11ec06e40.jpg"
+ },
+ {
+  "id": "94454f25-03f7-44e7-affc-0334f3218979",
+  "percentile": 18.5,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\94454f25-03f7-44e7-affc-0334f3218979.jpg"
+ },
+ {
+  "id": "9565f033-8966-4438-b3e9-c9988083704c",
+  "percentile": 98.8,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DaDDmrbDXFH/"
+ },
+ {
+  "id": "95f65ebe-786d-45de-b5bd-7bb3c99517ad",
+  "percentile": 79.2,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\95f65ebe-786d-45de-b5bd-7bb3c99517ad.jpg"
+ },
+ {
+  "id": "9a5d022b-b512-4722-9658-2b8f2bb72d3d",
+  "percentile": 30.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\9a5d022b-b512-4722-9658-2b8f2bb72d3d.jpg"
+ },
+ {
+  "id": "9c7e29fd-4a06-4aee-996d-e749921e4697",
+  "percentile": 91.2,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\9c7e29fd-4a06-4aee-996d-e749921e4697.jpg"
+ },
+ {
+  "id": "9eb9325c-471d-45e3-8bdc-eedec6f6a85c",
+  "percentile": 100.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\9eb9325c-471d-45e3-8bdc-eedec6f6a85c.jpg"
+ },
+ {
+  "id": "9fe16e28-0d36-464b-9c9c-7bf48c99d574",
+  "percentile": 41.2,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\9fe16e28-0d36-464b-9c9c-7bf48c99d574.jpg"
+ },
+ {
+  "id": "a01440d3-e6f8-4011-8ce0-a50e52084c02",
+  "percentile": 43.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\a01440d3-e6f8-4011-8ce0-a50e52084c02.jpg"
+ },
+ {
+  "id": "a2a6f50e-3a50-4c41-9580-718164261104",
+  "percentile": 43.6,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\a2a6f50e-3a50-4c41-9580-718164261104.jpg"
+ },
+ {
+  "id": "a4b31f9a-ab96-49c6-a074-2074026bdb4c",
+  "percentile": 59.3,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\a4b31f9a-ab96-49c6-a074-2074026bdb4c.jpg"
+ },
+ {
+  "id": "a5e7936a-8bd5-4ec2-a037-178ff0e88168",
+  "percentile": 38.5,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\a5e7936a-8bd5-4ec2-a037-178ff0e88168.jpg"
+ },
+ {
+  "id": "a69c67d0-a224-4b16-9445-7ea867a66a1b",
+  "percentile": 45.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\a69c67d0-a224-4b16-9445-7ea867a66a1b.jpg"
+ },
+ {
+  "id": "a704ae7d-bdc0-4b2b-8077-8937856bfb7a",
+  "percentile": 10.3,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\a704ae7d-bdc0-4b2b-8077-8937856bfb7a.jpg"
+ },
+ {
+  "id": "a7412b4f-0248-47d1-b977-1045f11f538b",
+  "percentile": 28.2,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\a7412b4f-0248-47d1-b977-1045f11f538b.jpg"
+ },
+ {
+  "id": "aabe13fa-6693-4bc8-a9f6-666752f68c45",
+  "percentile": 35.9,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\aabe13fa-6693-4bc8-a9f6-666752f68c45.jpg"
+ },
+ {
+  "id": "ac85b4a4-1a7d-4928-8470-6480a52c01e0",
+  "percentile": 100.0,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\ac85b4a4-1a7d-4928-8470-6480a52c01e0.jpg"
+ },
+ {
+  "id": "aeaaa11d-105b-40a4-b616-d7fc62cbc553",
+  "percentile": 74.4,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\aeaaa11d-105b-40a4-b616-d7fc62cbc553.jpg"
+ },
+ {
+  "id": "af94f61f-405c-4817-91be-391e90a2048d",
+  "percentile": 1.3,
+  "cohort": "instagram|video|per_view|2025Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DHsQIOdyR_C/"
+ },
+ {
+  "id": "afc04899-3f22-4ef4-ba2e-ae639c8f3ae7",
+  "percentile": 94.8,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\afc04899-3f22-4ef4-ba2e-ae639c8f3ae7.jpg"
+ },
+ {
+  "id": "b0261a43-db15-41e9-b88c-a71ff1346a69",
+  "percentile": 87.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b0261a43-db15-41e9-b88c-a71ff1346a69.jpg"
+ },
+ {
+  "id": "b066579a-0287-4d49-a910-e40f938961f7",
+  "percentile": 94.1,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b066579a-0287-4d49-a910-e40f938961f7.jpg"
+ },
+ {
+  "id": "b1b2b5e8-0433-4621-83e2-05d93aed1476",
+  "percentile": 0.0,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DYj3JRrgufJ/"
+ },
+ {
+  "id": "b33a571e-bf7b-41cb-8fef-8f0faf05a753",
+  "percentile": 97.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b33a571e-bf7b-41cb-8fef-8f0faf05a753.jpg"
+ },
+ {
+  "id": "b4bd8302-87b4-432a-be20-a5623cc670bc",
+  "percentile": 0.9,
+  "cohort": "instagram|video|raw|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DKZgcumNfys/"
+ },
+ {
+  "id": "b523abf3-1c75-47c4-a777-015588668910",
+  "percentile": 11.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b523abf3-1c75-47c4-a777-015588668910.jpg"
+ },
+ {
+  "id": "b53c44c7-c370-4242-b1b2-1e8cbce25fd0",
+  "percentile": 30.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b53c44c7-c370-4242-b1b2-1e8cbce25fd0.jpg"
+ },
+ {
+  "id": "b5eae9fe-f5ad-4d5d-a244-1a025c7022f4",
+  "percentile": 47.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b5eae9fe-f5ad-4d5d-a244-1a025c7022f4.jpg"
+ },
+ {
+  "id": "b6225256-c389-4241-81f1-3b6c1c5c11f1",
+  "percentile": 17.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b6225256-c389-4241-81f1-3b6c1c5c11f1.jpg"
+ },
+ {
+  "id": "b6866a54-9993-45da-91e8-366453f49078",
+  "percentile": 92.6,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b6866a54-9993-45da-91e8-366453f49078.jpg"
+ },
+ {
+  "id": "b6bb332d-1f32-4ec6-92da-42452d2efcc8",
+  "percentile": 92.2,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b6bb332d-1f32-4ec6-92da-42452d2efcc8.jpg"
+ },
+ {
+  "id": "b6f410dd-01a5-45d2-879d-d76d5b920a82",
+  "percentile": 16.2,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b6f410dd-01a5-45d2-879d-d76d5b920a82.jpg"
+ },
+ {
+  "id": "b7559d29-dd05-4d8e-8e32-5d2c4de9e0f9",
+  "percentile": 100.0,
+  "cohort": "instagram|video|per_view|2025Q4",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DSIcDmxmIKo/"
+ },
+ {
+  "id": "b8d82ccf-9549-4d0e-8628-7b92a06f4ec3",
+  "percentile": 71.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b8d82ccf-9549-4d0e-8628-7b92a06f4ec3.jpg"
+ },
+ {
+  "id": "b91f4fce-c452-4973-9cf3-45370e0ee69c",
+  "percentile": 85.3,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b91f4fce-c452-4973-9cf3-45370e0ee69c.jpg"
+ },
+ {
+  "id": "b9fda789-afb3-4505-8254-c3b6067ce79c",
+  "percentile": 72.7,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\b9fda789-afb3-4505-8254-c3b6067ce79c.jpg"
+ },
+ {
+  "id": "ba47c29c-d6e0-479f-8b3d-cf8d303d4b01",
+  "percentile": 0.8,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DWg_YiOiU-y/"
+ },
+ {
+  "id": "bab0ffc0-b06a-4b02-bb37-4b06fba83cdf",
+  "percentile": 47.4,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\bab0ffc0-b06a-4b02-bb37-4b06fba83cdf.jpg"
+ },
+ {
+  "id": "bbe6e012-c919-4ca9-b4dc-ad99f02f6f1c",
+  "percentile": 52.6,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\bbe6e012-c919-4ca9-b4dc-ad99f02f6f1c.jpg"
+ },
+ {
+  "id": "bd07a3af-d681-42f1-b9fc-5ea98f2837cf",
+  "percentile": 37.7,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\bd07a3af-d681-42f1-b9fc-5ea98f2837cf.jpg"
+ },
+ {
+  "id": "bd7a876b-43aa-41d4-ad79-75a76e0c0258",
+  "percentile": 48.1,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\bd7a876b-43aa-41d4-ad79-75a76e0c0258.jpg"
+ },
+ {
+  "id": "bf1f99a8-389e-4f01-9561-11529cf0b1cc",
+  "percentile": 35.9,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\bf1f99a8-389e-4f01-9561-11529cf0b1cc.jpg"
+ },
+ {
+  "id": "c0cc8bef-c6e9-40bd-b068-3ed2058664bd",
+  "percentile": 8.8,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c0cc8bef-c6e9-40bd-b068-3ed2058664bd.jpg"
+ },
+ {
+  "id": "c18e9a04-e6ce-4fb9-9033-ffc9474e0bab",
+  "percentile": 97.1,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c18e9a04-e6ce-4fb9-9033-ffc9474e0bab.jpg"
+ },
+ {
+  "id": "c1daa867-0451-4182-a14b-6fb981a693fe",
+  "percentile": 0.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c1daa867-0451-4182-a14b-6fb981a693fe.jpg"
+ },
+ {
+  "id": "c32fe28f-b11f-4155-9bda-30baa52f87ff",
+  "percentile": 2.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c32fe28f-b11f-4155-9bda-30baa52f87ff.jpg"
+ },
+ {
+  "id": "c3e869fa-d35f-4edd-abc7-c09384043a9a",
+  "percentile": 85.2,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c3e869fa-d35f-4edd-abc7-c09384043a9a.jpg"
+ },
+ {
+  "id": "c3fd522c-0d46-48e5-a7e8-db06e9f0dbbe",
+  "percentile": 97.8,
+  "cohort": "instagram|video|per_view|2025Q4",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DP6pnVME7yJ/"
+ },
+ {
+  "id": "c480106f-6c1a-4b57-8f50-db4cbe856049",
+  "percentile": 2.6,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c480106f-6c1a-4b57-8f50-db4cbe856049.jpg"
+ },
+ {
+  "id": "c4e9b871-2482-4092-9103-282cf7ced9a7",
+  "percentile": 55.6,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c4e9b871-2482-4092-9103-282cf7ced9a7.jpg"
+ },
+ {
+  "id": "c646f3dd-715b-4980-9593-5f98852a1095",
+  "percentile": 95.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c646f3dd-715b-4980-9593-5f98852a1095.jpg"
+ },
+ {
+  "id": "c76947dc-91c9-4f3b-b6a7-4b5fab03ed2f",
+  "percentile": 73.1,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c76947dc-91c9-4f3b-b6a7-4b5fab03ed2f.jpg"
+ },
+ {
+  "id": "c820e0fe-6dff-44a1-b012-e709d808da8c",
+  "percentile": 23.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c820e0fe-6dff-44a1-b012-e709d808da8c.jpg"
+ },
+ {
+  "id": "c98bb0b5-4200-4648-babd-c4b027088f9d",
+  "percentile": 69.2,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\c98bb0b5-4200-4648-babd-c4b027088f9d.jpg"
+ },
+ {
+  "id": "ca00b34e-16e6-45ff-bb87-01a177834fc8",
+  "percentile": 100.0,
+  "cohort": "instagram|video|raw|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DJbcu0_Ji4S/"
+ },
+ {
+  "id": "ca78a2df-b954-4685-aee6-d2621583d9ed",
+  "percentile": 100.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\ca78a2df-b954-4685-aee6-d2621583d9ed.jpg"
+ },
+ {
+  "id": "caa0a758-b9f4-4054-89af-03269f21a56d",
+  "percentile": 100.0,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\caa0a758-b9f4-4054-89af-03269f21a56d.jpg"
+ },
+ {
+  "id": "cbf6732b-86f6-4069-994d-01eac68c983b",
+  "percentile": 5.1,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\cbf6732b-86f6-4069-994d-01eac68c983b.jpg"
+ },
+ {
+  "id": "ceeef23b-27d4-47bb-9425-dd4232a679db",
+  "percentile": 5.2,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\ceeef23b-27d4-47bb-9425-dd4232a679db.jpg"
+ },
+ {
+  "id": "cf1bbaf1-c457-47fc-af7e-960b684c77f9",
+  "percentile": 1.5,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DV9H2U7AaLq/"
+ },
+ {
+  "id": "cf3315ba-c158-4922-9875-583d666519c4",
+  "percentile": 82.4,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\cf3315ba-c158-4922-9875-583d666519c4.jpg"
+ },
+ {
+  "id": "d056f232-8793-4179-a740-9d0f06e9ca1f",
+  "percentile": 35.9,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d056f232-8793-4179-a740-9d0f06e9ca1f.jpg"
+ },
+ {
+  "id": "d0c880e7-a761-45da-976e-45d6a8a1dd1c",
+  "percentile": 26.2,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d0c880e7-a761-45da-976e-45d6a8a1dd1c.jpg"
+ },
+ {
+  "id": "d14befa0-e20f-4636-932b-1634a6a38d9e",
+  "percentile": 43.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d14befa0-e20f-4636-932b-1634a6a38d9e.jpg"
+ },
+ {
+  "id": "d16144eb-076e-4a4e-8017-08897af8062b",
+  "percentile": 75.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d16144eb-076e-4a4e-8017-08897af8062b.jpg"
+ },
+ {
+  "id": "d39484ec-061f-40ef-9ba0-0b7ac004cb07",
+  "percentile": 71.8,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d39484ec-061f-40ef-9ba0-0b7ac004cb07.jpg"
+ },
+ {
+  "id": "d4374bd2-fe7c-4956-a6b4-39c76a2ec1da",
+  "percentile": 35.7,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d4374bd2-fe7c-4956-a6b4-39c76a2ec1da.jpg"
+ },
+ {
+  "id": "d49803aa-d751-4c5f-834c-b2b0772747fe",
+  "percentile": 81.5,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d49803aa-d751-4c5f-834c-b2b0772747fe.jpg"
+ },
+ {
+  "id": "d4ade1e1-e365-4e8f-99b5-841203a7d9ca",
+  "percentile": 5.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d4ade1e1-e365-4e8f-99b5-841203a7d9ca.jpg"
+ },
+ {
+  "id": "d4d4c59a-6a7d-459e-b05c-863398572472",
+  "percentile": 99.2,
+  "cohort": "instagram|video|per_view|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DL5MM01KFL0/"
+ },
+ {
+  "id": "d7240aab-626a-46c7-94fe-af933e141257",
+  "percentile": 77.9,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d7240aab-626a-46c7-94fe-af933e141257.jpg"
+ },
+ {
+  "id": "d89ff8ff-cbf1-46bf-89ab-a33583e375fa",
+  "percentile": 82.1,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d89ff8ff-cbf1-46bf-89ab-a33583e375fa.jpg"
+ },
+ {
+  "id": "d8b5b740-3266-4cac-b858-da5da3de2dcd",
+  "percentile": 96.1,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\d8b5b740-3266-4cac-b858-da5da3de2dcd.jpg"
+ },
+ {
+  "id": "dd1a1ff9-5415-4bd6-be5f-8755c251ee5a",
+  "percentile": 84.6,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\dd1a1ff9-5415-4bd6-be5f-8755c251ee5a.jpg"
+ },
+ {
+  "id": "dd62ddf5-63e3-41b2-bda2-c0f10e134a61",
+  "percentile": 100.0,
+  "cohort": "instagram|video|raw|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DLsCD1WNbHH/"
+ },
+ {
+  "id": "dd75f1c5-b140-4cd2-83c2-bf976296e649",
+  "percentile": 30.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\dd75f1c5-b140-4cd2-83c2-bf976296e649.jpg"
+ },
+ {
+  "id": "dde15e19-7d86-47bf-a0bd-9c2611607e6d",
+  "percentile": 50.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\dde15e19-7d86-47bf-a0bd-9c2611607e6d.jpg"
+ },
+ {
+  "id": "de6f14a3-21ce-4cae-946d-a818b3fe39ba",
+  "percentile": 52.6,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\de6f14a3-21ce-4cae-946d-a818b3fe39ba.jpg"
+ },
+ {
+  "id": "df205eec-d343-4edc-853b-a7298e92bb3c",
+  "percentile": 35.3,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\df205eec-d343-4edc-853b-a7298e92bb3c.jpg"
+ },
+ {
+  "id": "df2b4ef2-02e8-4e9b-9425-8ab40b8ef016",
+  "percentile": 26.2,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\df2b4ef2-02e8-4e9b-9425-8ab40b8ef016.jpg"
+ },
+ {
+  "id": "df6cc658-bacc-499a-81d1-ddc6b9bc47b0",
+  "percentile": 93.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\df6cc658-bacc-499a-81d1-ddc6b9bc47b0.jpg"
+ },
+ {
+  "id": "e05518d6-ccdb-460e-84c3-facb0c770a44",
+  "percentile": 30.8,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e05518d6-ccdb-460e-84c3-facb0c770a44.jpg"
+ },
+ {
+  "id": "e0dd7bc0-a68d-4674-80e1-acdd3f0a6830",
+  "percentile": 25.9,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e0dd7bc0-a68d-4674-80e1-acdd3f0a6830.jpg"
+ },
+ {
+  "id": "e123d81b-0590-4378-b4c7-5b4f70a8943f",
+  "percentile": 16.7,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e123d81b-0590-4378-b4c7-5b4f70a8943f.jpg"
+ },
+ {
+  "id": "e134d4b9-b263-4d14-a1ae-61faa534036f",
+  "percentile": 94.9,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e134d4b9-b263-4d14-a1ae-61faa534036f.jpg"
+ },
+ {
+  "id": "e169f87e-3c3a-4a17-b67e-033dd1a341ef",
+  "percentile": 83.1,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e169f87e-3c3a-4a17-b67e-033dd1a341ef.jpg"
+ },
+ {
+  "id": "e1780c8d-3dc6-4c5d-b9cc-c41ec521d056",
+  "percentile": 40.7,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e1780c8d-3dc6-4c5d-b9cc-c41ec521d056.jpg"
+ },
+ {
+  "id": "e1fe96d0-2d2b-41ec-adee-67ac86875732",
+  "percentile": 80.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e1fe96d0-2d2b-41ec-adee-67ac86875732.jpg"
+ },
+ {
+  "id": "e305c2e7-590c-49ce-bcdb-e4099b20ddba",
+  "percentile": 0.0,
+  "cohort": "instagram|video|per_view|2025Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DId8kWPtV6g/"
+ },
+ {
+  "id": "e317334c-f879-4aaf-b270-7fb85ed831bf",
+  "percentile": 1.6,
+  "cohort": "instagram|video|per_view|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DPDZk9XjjOw/"
+ },
+ {
+  "id": "e3190fa9-c280-4ae5-aa5e-4b3a6c67c7f0",
+  "percentile": 11.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e3190fa9-c280-4ae5-aa5e-4b3a6c67c7f0.jpg"
+ },
+ {
+  "id": "e3b7776a-058f-4e75-8435-20573f0b6830",
+  "percentile": 94.9,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e3b7776a-058f-4e75-8435-20573f0b6830.jpg"
+ },
+ {
+  "id": "e421b551-43bc-4546-8da6-922251be8ab7",
+  "percentile": 92.5,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e421b551-43bc-4546-8da6-922251be8ab7.jpg"
+ },
+ {
+  "id": "e46bde54-9cdb-4b1e-a654-318a1457d2f5",
+  "percentile": 55.8,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e46bde54-9cdb-4b1e-a654-318a1457d2f5.jpg"
+ },
+ {
+  "id": "e47b4fc3-8426-4565-997a-5b67769e1298",
+  "percentile": 58.8,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e47b4fc3-8426-4565-997a-5b67769e1298.jpg"
+ },
+ {
+  "id": "e577d535-7398-45a1-b197-c96c555e7d5f",
+  "percentile": 82.1,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e577d535-7398-45a1-b197-c96c555e7d5f.jpg"
+ },
+ {
+  "id": "e615dc14-8d0d-41c9-bc26-0c118a9781b1",
+  "percentile": 1.2,
+  "cohort": "instagram|video|per_view|2026Q2",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DYVSwoZFeVw/"
+ },
+ {
+  "id": "e82578ce-0e3b-4bbc-a205-5ca0fa0ff85c",
+  "percentile": 14.7,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e82578ce-0e3b-4bbc-a205-5ca0fa0ff85c.jpg"
+ },
+ {
+  "id": "e8fbb35c-18b2-42da-a860-dab6e2e78722",
+  "percentile": 0.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e8fbb35c-18b2-42da-a860-dab6e2e78722.jpg"
+ },
+ {
+  "id": "e8fdac9d-d2f5-4996-aa9e-d237e208759a",
+  "percentile": 11.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e8fdac9d-d2f5-4996-aa9e-d237e208759a.jpg"
+ },
+ {
+  "id": "e8ff4d82-58ee-4ef1-959e-ff87cc74eed7",
+  "percentile": 72.1,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\e8ff4d82-58ee-4ef1-959e-ff87cc74eed7.jpg"
+ },
+ {
+  "id": "eae22a60-670b-47f4-9485-81556714ab25",
+  "percentile": 88.2,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\eae22a60-670b-47f4-9485-81556714ab25.jpg"
+ },
+ {
+  "id": "ec9d812f-163a-4252-842a-89ca7bf3cd83",
+  "percentile": 100.0,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\ec9d812f-163a-4252-842a-89ca7bf3cd83.jpg"
+ },
+ {
+  "id": "ee1f2905-7727-4714-9f86-03ad1226968b",
+  "percentile": 38.2,
+  "cohort": "instagram|image|raw|2025Q3",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\ee1f2905-7727-4714-9f86-03ad1226968b.jpg"
+ },
+ {
+  "id": "ee43c757-f73b-4549-8a38-c9c27ebe4737",
+  "percentile": 76.9,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\ee43c757-f73b-4549-8a38-c9c27ebe4737.jpg"
+ },
+ {
+  "id": "eee91d8a-5ab7-4c5b-8f2d-8e5087987467",
+  "percentile": 75.3,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\eee91d8a-5ab7-4c5b-8f2d-8e5087987467.jpg"
+ },
+ {
+  "id": "efc24bc8-3350-498a-97be-be1427f06db7",
+  "percentile": 0.8,
+  "cohort": "instagram|video|per_view|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DO1ESJwEhxQ/"
+ },
+ {
+  "id": "f0b85959-9940-44e6-a8d8-ca280585a2ac",
+  "percentile": 98.5,
+  "cohort": "instagram|video|per_view|2026Q1",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DUIB3iqjZIz/"
+ },
+ {
+  "id": "f1bdcc49-d067-4f47-839e-0541c9d388b5",
+  "percentile": 1.3,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\f1bdcc49-d067-4f47-839e-0541c9d388b5.jpg"
+ },
+ {
+  "id": "f255764d-2b88-470d-a03b-c33d076e9c1d",
+  "percentile": 84.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\f255764d-2b88-470d-a03b-c33d076e9c1d.jpg"
+ },
+ {
+  "id": "f3982625-3981-4f95-af86-10e41112da5c",
+  "percentile": 77.8,
+  "cohort": "instagram|image|raw|2026Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\f3982625-3981-4f95-af86-10e41112da5c.jpg"
+ },
+ {
+  "id": "f3f83bae-2abb-4c07-9f10-b9fcb27ae9ad",
+  "percentile": 35.0,
+  "cohort": "instagram|image|raw|2025Q4",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\f3f83bae-2abb-4c07-9f10-b9fcb27ae9ad.jpg"
+ },
+ {
+  "id": "f420d054-d2bf-4291-8747-8fbfcf8df6db",
+  "percentile": 92.3,
+  "cohort": "instagram|image|raw|2025Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\f420d054-d2bf-4291-8747-8fbfcf8df6db.jpg"
+ },
+ {
+  "id": "f829da00-e294-47aa-b6ae-0ff71aa86a74",
+  "percentile": 23.4,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\f829da00-e294-47aa-b6ae-0ff71aa86a74.jpg"
+ },
+ {
+  "id": "f88b0859-b456-4862-91a5-e96a530c042f",
+  "percentile": 41.0,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\f88b0859-b456-4862-91a5-e96a530c042f.jpg"
+ },
+ {
+  "id": "f8ebe385-5506-4ea8-8d0a-ec89fce27d92",
+  "percentile": 0.0,
+  "cohort": "instagram|video|per_view|2025Q3",
+  "kind": "video",
+  "url": "https://www.instagram.com/p/DMfi27KPXgp/"
+ },
+ {
+  "id": "fb741efb-7910-4811-98e5-3eac2c7ae1a4",
+  "percentile": 7.7,
+  "cohort": "instagram|image|raw|2025Q1",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\fb741efb-7910-4811-98e5-3eac2c7ae1a4.jpg"
+ },
+ {
+  "id": "fc022e15-1eb7-423f-bc2d-4c0dbbdc79e7",
+  "percentile": 17.5,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\fc022e15-1eb7-423f-bc2d-4c0dbbdc79e7.jpg"
+ },
+ {
+  "id": "fcb48a25-b38f-4d76-bac9-7f3a44b3bbb1",
+  "percentile": 39.0,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\fcb48a25-b38f-4d76-bac9-7f3a44b3bbb1.jpg"
+ },
+ {
+  "id": "fdc30e2a-6ed0-4e05-8aa6-7e8f5f93ad09",
+  "percentile": 52.6,
+  "cohort": "instagram|image|raw|2026Q2",
+  "kind": "image",
+  "path": "eval\\calibration\\data\\media\\fdc30e2a-6ed0-4e05-8aa6-7e8f5f93ad09.jpg"
+ }
+]
