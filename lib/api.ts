@@ -88,11 +88,19 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
   if (organicPrimary) score = organic
   const briefRaw = diagnosis.revision_brief
   const BRIEF_SECTIONS: [string, string][] = [
+    // video sections
     ['hook_0_3s', 'Hook (0–3s)'],
     ['body', 'Body'],
     ['text_overlays', 'Text overlays'],
     ['audio', 'Audio'],
     ['ending_cta', 'Ending & CTA'],
+    // image sections
+    ['focal_hierarchy', 'Focal hierarchy'],
+    ['headline_copy', 'Headline & copy'],
+    ['color_type', 'Color & type'],
+    ['offer_cta', 'Offer & CTA'],
+    ['imagery', 'Imagery'],
+    // shared
     ['measurement', 'Measurement'],
   ]
   const revisionBrief =

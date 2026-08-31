@@ -92,6 +92,34 @@ Job:
 1. Top 3 specific design risks ranked by impact.
 2. Each risk cites perception/KPI/percentile/saliency evidence.
 3. Concrete testable fix.
+4. A "revision_brief": a complete remake plan a designer could execute without
+   follow-up questions — specific to THIS creative (name its actual elements,
+   zones, and copy), never generic advice.
+
+SAMSUNG BRAND CONSTRAINTS FOR ALL RECOMMENDATIONS
+This deployment analyzes Samsung creative. Every suggested_fix and every
+revision_brief section must be executable within the Samsung Brand Creative
+Playbook (Global Brand Center, Apr 2026):
+- Essence: the Confident Explorer (Open, Bold, Authentic) delivering REFINED
+  WIT — clarity plus surprise, a gentle wink, rooted in real life. Never
+  loud/obnoxious, silly/cutesy, busy/dense, staged/faked, or mechanical/cold.
+- Copy you propose must use the brand voice techniques — personify the tech,
+  upend expectations, "not just this, but also that", confident POV, "Detail.
+  Detail. Emotion.", play up contrast, write to a friend, find the upside,
+  find the tangible benefit. One voice attribute per short line. Calibrate
+  against real Samsung headline craft: "Don't move a muscle." / "See better
+  than the ref." / "Ready. Set. Flip."
+- Type: SamsungSharpSans only (Head above 18pt, Body below); clear size/weight
+  hierarchy; type color blue, white, or black for most occasions.
+- Color: blue must appear in the composition — Confident Blue #020DCB for
+  digital, Samsung Blue #1428A0 for print/corporate — with white/black
+  dominant and creative colors as sparing accents.
+- Imagery: imagination rooted in real moments — no surreal devices; Open =
+  negative space and curiosity, Bold = dynamic angles and striking contrast,
+  Authentic = natural light and unposed moments.
+- Name the specific technique, color, or type treatment when you recommend it.
+  If a high-engagement tactic exists that the brand cannot ship, propose the
+  nearest refined-wit equivalent instead.
 
 JUDGE AGAINST THE ASSET'S FUNNEL STAGE — NOT A UNIVERSAL CHECKLIST.
 Every stage has its own success criteria; the absence of another stage's devices is not a defect:
@@ -119,7 +147,16 @@ Output strict JSON:
   "hierarchy_analysis": "Where the eye lands vs. where it should",
   "brand_visibility": "How well brand element is positioned",
   "benchmark_context": "What the percentile rankings tell us",
-  "diagnostic_caveats": "What this analysis cannot tell you"
+  "diagnostic_caveats": "What this analysis cannot tell you",
+  "revision_brief": {
+    "objective": "The single engagement problem this revision must solve, in one sentence",
+    "focal_hierarchy": "What the eye should land on first, second, third — and the exact layout/scale/contrast changes to achieve it",
+    "headline_copy": "The rewritten headline and supporting copy, in brand voice, naming the technique used",
+    "color_type": "Palette and typography changes: which brand colors where, type faces/weights/sizes for each text level",
+    "offer_cta": "Offer and CTA treatment appropriate to this funnel stage (for upper funnel: the closing brand moment instead — never push a stage change)",
+    "imagery": "Product and imagery changes: crop, angle, casting, styling, background",
+    "measurement": "Which KPI(s) the revision should move and how to A/B verify it"
+  }
 }
 """
 
@@ -191,7 +228,7 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
 
     print(f"Sending to Claude (role: {role_key})...")
     response = client.messages.create(
-        model="claude-opus-4-7", max_tokens=2500,
+        model="claude-opus-4-7", max_tokens=5000,
         # constant per role -> prompt-cache it; hits cost ~10% of the input
         system=[{"type": "text", "text": system_prompt,
                  "cache_control": {"type": "ephemeral"}}],
