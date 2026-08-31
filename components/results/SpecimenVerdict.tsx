@@ -206,6 +206,21 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
                 {FUNNEL_LABEL[result.funnelStage] ?? result.funnelStage}
               </span>
             )}
+            {typeof result.contextScore === 'number' && (
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
+                style={{
+                  color: scoreColor(result.contextScore),
+                  borderColor: `${scoreColor(result.contextScore)}40`,
+                  backgroundColor: `${scoreColor(result.contextScore)}0d`,
+                }}
+                title={result.contextReasoning
+                  ? `In your declared campaign context: ${result.contextReasoning}`
+                  : 'Expected performance in the campaign context you provided'}
+              >
+                In Context {result.contextScore.toFixed(1)}
+              </span>
+            )}
             {typeof result.craftScore === 'number' ? (
               <span
                 className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"

@@ -61,6 +61,9 @@ export interface DiagnosticResult {
   organicEngagement?: number // beta: KPI weighting calibrated vs realized organic engagement
   /** 'ranker' (fine-tuned pairwise model, holdout AUC 0.851) or 'weights' (refit KPI blend) */
   organicSource?: string
+  /** Context-conditioned expected performance — only present when the user supplied campaign context */
+  contextScore?: number
+  contextReasoning?: string
   benchmarkPercentile: number
   funnelStage?: string       // 'upper' | 'mid' | 'lower' — inferred from format (image)
   productTier?: string       // 'mass-market' | 'mid-market' | 'premium' | 'luxury'

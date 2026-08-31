@@ -125,6 +125,9 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
   const analysis = ANALYSIS_SECTIONS
     .filter(([k]) => typeof diagnosis[k] === 'string' && diagnosis[k])
     .map(([k, title]) => ({ title, text: diagnosis[k] as string }))
+  if (typeof raw.context_reasoning === 'string' && raw.context_reasoning) {
+    analysis.unshift({ title: 'Context assessment', text: raw.context_reasoning })
+  }
   const heatmap = raw.heatmap ? `data:${raw.heatmap_type || 'image/png'};base64,${raw.heatmap}` : undefined
   const kpis = toKpiArray(raw.kpis)
   // The backend returns per-KPI percentiles vs. the MAdVerse benchmark, not a
@@ -144,6 +147,8 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     craftScore: organicPrimary ? craftScore : undefined,
     organicEngagement: organic,
     organicSource: typeof raw.organic_source === 'string' ? raw.organic_source : undefined,
+    contextScore: typeof raw.context_score === 'number' ? raw.context_score : undefined,
+    contextReasoning: typeof raw.context_reasoning === 'string' ? raw.context_reasoning : undefined,
     benchmarkPercentile,
     funnelStage: raw.funnel_stage ?? undefined,
     productTier: raw.product_tier ?? undefined,

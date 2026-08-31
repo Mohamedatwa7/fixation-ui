@@ -523,6 +523,60 @@ def _sample_frames(video_path, n=3):
 JUDGE_SAMPLES = 3  # median-of-N judge ensemble; see eval/ reliability harness
 
 
+CONTEXT_SCORE_PROMPT = """You are the F1X8 context assessor. You are given an advertising creative, its calibrated creative score, and the advertiser's declared campaign context. Produce ONE number: context_score (0-10, one decimal) — the expected performance of THIS creative in THIS declared campaign context — plus concise reasoning.
+
+Rules:
+- Start from the calibrated creative score you are given and adjust for context factors, naming each adjustment and its direction.
+- Audience/objective/market fit: does the creative serve the declared audience and objective? Mismatch lowers the score.
+- Declared role and support: a hero/main asset with a major paid push has greater reach and delivery support behind it — this RAISES expected performance when the creative is competent for its declared job, and AMPLIFIES the downside when it is not. State which applies and why.
+- Constraint compliance: if the context names a campaign lever or constraint (e.g. "the trade-in offer is the main lever"), weigh how well the creative serves it — heavily.
+- Be decisive and use the full range. Do not simply restate the calibrated score; the whole point of this number is that context moves it. Deviations larger than ±2.0 from the calibrated score need an explicitly named justification.
+
+Output strict JSON only:
+{"context_score": 0.0, "reasoning": "2-4 sentences naming each context adjustment and its direction", "watchouts": ["risk amplified by this context, if any"]}
+"""
+
+
+def _assess_context_fit(images, context_text, base_score):
+    """Context-conditioned expected-performance score (single call, advisory —
+    only runs when the advertiser supplied context; the calibrated scores stay
+    untouched)."""
+    try:
+        import anthropic
+        client = anthropic.Anthropic()
+        content = [
+            {"type": "image", "source": {"type": "base64", "media_type": mt, "data": d}}
+            for mt, d in images
+        ]
+        content.append({"type": "text", "text": (
+            f"Calibrated creative score: {base_score}/10\n\n"
+            f"DECLARED CAMPAIGN CONTEXT:\n{context_text}\n\n"
+            "Assess expected performance in this context. Return only the JSON object."
+        )})
+        resp = client.messages.create(
+            model="claude-opus-4-8", max_tokens=800,
+            system=[{"type": "text", "text": CONTEXT_SCORE_PROMPT}],
+            messages=[{"role": "user", "content": content}],
+        )
+        raw = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
+        if raw.startswith("```"):
+            raw = raw.split("```", 2)[1]
+            raw = raw[4:] if raw.startswith("json") else raw
+            raw = raw.strip().rstrip("`").strip()
+        data = json.loads(raw)
+        score = data.get("context_score")
+        if not isinstance(score, (int, float)):
+            return None
+        reasoning = data.get("reasoning") or ""
+        watch = data.get("watchouts") or []
+        if watch:
+            reasoning += " Watchouts: " + " ".join(str(w) for w in watch)
+        return {"context_score": round(float(score), 1), "context_reasoning": reasoning.strip()}
+    except Exception as e:
+        print(f"[context-score] failed: {e}")
+        return None
+
+
 def _context_text(title=None, description=None, format_type=None):
     """Advertiser-supplied context block for the judge and diagnosis prompts."""
     parts = []
@@ -896,7 +950,12 @@ def fastapi_app():
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
             rank = _rank_score(tmp)
+            ctx_fit = (_assess_context_fit([(_media_type(tmp), b64(tmp))],
+                                           _context_text(title, description, format_type),
+                                           engagement_potential)
+                       if description else None)
             return {
+                **(ctx_fit or {}),
                 "verdict": report.get("diagnosis", {}),
                 "engagement_potential": engagement_potential,
                 "score": engagement_potential,
@@ -944,9 +1003,14 @@ def fastapi_app():
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
             rank = _rank_score(image_path)
+            ctx_fit = (_assess_context_fit([(_media_type(image_path), b64(image_path))],
+                                           _context_text(title, description, format_type),
+                                           engagement_potential)
+                       if description else None)
             JOBS[job_id] = {
                 "status": "done",
                 "result": {
+                    **(ctx_fit or {}),
                     "verdict": report.get("diagnosis", {}),
                     "engagement_potential": engagement_potential,
                     "score": engagement_potential,
@@ -1038,7 +1102,8 @@ def fastapi_app():
                     print(f"ffmpeg transcode failed: {tx.stderr[-400:]}")
                     sal_web = sal
 
-            judgment = assess_engagement(_sample_frames(video_path, 3),
+            frames = _sample_frames(video_path, 3)
+            judgment = assess_engagement(frames,
                                          context_text=_context_text(title, description))
             funnel = judgment.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(kpis_block, judgment, "video", funnel)
@@ -1048,9 +1113,13 @@ def fastapi_app():
             if heatmap_b64 and len(heatmap_b64) > 60_000_000:
                 print(f"Overlay too large to store ({len(heatmap_b64)} b64 chars); dropping heatmap")
                 heatmap_b64 = None
+            ctx_fit = (_assess_context_fit(frames, _context_text(title, description),
+                                           engagement_potential)
+                       if description and frames else None)
             JOBS[job_id] = {
                 "status": "done",
                 "result": {
+                    **(ctx_fit or {}),
                     "verdict": report.get("diagnosis", {}),
                     "engagement_potential": engagement_potential,
                     "score": engagement_potential,
