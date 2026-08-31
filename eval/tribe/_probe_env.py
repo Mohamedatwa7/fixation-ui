@@ -1,4 +1,4 @@
-"""One-off: inspect CUDA runtime libs inside the TRIBE image.
+"""One-off: introspect the tribev2 API for modality controls.
 Run: python -m modal run eval/tribe/_probe_env.py
 """
 import modal
@@ -11,32 +11,29 @@ image = (
         "git+https://github.com/facebookresearch/tribev2.git",
         "nibabel", "pandas", "huggingface_hub", "yt-dlp", "curl-cffi",
     )
-    .pip_install("nvidia-cuda-runtime")
-    .env({"LD_LIBRARY_PATH":
-          "/usr/local/lib/python3.11/site-packages/nvidia/cuda_runtime/lib"})
+    .pip_install("torchaudio==2.6.0")
 )
 
-app = modal.App("tribe-env-probe", image=image)
+app = modal.App("tribe-api-probe", image=image)
 
 
-@app.function(gpu="A100", timeout=600)
+@app.function(timeout=600)
 def probe():
-    import glob
-    import os
-    import subprocess
+    import inspect
 
-    print("LD_LIBRARY_PATH =", os.environ.get("LD_LIBRARY_PATH"))
-    hits = glob.glob("/usr/local/lib/python3.11/site-packages/**/libcudart*",
-                     recursive=True)
-    print("libcudart in site-packages:", hits or "NONE")
-    sys_hits = subprocess.run(["find", "/usr", "-name", "libcudart*"],
-                              capture_output=True, text=True).stdout.strip()
-    print("libcudart under /usr:", sys_hits or "NONE")
-    for mod in ("torch", "torchaudio", "torchcodec", "torchvision"):
+    from tribev2 import TribeModel
+
+    for name in ("from_pretrained", "get_events_dataframe", "predict"):
+        fn = getattr(TribeModel, name, None)
+        if fn is None:
+            print(name, ": MISSING")
+            continue
         try:
-            m = __import__(mod)
-            print(mod, "ok", getattr(m, "__version__", "?"))
+            print(f"--- {name}{inspect.signature(fn)}")
         except Exception as e:
-            print(mod, "FAIL:", str(e)[:250])
-    import torch
-    print("torch cuda:", torch.version.cuda, "available:", torch.cuda.is_available())
+            print(f"--- {name}: signature failed {e}")
+    try:
+        src = inspect.getsource(TribeModel.get_events_dataframe)
+        print(src[:4000])
+    except Exception as e:
+        print("source failed:", e)

@@ -125,6 +125,12 @@ class Tribe:
         try:
             path = _prep_media(item)
             df = self.model.get_events_dataframe(video_path=path)
+            # Word events feed the text extractor, which loads the gated
+            # meta-llama repo. Dropping them yields a consistent audio+video
+            # ablation that needs no HF token (silent clips take this path
+            # naturally anyway).
+            if item.get("drop_text") and "type" in df.columns:
+                df = df[df["type"] != "Word"].reset_index(drop=True)
             preds, _segments = self.model.predict(events=df)
             preds = np.asarray(preds, dtype=np.float64)
             T, V = preds.shape
@@ -141,21 +147,29 @@ class Tribe:
                 feats[f"{net}_std"] = float(ts.std())
                 feats[f"{net}_early"] = float(ts[:k].mean())
                 feats[f"{net}_late"] = float(ts[-k:].mean())
-            return {"id": item["id"], "kind": item["kind"], "ok": True, "features": feats}
+            return {"id": item["id"], "kind": item["kind"], "ok": True,
+                    "mode": "av" if item.get("drop_text") else "avt", "features": feats}
         except Exception as e:
             return {"id": item["id"], "kind": item["kind"], "ok": False, "error": str(e)[-500:]}
 
 
 @app.local_entrypoint()
-def main(smoke: bool = False, only_kind: str = "", limit: int = 0):
+def main(smoke: bool = False, only_kind: str = "", limit: int = 0, drop_text: bool = False):
     here = os.path.dirname(os.path.abspath(__file__))
     manifest = json.load(open(os.path.join(here, "manifest.json"), encoding="utf-8"))
     out_path = os.path.join(here, "features.json")
-    done = {}
+    all_rows = []
     if os.path.exists(out_path):
-        done = {r["id"]: r for r in json.load(open(out_path, encoding="utf-8")) if r.get("ok")}
+        all_rows = json.load(open(out_path, encoding="utf-8"))
+    # Keep every successful row (both text modes can coexist per video);
+    # a prior ok result only skips reprocessing for the SAME mode. Legacy
+    # rows without a mode were silent clips — av-equivalent.
+    want = "av" if drop_text else "avt"
+    done_ids = {r["id"] for r in all_rows
+                if r.get("ok") and (r["kind"] == "image" or "mode" not in r
+                                    or r.get("mode") == want)}
 
-    items = [i for i in manifest if i["id"] not in done]
+    items = [{**i, "drop_text": drop_text} for i in manifest if i["id"] not in done_ids]
     if only_kind:
         items = [i for i in items if i["kind"] == only_kind]
     if smoke:
@@ -173,8 +187,10 @@ def main(smoke: bool = False, only_kind: str = "", limit: int = 0):
         else:
             payloads.append(i)
 
-    print(f"extracting {len(payloads)} items ({len(done)} already done)")
-    results = list(done.values())
+    print(f"extracting {len(payloads)} items ({len(done_ids)} already done)")
+    # Start from all prior ok rows; failed records for retried ids drop away.
+    retry_ids = {p["id"] for p in payloads}
+    results = [r for r in all_rows if r.get("ok") or r["id"] not in retry_ids]
     for r in Tribe().extract.map(payloads, return_exceptions=True):
         if isinstance(r, Exception):
             print("worker exception:", str(r)[:200])

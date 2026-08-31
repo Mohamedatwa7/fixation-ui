@@ -34,30 +34,37 @@ mean/std. 37 features per creative.
 
 Still images are looped into a 12s silent mp4; reels are capped at 120s.
 
-## Findings — 2026-08-31 (image arm complete, video arm blocked)
+## Findings — 2026-08-31 (complete): do not integrate
 
-Extraction: 228/264 ok — all 224 images, 4/40 reels. Reel failures: 29 hit
-the gated `meta-llama` repo (TRIBE routes videos with detected speech through
-its Llama text pipeline; needs an HF token with Llama 3.2 access), 7 hit
-IG fetch auth walls.
+Extraction: 224/224 images; 33/40 reels in BOTH text modes (`av` = Word
+events dropped, no gated repo needed; `avt` = full tri-modal with a
+Llama-3.2-licensed HF token). 7 reels unrecoverable behind IG auth walls.
 
-**Image arm (n=141 labeled): TRIBE adds no signal.**
+**Image arm (n=141): no signal.** Baseline 0.645 CV AUC; all 37 TRIBE
+features 0.621 (−0.024); best case (7 network means, tuned L2) 0.653
+(+0.008). Individual networks 0.51–0.55 — near-chance.
 
-| model | 5-fold CV AUC |
+**Video arm (n=30): no signal, and the av-mode teaser did not replicate.**
+
+| video model | 5-fold CV AUC |
 |---|---|
-| baseline score alone | 0.645 |
-| + all 37 TRIBE features (lam=1) | 0.621 (−0.024) |
-| + 7 network means (lam=10–50) | 0.653 (+0.008) |
+| baseline (pipeline score) alone | 0.725 |
+| + 14 TRIBE features, av mode | 0.483 (−0.242) |
+| + 14 TRIBE features, avt mode | 0.408 (−0.317) |
 
-Every network mean alone is near-chance vs realized engagement (AUC
-0.51–0.55). Best case is +0.008 — far under the +0.03 gate. Verdict for
-stills: **do not integrate**; consistent with the caveat that looped silent
-stills are off-distribution for a movie-trained encoder.
+In av mode, Limbic_std and Default_std each hit 0.713 univariate — but
+that is what the best of 14 tested features looks like under noise at
+n=30, and both collapsed (0.611 / 0.579) when the text pathway was added
+in avt mode. No feature in the full model exceeds 0.61 alone; every
+multivariate combination underperforms the baseline.
 
-**Video arm: n=4, unresolved** — this is where the hypothesis was always
-strongest (temporal neural engagement vs watch-time). To complete it:
-provide an HF token with the Llama 3.2 license accepted (`HF_TOKEN` env at
-run time), then `modal run eval/tribe/modal_tribe.py --only-kind video`.
+**Decision (per the pre-registered gate): TRIBE v2 does not enter the
+F1X8 pipeline.** Predicted population-level cortical response, reduced to
+network summaries, carries no measurable information about realized
+in-feed engagement beyond what the gaze + judge + calibration stack
+already captures — on this sample. Power caveat: n=30 videos cannot
+detect small effects; the harness is resumable and the analysis rerunnable
+if the labeled reel set grows or Meta ships a stronger encoder.
 
 ## Caveats
 
