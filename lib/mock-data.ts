@@ -68,6 +68,8 @@ export interface DiagnosticResult {
   fix: { issue: string; action: string }
   /** Detailed end-to-end remake plan (video diagnostics) */
   revisionBrief?: { objective?: string; sections: { title: string; detail: string }[] }
+  /** Written analysis sections from the diagnosis (hierarchy, brand visibility, benchmark context, …) */
+  analysis?: { title: string; text: string }[]
   kpis: KPI[]
   strengths: string[]
   risks: Risk[]

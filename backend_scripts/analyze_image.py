@@ -137,6 +137,14 @@ When the user message includes ENGAGEMENT SCORE WEIGHTS, they are the exact weig
 
 Use the percentile data explicitly — e.g., "your hierarchy is in the 25th percentile of 50K ads" is much stronger than "your hierarchy could be better."
 
+HONOR THE ADVERTISER CONTEXT. When the user message includes an ADVERTISER
+CONTEXT block (title, format, brief), treat it as ground truth about the
+campaign's audience, market, objective, and constraints. Judge the creative
+against THAT job — not a generic one — reference the context explicitly in
+your summary and risks where relevant, and tailor every suggested_fix and
+revision_brief section to it. If the context contradicts what the creative
+shows, name that mismatch as a risk.
+
 Be direct. If the design is strong, say so. Frame issues as hypotheses, not certainties.
 
 Output strict JSON:
@@ -217,9 +225,16 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
     system_prompt = build_role_aware_system_prompt(BASE_SYS_PROMPT, role_key, "image")
 
     weights_text = _score_weight_text(stage, score_weights)
+    context_block = ""
+    if title or description or format_type:
+        context_block = (
+            "ADVERTISER CONTEXT (ground truth — honor in every judgment and recommendation):\n"
+            f"Title: {title or '(none)'}\n"
+            f"Format: {format_type or '(unspecified)'}\n"
+            f"Brief: {description or '(none)'}\n\n"
+        )
     user_message = (
-        f"Image: {os.path.basename(image_path)}\nTitle: {title or '(none)'}\n"
-        f"Format: {format_type or '(unspecified)'}\nBrief: {description or '(none)'}\n\n"
+        f"Image: {os.path.basename(image_path)}\n\n{context_block}"
         f"PERCEPTION (Qwen2.5-VL):\n\n{perception_text}\n\n"
         f"DESIGN KPIs (with industry percentiles):\n\n{kpi_text}\n\n"
         + (f"{weights_text}\n\n" if weights_text else "")

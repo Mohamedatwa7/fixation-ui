@@ -63,6 +63,27 @@ export default function FullDiagnostic({ result }: Props) {
           {/* Signal timelines — video only */}
           {result.mediaType === 'video' && <SignalTimelines result={result} />}
 
+          {/* Written analysis — hierarchy, brand visibility, benchmark context, … */}
+          {!!result.analysis?.length && (
+            <div className="border-b border-white/10 p-7">
+              <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40 mb-5">
+                Written Analysis
+              </p>
+              <div className="flex flex-col gap-4">
+                {result.analysis.map(section => (
+                  <div key={section.title} className="grid grid-cols-1 sm:grid-cols-[150px_1fr] gap-1.5 sm:gap-4">
+                    <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/45 pt-0.5">
+                      {section.title}
+                    </span>
+                    <p className="font-sans text-[14px] text-white/70 leading-relaxed">
+                      {section.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Full KPI breakdown */}
           <div className="border-b border-white/10 p-7">
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40 mb-5">

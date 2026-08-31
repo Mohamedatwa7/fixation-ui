@@ -111,6 +111,20 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
             .map(([k, title]) => ({ title, detail: briefRaw[k] as string })),
         }
       : undefined
+  // Written analysis sections the diagnosis emits (image + video variants) —
+  // previously dropped on the floor, now surfaced in the Full Diagnostic.
+  const ANALYSIS_SECTIONS: [string, string][] = [
+    ['hierarchy_analysis', 'Hierarchy'],
+    ['brand_visibility', 'Brand visibility'],
+    ['benchmark_context', 'Benchmark context'],
+    ['gaze_analysis', 'Gaze'],
+    ['audio_visual_alignment', 'Audio–visual alignment'],
+    ['key_moments_analysis', 'Key moments'],
+    ['diagnostic_caveats', 'Caveats'],
+  ]
+  const analysis = ANALYSIS_SECTIONS
+    .filter(([k]) => typeof diagnosis[k] === 'string' && diagnosis[k])
+    .map(([k, title]) => ({ title, text: diagnosis[k] as string }))
   const heatmap = raw.heatmap ? `data:${raw.heatmap_type || 'image/png'};base64,${raw.heatmap}` : undefined
   const kpis = toKpiArray(raw.kpis)
   // The backend returns per-KPI percentiles vs. the MAdVerse benchmark, not a
@@ -136,6 +150,7 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     verdict: verdictText,
     fix,
     revisionBrief,
+    analysis: analysis.length ? analysis : undefined,
     kpis,
     strengths,
     risks,
@@ -180,6 +195,8 @@ export async function analyzeVideoUrl(url: string, meta: AnalysisMeta): Promise<
   const form = new FormData()
   form.append('url', url)
   if (meta.role) form.append('role', String(meta.role).toLowerCase().replace(/\s+/g, '_'))
+  if (meta.title) form.append('title', meta.title)
+  if (meta.description) form.append('description', meta.description)
   const res = await fetch('/api/analyze?endpoint=/api/analyze/video-url/submit', { method: 'POST', body: form })
   if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.error || `Video analysis failed (${res.status})`) }
   const { job_id } = await res.json()

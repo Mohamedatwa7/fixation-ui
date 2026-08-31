@@ -523,7 +523,19 @@ def _sample_frames(video_path, n=3):
 JUDGE_SAMPLES = 3  # median-of-N judge ensemble; see eval/ reliability harness
 
 
-def _assess_engagement_once(images):
+def _context_text(title=None, description=None, format_type=None):
+    """Advertiser-supplied context block for the judge and diagnosis prompts."""
+    parts = []
+    if title:
+        parts.append(f"Title: {title}")
+    if format_type:
+        parts.append(f"Declared format: {format_type}")
+    if description:
+        parts.append(f"Context/brief from the advertiser: {description}")
+    return "\n".join(parts) or None
+
+
+def _assess_engagement_once(images, context_text=None):
     """One vision-LLM judge call. Returns the parsed judgment, or None on failure."""
     try:
         import anthropic
@@ -532,10 +544,15 @@ def _assess_engagement_once(images):
             {"type": "image", "source": {"type": "base64", "media_type": mt, "data": d}}
             for mt, d in images
         ]
-        content.append({
-            "type": "text",
-            "text": "Assess this advertising asset for engagement potential. Return only the JSON object.",
-        })
+        prompt_text = "Assess this advertising asset for engagement potential. Return only the JSON object."
+        if context_text:
+            prompt_text = (
+                "ADVERTISER CONTEXT — treat as ground truth about the campaign's "
+                "audience, market, objective, and constraints; use it when "
+                "classifying funnel stage and judging every dimension:\n"
+                f"{context_text}\n\n" + prompt_text
+            )
+        content.append({"type": "text", "text": prompt_text})
         resp = client.messages.create(
             model="claude-opus-4-8",
             # 1500 truncated the JSON mid-field once the funnel-conditional
@@ -635,7 +652,7 @@ def _aggregate_judgments(judgments):
     return agg
 
 
-def assess_engagement(images):
+def assess_engagement(images, context_text=None):
     """Median-of-N ensemble over the vision-LLM judge; parse JSON robustly.
     images: list of (media_type, base64_data). Returns the aggregated judgment
     or a neutral default.
@@ -651,7 +668,7 @@ def assess_engagement(images):
           f"ANTHROPIC_API_KEY set={bool(os.environ.get('ANTHROPIC_API_KEY'))}")
     from concurrent.futures import ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=JUDGE_SAMPLES) as ex:
-        samples = [s for s in ex.map(lambda _: _assess_engagement_once(images),
+        samples = [s for s in ex.map(lambda _: _assess_engagement_once(images, context_text),
                                      range(JUDGE_SAMPLES)) if s is not None]
     if not samples:
         print("[engagement] all samples FAILED -> neutral default")
@@ -858,7 +875,8 @@ def fastapi_app():
             from analyze_image import analyze_image
             # Judge first: the diagnosis critic needs the judge's funnel stage to
             # rank risks by that stage's actual score weights.
-            judgment = assess_engagement([(_media_type(tmp), b64(tmp))])
+            judgment = assess_engagement([(_media_type(tmp), b64(tmp))],
+                                         context_text=_context_text(title, description, format_type))
             report = analyze_image(
                 image_path=tmp,
                 title=title or None,
@@ -906,7 +924,8 @@ def fastapi_app():
             from analyze_image import analyze_image
             # Judge first: the diagnosis critic needs the judge's funnel stage to
             # rank risks by that stage's actual score weights.
-            judgment = assess_engagement([(_media_type(image_path), b64(image_path))])
+            judgment = assess_engagement([(_media_type(image_path), b64(image_path))],
+                                         context_text=_context_text(title, description, format_type))
             report = analyze_image(
                 image_path=image_path,
                 title=title or None,
@@ -953,11 +972,11 @@ def fastapi_app():
                 except Exception:
                     pass
 
-    def _run_video(job_id, video_path):
+    def _run_video(job_id, video_path, title=None, description=None):
         try:
             # Bumped per deploy — proves in the logs which build ran a job,
             # since warm containers can briefly keep serving old code.
-            print(f"[build] 2026-08-26-perception-logging job={job_id}")
+            print(f"[build] 2026-08-31-context-threading job={job_id}")
             JOBS[job_id] = {"status": "analyzing"}
             out = f"/tmp/video_{job_id}.json"
             cmd = [
@@ -967,6 +986,10 @@ def fastapi_app():
                 "--model-cache", MODEL_CACHE,
                 "--tased-weights", TASED_WEIGHTS,
             ]
+            if title:
+                cmd += ["--title", title]
+            if description:
+                cmd += ["--description", " ".join(description.split())[:800]]
             env = os.environ.copy()
             env["MPLBACKEND"] = "Agg"
             env["PYTHONPATH"] = f"{SCRIPTS_DIR}:{TASED_REPO}"
@@ -1015,7 +1038,8 @@ def fastapi_app():
                     print(f"ffmpeg transcode failed: {tx.stderr[-400:]}")
                     sal_web = sal
 
-            judgment = assess_engagement(_sample_frames(video_path, 3))
+            judgment = assess_engagement(_sample_frames(video_path, 3),
+                                         context_text=_context_text(title, description))
             funnel = judgment.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(kpis_block, judgment, "video", funnel)
             # A result that exceeds the 100MB dict-entry cap kills the whole
@@ -1054,7 +1078,8 @@ def fastapi_app():
                     pass
 
     @web_app.post("/api/analyze/video-url/submit")
-    async def submit_video_url(url: str = Form(...), role: str = Form("creative_director")):
+    async def submit_video_url(url: str = Form(...), role: str = Form("creative_director"),
+                               title: str = Form(None), description: str = Form(None)):
         job_id = str(uuid.uuid4())
         JOBS[job_id] = {"status": "fetching"}
 
@@ -1074,7 +1099,7 @@ def fastapi_app():
                 if "error" in fetched:
                     JOBS[job_id] = {"status": "error", "error": fetched.get("error")}
                     return
-                _run_video(job_id, fetched["video_path"])
+                _run_video(job_id, fetched["video_path"], title, description)
             except Exception as e:
                 JOBS[job_id] = {"status": "error", "error": str(e)}
 
@@ -1100,12 +1125,13 @@ def fastapi_app():
         return {"job_id": job_id}
 
     @web_app.post("/api/analyze/video/submit")
-    async def submit_video_file(file: UploadFile = File(...), role: str = Form("creative_director")):
+    async def submit_video_file(file: UploadFile = File(...), role: str = Form("creative_director"),
+                                title: str = Form(None), description: str = Form(None)):
         job_id = str(uuid.uuid4())
         tmp = f"/tmp/upload_{job_id}_{file.filename}"
         with open(tmp, "wb") as f:
             f.write(await file.read())
-        threading.Thread(target=_run_video, args=(job_id, tmp), daemon=True).start()
+        threading.Thread(target=_run_video, args=(job_id, tmp, title, description), daemon=True).start()
         return {"job_id": job_id}
 
     @web_app.get("/api/job/{job_id}")
