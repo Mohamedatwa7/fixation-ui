@@ -523,17 +523,20 @@ def _sample_frames(video_path, n=3):
 JUDGE_SAMPLES = 3  # median-of-N judge ensemble; see eval/ reliability harness
 
 
-CONTEXT_SCORE_PROMPT = """You are the F1X8 context assessor. You are given an advertising creative, its calibrated creative score, and the advertiser's declared campaign context. Produce ONE number: context_score (0-10, one decimal) — the expected performance of THIS creative in THIS declared campaign context — plus concise reasoning.
+CONTEXT_SCORE_PROMPT = """You are the F1X8 context assessor. You are given an advertising creative, its calibrated creative score, and the advertiser's declared campaign context. Produce ONE number: context_score (0-10, one decimal) — the expected IN-MARKET OUTCOME of this creative in this declared campaign context — plus concise reasoning.
 
-Rules:
-- Start from the calibrated creative score you are given and adjust for context factors, naming each adjustment and its direction.
-- Audience/objective/market fit: does the creative serve the declared audience and objective? Mismatch lowers the score.
-- Declared role and support: a hero/main asset with a major paid push has greater reach and delivery support behind it — this RAISES expected performance when the creative is competent for its declared job, and AMPLIFIES the downside when it is not. State which applies and why.
-- Constraint compliance: if the context names a campaign lever or constraint (e.g. "the trade-in offer is the main lever"), weigh how well the creative serves it — heavily.
-- Be decisive and use the full range. Do not simply restate the calibrated score; the whole point of this number is that context moves it. Deviations larger than ±2.0 from the calibrated score need an explicitly named justification.
+This score is a BUSINESS outcome prediction, not a design critique. It answers: given everything the advertiser declared about how this asset will be deployed, how strongly will it perform in the real market? Media support drives outcomes: a main/hero asset carried by a large paid push reaches far more people and delivers far more total results than a lightly-supported asset. Never grade a hero asset more harshly because of its role — the role is fuel, not a burden.
+
+Compose the score as: calibrated base + support lift + fit adjustment (clamp 0-10):
+1. START from the calibrated creative score.
+2. SUPPORT LIFT (upward lever): declared main/hero role with major paid budget or all-placement push -> add +1.5 to +2.5. Meaningful but partial support (boosted, featured) -> add +0.5 to +1.5. No deployment support declared -> no lift. A competent creative with maximum support should land 8+.
+3. FIT ADJUSTMENT: audience/objective/market fit and compliance with named campaign levers (e.g. "trade-in is the main lever") adjust up to about +/-1.5. Only a fundamental mismatch with the declared audience or objective may cut deeper — and then say so plainly.
+4. Watchouts carry the caution: if the creative has weaknesses that a big push will magnify, keep them in "watchouts" — they inform the team; they do not drag the score below what the support and fit warrant.
+
+Be decisive. Name each component (base, lift, fit) and its magnitude in the reasoning.
 
 Output strict JSON only:
-{"context_score": 0.0, "reasoning": "2-4 sentences naming each context adjustment and its direction", "watchouts": ["risk amplified by this context, if any"]}
+{"context_score": 0.0, "reasoning": "2-4 sentences naming base, support lift, and fit adjustment with magnitudes", "watchouts": ["weakness the declared push will magnify, if any"]}
 """
 
 
@@ -559,11 +562,11 @@ def _assess_context_fit(images, context_text, base_score):
             messages=[{"role": "user", "content": content}],
         )
         raw = "".join(b.text for b in resp.content if getattr(b, "type", None) == "text").strip()
-        if raw.startswith("```"):
-            raw = raw.split("```", 2)[1]
-            raw = raw[4:] if raw.startswith("json") else raw
-            raw = raw.strip().rstrip("`").strip()
-        data = json.loads(raw)
+        # Parse the first JSON object and ignore fences or trailing commentary.
+        start = raw.find("{")
+        if start < 0:
+            raise ValueError("no JSON object in response")
+        data, _ = json.JSONDecoder().raw_decode(raw[start:])
         score = data.get("context_score")
         if not isinstance(score, (int, float)):
             return None
