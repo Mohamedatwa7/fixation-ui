@@ -1,0 +1,13 @@
+campaign,type,asset,impressions,link_clicks,cpm_usd,ctr_pct,vtr_pct,er_pct,f1x8_organic,f1x8_ep,creative_known
+upper,static,q8h8offkv,5689176,48541,1.17,0.85,,0.93,6.6,6.5,fold8_duo_hands
+upper,static,q8h8kv,7118650,11272,0.34,0.16,,0.19,,,
+upper,static,b8kv,20876961,30195,0.44,0.14,,0.18,7.1,6.3,flip8_flip_it_your_way
+upper,video,offvid,4316672,38759,1.13,0.90,14,15.47,,,
+upper,video,q8sf,35664899,22064,0.57,0.06,7,7.37,,,
+upper,video,mainflmhard,3214589,1062,0.60,0.03,4,4.40,,,
+lower,static,h8offkv,1260246,7317,2.91,0.58,,0.65,6.7,6.7,fold8_hero_purple
+lower,static,q8offkv,1029883,4879,2.43,0.47,,0.55,7.6,6.7,fold8_ultra_dark_closeup
+lower,static,b8offkv,3039881,13822,1.65,0.45,,0.55,,,
+lower,video,q8h8animkv,1528352,6558,1.72,0.43,9,10.14,,,
+lower,video,estoben,1798509,9135,2.70,0.51,9,9.65,,,
+lower,video,offvid_lower,3827235,17188,2.29,0.45,8,9.07,,,
