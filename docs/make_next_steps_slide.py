@@ -15,41 +15,41 @@ ACCENT = RGBColor(0xE0, 0xE0, 0xE0)
 GREEN = RGBColor(0x8A, 0xE1, 0xB8)
 GOLD = RGBColor(0xFF, 0xC8, 0x61)
 
-# (lead-in, body, timing) — business language, numbers where they earn their place
+# (lead-in, body, timing) — how we scale F1X8 inside the company
 BULLETS = [
-    ("Where we stand today:",
-     "F1X8 picks the better-performing Samsung creative 85 times out of 100 — proven "
-     "against our own published posts — and delivers a full verdict with a ready-to-shoot "
-     "fix in minutes, not the weeks a market test takes.",
-     None),
-    ("Why creative choice is free money:",
-     "In the FF8 pre-order campaign, two versions of the same message differed 6× in "
-     "click-through (0.85% vs 0.14%). Same budget, same audience — the only difference "
-     "was which creative got the push.",
-     None),
-    ("Switch on weekly learning.",
-     "The system improves automatically as every new campaign's results come in — accuracy "
-     "already climbed as its training data grew, and it only gets sharper from here.",
-     "this week"),
-    ("Bring video up to image-level accuracy.",
-     "Most of our content is video, yet video is still scored by the older method — right "
-     "~73 times out of 100 vs ~85 for images. Closing that gap upgrades scoring for the "
-     "majority of what we publish.",
-     "2–3 weeks"),
-    ("Add paid-campaign scoring.",
-     "FF8 showed a 3.5× difference in cost per engagement between sister assets ($0.13 vs "
-     "$0.45). A paid-tuned score means media budget always lands on the creative that buys "
-     "engagement cheapest — all we need are the ads-manager reports.",
-     "as reports arrive"),
-    ("Make pre-flight checks standard practice.",
-     "Every KV and reel scored and revised before boosting. At hero-campaign reach (~20M "
-     "views), the gap between a weak and a strong creative is roughly 140,000 engagements — "
-     "decided before a single dirham is spent.",
-     "immediately"),
+    ("Make it part of the sign-off.",
+     "Start with our own social team: no KV or reel gets boosted without its F1X8 check — "
+     "a 90-second step that picks the stronger creative 85 times out of 100. One campaign, "
+     "one team, prove the ritual works.",
+     "this month"),
+    ("Close the loop with the media team & agencies.",
+     "Two-way habit: they add campaign context when briefing creatives in, and send back the "
+     "ads-manager results after each flight. Every report they return makes the tool smarter — "
+     "the FF8 export alone exposed a 3.5× spread in cost per engagement we can now predict.",
+     "next campaign"),
+    ("Onboard more Samsung accounts.",
+     "Today it is tuned to one account's feed. The data to extend it — 12,500 posts from other "
+     "accounts — is already exported. Each new account gets scoring calibrated to its own "
+     "audience and history, same as ours.",
+     "1–2 months"),
+    ("Give it an owner and a scoreboard.",
+     "One person in creative ops owns it; one monthly page: what we scored, what we predicted, "
+     "what actually happened. Trust in the tool is built the same way the tool works — by "
+     "checking predictions against results, in the open.",
+     "from day one"),
+    ("Train the teams that touch creative.",
+     "A 30-minute session per team: how to write good campaign context (it now directly drives "
+     "the In-Context score), how to read the fix brief, when to trust which number. The tool is "
+     "only as scaled as the people using it.",
+     "first two weeks"),
+    ("Take it to regional when the scoreboard proves it.",
+     "After 2–3 months of tracked predictions across multiple accounts, present it to regional "
+     "HQ as a MENA-built capability — with our own campaigns as the evidence, not a demo.",
+     "quarter's end"),
 ]
 
-ADVANTAGE = ("The advantage no one can copy: F1X8 is calibrated on Samsung's own posts and results. "
-             "Every campaign it scores makes it smarter — and every point of engagement it recovers is free media.")
+ADVANTAGE = ("Scaling logic: every team that adopts it adds campaigns; every campaign adds results; "
+             "every result makes it more accurate for everyone. The earlier it spreads, the faster it compounds.")
 
 prs = Presentation()
 prs.slide_width = Inches(13.333)
@@ -66,7 +66,7 @@ r.font.size = Pt(12); r.font.name = "Consolas"; r.font.color.rgb = MUTED
 
 tb = slide.shapes.add_textbox(Inches(0.6), Inches(0.62), Inches(12.1), Inches(0.6))
 r = tb.text_frame.paragraphs[0].add_run()
-r.text = "Better creative decisions, before the budget is spent"
+r.text = "Scaling F1X8 across the company"
 r.font.size = Pt(26); r.font.bold = True; r.font.name = "Segoe UI"; r.font.color.rgb = WHITE
 
 # Bullets
@@ -106,13 +106,16 @@ r.font.size = Pt(13.5); r.font.bold = True; r.font.name = "Segoe UI"; r.font.col
 
 notes = slide.notes_slide.notes_text_frame
 notes.text = (
-    "Number sources (if challenged): 85/100 and 73/100 = pairwise accuracy on held-out Samsung "
-    "creatives (image ranker AUC 0.851; video pipeline AUC 0.731). 6x CTR = FF8 upper-funnel "
-    "statics q8h8offkv 0.85% vs b8kv 0.14%. $0.13 vs $0.45 = cost per engagement, FF8 lower-funnel "
-    "statics. 140K = 20M impressions x (0.9% - 0.2%) engagement rate. Weekly learning: retrain "
-    "loop is built with a safety gate — a new model only ships if it beats the current one. "
-    "Also in the back pocket: we tested Meta's TRIBE brain-response model on 171 of our posts — "
-    "zero accuracy gain over F1X8, which is why it is not part of the stack."
+    "Number sources (if challenged): 85/100 = pairwise accuracy on held-out Samsung creatives "
+    "(image ranker AUC 0.851). 3.5x cost-per-engagement spread = FF8 lower-funnel statics "
+    "($0.13 vs $0.45). 12,500 posts = non-brand rows already in the calibration export. "
+    "90 seconds = live image diagnostic time.\n\n"
+    "Sequencing logic: bullets 1-2 cost nothing and start immediately (process + data habit). "
+    "Bullet 3 needs the multi-account training pass (engineering, ~4-6 weeks). Bullets 4-5 are "
+    "organizational glue that make adoption stick. Bullet 6 is the expansion play once the "
+    "scoreboard carries 2-3 months of tracked predictions vs actuals.\n\n"
+    "Back pocket: we tested Meta's TRIBE brain-response model on 171 of our posts — zero "
+    "accuracy gain over F1X8 — which answers the 'why not the neuroscience tool' question."
 )
 
 out = os.path.join(os.environ.get("USERPROFILE", ""), "Downloads", "F1X8_Next_Steps.pptx")
