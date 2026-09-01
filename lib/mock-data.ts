@@ -53,10 +53,12 @@ export interface DiagnosticResult {
   role: Role
   mediaType: MediaType
   score: number
-  /** What the headline `score` measures — 'Predicted Organic Pull' for in-feed
-   *  creatives (weights calibrated vs realized engagement), else 'Engagement Potential'. */
+  /** Headline label — always 'Engagement Potential'; the value is the
+   *  context-conditioned score when campaign context was supplied, else the
+   *  stage-weighted creative score. */
   scoreLabel?: string
-  /** Funnel-weighted craft score, shown as a secondary badge when organic pull is primary */
+  /** Stage-weighted creative score, displayed as the "Organic" badge when the
+   *  context score has taken the headline */
   craftScore?: number
   organicEngagement?: number // beta: KPI weighting calibrated vs realized organic engagement
   /** 'ranker' (fine-tuned pairwise model, holdout AUC 0.851) or 'weights' (refit KPI blend) */

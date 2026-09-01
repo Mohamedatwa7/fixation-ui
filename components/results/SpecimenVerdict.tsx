@@ -160,8 +160,8 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
         <div className="relative p-7 md:p-10 flex flex-col justify-center">
           <span
             className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/40"
-            title={result.organicSource === 'ranker'
-              ? 'Fine-tuned ranker calibrated on realized organic engagement — picks the better performer of a pair ~85 times out of 100 on held-out creatives'
+            title={typeof result.contextScore === 'number' && result.contextReasoning
+              ? `Expected performance in your declared campaign context: ${result.contextReasoning}`
               : undefined}
           >
             {result.scoreLabel ?? 'Engagement Potential'}
@@ -206,42 +206,16 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
                 {FUNNEL_LABEL[result.funnelStage] ?? result.funnelStage}
               </span>
             )}
-            {typeof result.contextScore === 'number' && (
-              <span
-                className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
-                style={{
-                  color: scoreColor(result.contextScore),
-                  borderColor: `${scoreColor(result.contextScore)}40`,
-                  backgroundColor: `${scoreColor(result.contextScore)}0d`,
-                }}
-                title={result.contextReasoning
-                  ? `In your declared campaign context: ${result.contextReasoning}`
-                  : 'Expected performance in the campaign context you provided'}
-              >
-                In Context {result.contextScore.toFixed(1)}
-              </span>
-            )}
-            {typeof result.craftScore === 'number' ? (
+            {typeof result.craftScore === 'number' && (
               <span
                 className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
                 style={{
                   color: scoreColor(result.craftScore),
                   borderColor: `${scoreColor(result.craftScore)}40`,
                 }}
-                title="Craft: funnel-weighted execution quality — how well the creative is built for its funnel job, independent of in-feed pull"
+                title="Organic: the creative's own stage-weighted score, independent of campaign context and media support"
               >
-                Craft {result.craftScore.toFixed(1)}
-              </span>
-            ) : typeof result.organicEngagement === 'number' && (
-              <span
-                className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
-                style={{
-                  color: scoreColor(result.organicEngagement),
-                  borderColor: `${scoreColor(result.organicEngagement)}40`,
-                }}
-                title="Organic pull (beta): KPI weighting calibrated against realized organic social engagement — reads in-feed appeal, not paid-media craft"
-              >
-                Organic {result.organicEngagement.toFixed(1)}
+                Organic {result.craftScore.toFixed(1)}
               </span>
             )}
             <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35 pl-1">

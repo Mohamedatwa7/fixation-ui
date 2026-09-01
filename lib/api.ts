@@ -12,9 +12,6 @@ export interface AnalysisMeta {
   inFeed?: boolean
 }
 
-/** Formats that live in a social feed, where the organic-calibrated score is
- *  the better predictor of real performance than the craft score. */
-const IN_FEED_FORMATS = new Set(['Social', 'Reel', 'Story', 'Banner'])
 
 const KPI_LABELS: Record<string, string> = {
   hook: 'Hook Strength',
@@ -78,14 +75,14 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
   const fix = { issue: topRisk.evidence || topRisk.issue || verdictText, action: topRisk.suggested_fix || diagnosis.recommendation || 'See detailed risks below.' }
   let score = raw.engagement_potential ?? raw.score ?? raw.kpis_overall ?? raw.kpis?.overall ?? 0
   if (score > 10) score = score / 10
-  // In-feed creatives lead with the organic-calibrated score — its weights are
-  // fit against realized engagement (holdout AUC 0.69 vs 0.59 for the craft
-  // score) — and keep the funnel-weighted craft score as a secondary badge.
+  // Display contract (product decision, 2026-09-01): the context-conditioned
+  // score leads as "Engagement Potential" whenever the user supplied campaign
+  // context; the funnel-weighted craft score shows as the "Organic" badge.
+  // The ranker/weights organic value stays in the data but is not displayed.
   const organic = typeof raw.organic_engagement === 'number' ? raw.organic_engagement : undefined
-  const inFeed = meta.inFeed ?? IN_FEED_FORMATS.has((meta.format as string) || 'Social')
-  const organicPrimary = inFeed && organic !== undefined
+  const ctxScore = typeof raw.context_score === 'number' ? raw.context_score : undefined
   const craftScore = Number(Number(score).toFixed(1))
-  if (organicPrimary) score = organic
+  if (ctxScore !== undefined) score = ctxScore
   const briefRaw = diagnosis.revision_brief
   const BRIEF_SECTIONS: [string, string][] = [
     // video sections
@@ -143,11 +140,11 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     role: (meta.role as any) || 'Marketer',
     mediaType: (meta.mediaType as any) || 'video',
     score: Number(Number(score).toFixed(1)),
-    scoreLabel: organicPrimary ? 'Predicted Organic Pull' : 'Engagement Potential',
-    craftScore: organicPrimary ? craftScore : undefined,
+    scoreLabel: 'Engagement Potential',
+    craftScore: ctxScore !== undefined ? craftScore : undefined,
     organicEngagement: organic,
     organicSource: typeof raw.organic_source === 'string' ? raw.organic_source : undefined,
-    contextScore: typeof raw.context_score === 'number' ? raw.context_score : undefined,
+    contextScore: ctxScore,
     contextReasoning: typeof raw.context_reasoning === 'string' ? raw.context_reasoning : undefined,
     benchmarkPercentile,
     funnelStage: raw.funnel_stage ?? undefined,
