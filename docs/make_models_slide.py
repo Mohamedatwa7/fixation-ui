@@ -19,41 +19,48 @@ GREEN = RGBColor(0x1E, 0x9E, 0x4A)    # positive metrics
 ORANGE = RGBColor(0xE8, 0x86, 0x2B)   # process accents
 
 # (header = model name, [(text, color, bold), ...] body parts, "covers" line)
+# Ordered as the diagnostic story: see -> look -> listen -> measure -> compare -> judge.
 CARDS = [
-    ("TASED-Net",
-     [("Attention mapping. ", NAVY, True),
-      ("Predicts where human eyes go in the first seconds of viewing — trained on ", NAVY, False),
-      ("200K+ real eye-tracking recordings", BLUE, True),
-      (" of people watching real content.", NAVY, False)],
-     "Covers: Heatmaps · attention KPI scores"),
     ("Qwen2.5-VL",
      [("Visual understanding. ", NAVY, True),
-      ("An AI that ", NAVY, False),
+      ("First, an AI ", NAVY, False),
       ("describes what is actually in the creative", BLUE, True),
       (" — products, faces, text, scenes — the way a human viewer would see it.", NAVY, False)],
      "Covers: Top risks · suggested fixes (the evidence behind them)"),
+    ("TASED-Net",
+     [("Attention mapping. ", NAVY, True),
+      ("Then we predict where human eyes go in the first seconds — trained on ", NAVY, False),
+      ("200K+ real eye-tracking recordings", BLUE, True),
+      (" of people watching real content.", NAVY, False)],
+     "Covers: Heatmaps · attention KPI scores"),
     ("Whisper + Librosa",
      [("Audio analysis. ", NAVY, True),
-      ("Listens to video sound: ", NAVY, False),
-      ("transcribes every spoken word", BLUE, True),
-      (" and tracks music energy second by second to check sound and visuals work together.", NAVY, False)],
+      ("For video, we listen too: ", NAVY, False),
+      ("every spoken word transcribed", BLUE, True),
+      (" and music energy tracked second by second, so sound and visuals are judged together.", NAVY, False)],
      "Covers: Video KPI scores · text translation"),
     ("OpenCV",
      [("Design measurement. ", NAVY, True),
-      ("Objective measurements of the layout — hierarchy, contrast, white space, clutter — compared against ", NAVY, False),
-      ("MAdVerse, a library of 30K real ads", BLUE, True),
-      (" measured the same way, so every score has a percentile behind it.", NAVY, False)],
-     "Covers: KPI scores · benchmarks"),
+      ("The layout is measured objectively — ", NAVY, False),
+      ("hierarchy, contrast, white space, clutter", BLUE, True),
+      (" — pure numbers, no opinion involved.", NAVY, False)],
+     "Covers: KPI scores (the measured half)"),
+    ("MAdVerse",
+     [("Benchmark library. ", NAVY, True),
+      ("Not a model — a reference set of ", NAVY, False),
+      ("30K real ads measured the same way", BLUE, True),
+      (", so every measurement becomes a percentile: better than X% of real ads.", NAVY, False)],
+     "Covers: Benchmarks · the percentile behind every KPI"),
     ("Claude",
      [("Creative judge. ", NAVY, True),
-      ("A senior-creative-director AI that scores what can't be measured — emotion, brand strength, distinctiveness — ", NAVY, False),
+      ("Finally, a senior-creative-director AI scores what can't be measured — emotion, brand strength, distinctiveness — ", NAVY, False),
       ("following the Samsung Brand Playbook", BLUE, True),
       (".", NAVY, False)],
      "Covers: Verdict · top risks · suggested fixes · image reiteration briefs"),
 ]
 
 FOOTER_PARTS = [
-    ("Every output on the previous slide traces back to one of these five engines — ", NAVY, False),
+    ("Every output on the previous slide traces back to one of these six engines — ", NAVY, False),
     ("measured and validated, not guessed", BLUE, True),
     (".", NAVY, False),
 ]
@@ -86,7 +93,7 @@ ln.fill.solid(); ln.fill.fore_color.rgb = LINE; ln.line.fill.background()
 
 tb = slide.shapes.add_textbox(Inches(0.45), Inches(0.98), Inches(12.4), Inches(0.4))
 p = tb.text_frame.paragraphs[0]
-runs_para(p, [("The five engines behind the diagnosis — and which part of the output each one produces",
+runs_para(p, [("The six engines behind the diagnosis — and which part of the output each one produces",
                GRAY, False)], 13)
 
 # Card grid: 3 columns x 2 rows
@@ -141,7 +148,7 @@ runs_para(p, FOOTER_PARTS, 13)
 notes = slide.notes_slide.notes_text_frame
 notes.text = (
     "Talk track: slide 1 showed the workflow (input -> AI models -> outputs). This slide opens the "
-    "AI-models box. Five engines, each with one job: TASED-Net = attention mapping trained on real "
+    "AI-models box. Six engines in story order (see, look, listen, measure, compare, judge), each with one job: TASED-Net = attention mapping trained on real "
     "human eye-tracking (the heatmaps); Qwen2.5-VL = visual understanding (what's in the frame); "
     "Whisper + librosa = audio transcription and sound-energy tracking; OpenCV = the measuring "
     "instrument for layout metrics, with MAdVerse (30K real ads) as the reference library that "
