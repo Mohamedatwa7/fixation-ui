@@ -18,40 +18,46 @@ BLUE = RGBColor(0x2F, 0x4B, 0xE0)     # keyword emphasis
 GREEN = RGBColor(0x1E, 0x9E, 0x4A)    # positive metrics
 ORANGE = RGBColor(0xE8, 0x86, 0x2B)   # process accents
 
-# (header, [(text, color, bold), ...] body sentence parts, "powers" line)
+# (header = model name, [(text, color, bold), ...] body parts, "covers" line)
 CARDS = [
-    ("Attention Mapping",
-     [("Predicts where human eyes go in the first seconds of viewing. Trained on ", NAVY, False),
+    ("TASED-Net",
+     [("Attention mapping. ", NAVY, True),
+      ("Predicts where human eyes go in the first seconds of viewing — trained on ", NAVY, False),
       ("200K+ real eye-tracking recordings", BLUE, True),
-      (" from people watching real content.", NAVY, False)],
-     "Powers: Heatmaps · attention KPIs"),
-    ("Visual Understanding",
-     [("An AI that ", NAVY, False),
+      (" of people watching real content.", NAVY, False)],
+     "Covers: Heatmaps · attention KPI scores"),
+    ("Qwen2.5-VL",
+     [("Visual understanding. ", NAVY, True),
+      ("An AI that ", NAVY, False),
       ("describes what is actually in the creative", BLUE, True),
       (" — products, faces, text, scenes — the way a human viewer would see it.", NAVY, False)],
-     "Powers: Risks · suggested fixes"),
-    ("Audio Analysis",
-     [("Listens to video sound: ", NAVY, False),
+     "Covers: Top risks · suggested fixes (the evidence behind them)"),
+    ("Whisper + Librosa",
+     [("Audio analysis. ", NAVY, True),
+      ("Listens to video sound: ", NAVY, False),
       ("transcribes every spoken word", BLUE, True),
       (" and tracks music energy second by second to check sound and visuals work together.", NAVY, False)],
-     "Powers: Video KPI scoring"),
-    ("Design Measurement",
-     [("Objective measurements of the layout — hierarchy, contrast, white space, clutter — ", NAVY, False),
+     "Covers: Video KPI scores · text translation"),
+    ("OpenCV",
+     [("Design measurement. ", NAVY, True),
+      ("Objective measurements of the layout — hierarchy, contrast, white space, clutter — ", NAVY, False),
       ("benchmarked against 30K real ads", BLUE, True),
-      (", so every score has a percentile behind it.", NAVY, False)],
-     "Powers: KPI scores · benchmarks"),
-    ("Creative Judge",
-     [("A senior-creative-director AI that scores what can't be measured — emotion, brand strength, distinctiveness — ", NAVY, False),
+      (" so every score has a percentile behind it.", NAVY, False)],
+     "Covers: KPI scores · benchmarks"),
+    ("Claude",
+     [("Creative judge. ", NAVY, True),
+      ("A senior-creative-director AI that scores what can't be measured — emotion, brand strength, distinctiveness — ", NAVY, False),
       ("following the Samsung Brand Playbook", BLUE, True),
       (".", NAVY, False)],
-     "Powers: Verdict · KPI scores · fixes"),
-    ("Performance Ranker",
-     [("Fine-tuned on ", NAVY, False),
-      ("our own posts and their real results", BLUE, True),
-      (". Picks the better-performing creative ", NAVY, False),
+     "Covers: Verdict · top risks · suggested fixes · image reiteration briefs"),
+    ("LoRA Ranker",
+     [("Performance prediction. ", NAVY, True),
+      ("Our own model, fine-tuned on ", NAVY, False),
+      ("Samsung posts and their real results", BLUE, True),
+      (" — picks the better-performing creative ", NAVY, False),
       ("85 times out of 100", GREEN, True),
       (".", NAVY, False)],
-     "Powers: Performance score · rankings"),
+     "Covers: Performance score · creative rankings"),
 ]
 
 FOOTER_PARTS = [
@@ -93,10 +99,10 @@ runs_para(p, [("The six engines behind the diagnosis — and which part of the o
 
 # Card grid: 3 columns x 2 rows
 COLS, ROWS = 3, 2
-LEFT, TOP = Inches(0.45), Inches(1.55)
-CARD_W, CARD_H = Inches(4.02), Inches(2.42)
+LEFT, TOP = Inches(0.45), Inches(1.50)
+CARD_W, CARD_H = Inches(4.02), Inches(2.38)
 GAP_X, GAP_Y = Inches(0.20), Inches(0.24)
-BAR_H = Inches(0.36)
+BAR_H = Inches(0.38)
 
 for i, (header, body_parts, powers) in enumerate(CARDS):
     cx = Emu(int(LEFT) + (i % COLS) * (int(CARD_W) + int(GAP_X)))
@@ -124,14 +130,14 @@ for i, (header, body_parts, powers) in enumerate(CARDS):
     tf.margin_left = Emu(118872); tf.margin_right = Emu(118872); tf.margin_top = Emu(91440)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.LEFT
-    runs_para(p, body_parts, 11.5)
+    runs_para(p, body_parts, 13.5)
     p2 = tf.add_paragraph()
     p2.alignment = PP_ALIGN.LEFT
-    p2.space_before = Pt(8)
-    runs_para(p2, [("→ ", ORANGE, True), (powers, ORANGE, True)], 10.5)
+    p2.space_before = Pt(10)
+    runs_para(p2, [("→ ", ORANGE, True), (powers, ORANGE, True)], 12.5)
 
 # Footer line
-tb = slide.shapes.add_textbox(Inches(0.45), Inches(6.85), Inches(12.45), Inches(0.4))
+tb = slide.shapes.add_textbox(Inches(0.45), Inches(6.62), Inches(12.45), Inches(0.4))
 p = tb.text_frame.paragraphs[0]
 p.alignment = PP_ALIGN.CENTER
 runs_para(p, FOOTER_PARTS, 13)
