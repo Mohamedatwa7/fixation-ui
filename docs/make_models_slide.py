@@ -40,9 +40,9 @@ CARDS = [
      "Covers: Video KPI scores · text translation"),
     ("OpenCV",
      [("Design measurement. ", NAVY, True),
-      ("Objective measurements of the layout — hierarchy, contrast, white space, clutter — ", NAVY, False),
-      ("benchmarked against 30K real ads", BLUE, True),
-      (" so every score has a percentile behind it.", NAVY, False)],
+      ("Objective measurements of the layout — hierarchy, contrast, white space, clutter — compared against ", NAVY, False),
+      ("MAdVerse, a library of 30K real ads", BLUE, True),
+      (" measured the same way, so every score has a percentile behind it.", NAVY, False)],
      "Covers: KPI scores · benchmarks"),
     ("Claude",
      [("Creative judge. ", NAVY, True),
@@ -50,18 +50,10 @@ CARDS = [
       ("following the Samsung Brand Playbook", BLUE, True),
       (".", NAVY, False)],
      "Covers: Verdict · top risks · suggested fixes · image reiteration briefs"),
-    ("LoRA Ranker",
-     [("Performance prediction. ", NAVY, True),
-      ("Our own model, fine-tuned on ", NAVY, False),
-      ("Samsung posts and their real results", BLUE, True),
-      (" — picks the better-performing creative ", NAVY, False),
-      ("85 times out of 100", GREEN, True),
-      (".", NAVY, False)],
-     "Covers: Performance score · creative rankings"),
 ]
 
 FOOTER_PARTS = [
-    ("Every output on the previous slide traces back to one of these six engines — ", NAVY, False),
+    ("Every output on the previous slide traces back to one of these five engines — ", NAVY, False),
     ("measured and validated, not guessed", BLUE, True),
     (".", NAVY, False),
 ]
@@ -94,7 +86,7 @@ ln.fill.solid(); ln.fill.fore_color.rgb = LINE; ln.line.fill.background()
 
 tb = slide.shapes.add_textbox(Inches(0.45), Inches(0.98), Inches(12.4), Inches(0.4))
 p = tb.text_frame.paragraphs[0]
-runs_para(p, [("The six engines behind the diagnosis — and which part of the output each one produces",
+runs_para(p, [("The five engines behind the diagnosis — and which part of the output each one produces",
                GRAY, False)], 13)
 
 # Card grid: 3 columns x 2 rows
@@ -105,8 +97,12 @@ GAP_X, GAP_Y = Inches(0.20), Inches(0.24)
 BAR_H = Inches(0.38)
 
 for i, (header, body_parts, powers) in enumerate(CARDS):
-    cx = Emu(int(LEFT) + (i % COLS) * (int(CARD_W) + int(GAP_X)))
-    cy = Emu(int(TOP) + (i // COLS) * (int(CARD_H) + int(GAP_Y)))
+    row, col = i // COLS, i % COLS
+    # Center a partial final row under the full rows above.
+    in_row = min(len(CARDS) - row * COLS, COLS)
+    row_indent = (COLS - in_row) * (int(CARD_W) + int(GAP_X)) // 2
+    cx = Emu(int(LEFT) + row_indent + col * (int(CARD_W) + int(GAP_X)))
+    cy = Emu(int(TOP) + row * (int(CARD_H) + int(GAP_Y)))
 
     # black header bar
     bar = slide.shapes.add_shape(1, cx, cy, CARD_W, BAR_H)
@@ -145,14 +141,14 @@ runs_para(p, FOOTER_PARTS, 13)
 notes = slide.notes_slide.notes_text_frame
 notes.text = (
     "Talk track: slide 1 showed the workflow (input -> AI models -> outputs). This slide opens the "
-    "AI-models box. Six engines, each with one job: Attention Mapping = TASED-Net trained on real "
-    "human eye-tracking (the heatmaps); Visual Understanding = Qwen vision model (what's in the "
-    "frame); Audio Analysis = Whisper transcription + sound-energy tracking; Design Measurement = "
-    "computer-vision metrics benchmarked on 30K ads (MAdVerse); Creative Judge = Claude scoring "
-    "the human dimensions under the Samsung Brand Playbook; Performance Ranker = LoRA model "
-    "fine-tuned on our own engagement results (85/100 = 0.851 AUC on held-out creatives — links "
-    "to the 74%->85% accuracy story on the next slide). Orange 'Powers' lines map each engine to "
-    "the Diagnosis & Output column stakeholders saw on slide 1."
+    "AI-models box. Five engines, each with one job: TASED-Net = attention mapping trained on real "
+    "human eye-tracking (the heatmaps); Qwen2.5-VL = visual understanding (what's in the frame); "
+    "Whisper + librosa = audio transcription and sound-energy tracking; OpenCV = the measuring "
+    "instrument for layout metrics, with MAdVerse (30K real ads) as the reference library that "
+    "turns measurements into percentiles — instrument vs yardstick, they are different things; "
+    "Claude = the creative judge scoring human dimensions under the Samsung Brand Playbook. "
+    "Orange 'Covers' lines map each engine to the Diagnosis & Output column from slide 1. The "
+    "fine-tuning/accuracy story (74%->85%) lives on the next slide."
 )
 
 out = os.path.join(os.environ.get("USERPROFILE", ""), "Downloads", "F1X8_Models_Slide.pptx")
