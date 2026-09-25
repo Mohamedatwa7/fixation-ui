@@ -85,7 +85,6 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
           .specimen-scanline { animation: none; opacity: 0; }
         }
       `}</style>
-      <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
 
       <div className="relative grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
 
