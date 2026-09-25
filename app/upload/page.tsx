@@ -159,15 +159,13 @@ export default function UploadPage() {
   const loadingText = (inputMode === 'url' ? URL_LOADING_STEPS : LOADING_STEPS)[loadingStep]
 
   return (
-    <main className="relative min-h-screen bg-noir text-[#fafafa] flex flex-col">
+    <main className="relative min-h-screen bg-black text-[#fafafa] flex flex-col">
       <Nav active="upload" />
-      <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
-      <div className="absolute inset-0 spotlight pointer-events-none" aria-hidden="true" />
 
       {/* Engine core — spins up while analyzing */}
       <div className="fixed inset-0 pointer-events-none" aria-hidden="true">
         <EngineOrb active={isAnalyzing} />
-        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-noir to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black to-transparent" />
       </div>
 
       <div className="relative flex-1 flex flex-col pt-16">
