@@ -68,7 +68,7 @@ export default function ResultsPage() {
 
   if (!result) {
     return (
-      <main className="bg-noir min-h-screen text-[#fafafa]">
+      <main className="bg-black min-h-screen text-[#fafafa]">
         <Nav active="results" />
         <div className="pt-16 min-h-screen flex items-center justify-center">
           <div className="flex items-center gap-3">
@@ -84,10 +84,8 @@ export default function ResultsPage() {
   }
 
   return (
-    <main className="relative bg-noir min-h-screen text-[#fafafa]">
+    <main className="relative bg-black min-h-screen text-[#fafafa]">
       <Nav active="results" />
-      <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
-      <div className="absolute inset-0 spotlight pointer-events-none" aria-hidden="true" />
       {/* Golden-angle dot spiral — instrument-panel ambience behind the verdict */}
       <div
         className="absolute inset-x-0 top-10 flex justify-center pointer-events-none opacity-[0.16]
