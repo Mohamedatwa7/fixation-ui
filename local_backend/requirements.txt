@@ -1,0 +1,19 @@
+# torch/torchvision are installed separately with the cu128 index (setup.ps1)
+# so the RTX 5090 (sm_120) gets a CUDA build instead of the CPU wheel.
+fastapi
+uvicorn[standard]
+python-multipart
+transformers<5
+accelerate
+qwen-vl-utils
+opencv-contrib-python
+numpy
+scipy
+Pillow
+librosa
+soundfile
+openai-whisper
+yt-dlp
+curl-cffi
+anthropic>=0.117.0
+requests

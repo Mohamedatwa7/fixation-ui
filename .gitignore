@@ -18,3 +18,13 @@ eval/finetune/data/
 
 # Higgsfield KV adaptation outputs (generated)
 adapted-kv/
+
+# Modal volume backup (recovered 2026-09-25; large binaries, scripts also copied into backend_scripts/)
+modal_volume_backup/
+
+# Local plan-B backend: env + model caches + runtime dirs (code itself is tracked)
+local_backend/.venv/
+local_backend/hf-cache/
+local_backend/weights/
+local_backend/tmp/
+local_backend/benchmarks/
