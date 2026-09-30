@@ -8,85 +8,86 @@ import ImageStreamHero from '@/components/ui/image-stream-hero'
  * stream and the CTA anchored below it.
  */
 
-const CDN = 'https://pub-940ccf6255b54fa799a9b01050e6c227.r2.dev'
+/* All hero art is self-hosted under /public/hero so corporate web filters
+ * that block third-party CDNs (Pinterest, r2.dev) can't drop the images. */
 
 /* Each rail renders 9 cards, so each list holds exactly 9 images and the
  * two lists share none — the rails never show the same art in parallel. */
 
 const RIGHT_IMAGES = [
   {
-    src: `${CDN}/stock-images/767d99bb371a54d0d36751e8cecae43c.jpg`,
+    src: '/hero/diver-sunset.jpg',
     alt: 'Diver silhouetted inside a sunset seascape shaped like a profile',
   },
   {
-    src: 'https://i.pinimg.com/736x/80/17/36/8017367dbe52dae63b58a678018795ee.jpg',
+    src: '/hero/ducati-macro.jpg',
     alt: 'Macro front view of a red Ducati superbike',
   },
   {
-    src: `${CDN}/stock-images/821d815affa6496c39cbdeeec7a84603.jpg`,
+    src: '/hero/city-double-exposure.jpg',
     alt: 'Double-exposure portrait blended with a city skyline at dusk',
   },
   {
-    src: `${CDN}/gradients/hero_gradient/hero-gradients-01.png`,
+    src: '/hero/gradient-hero-01.png',
     alt: 'Soft multi-tone gradient wash',
   },
   {
-    src: `${CDN}/stock-images/937438c560ada1c83317f2c11b3454b0.jpg`,
+    src: '/hero/orange-motion-portrait.jpg',
     alt: 'Motion-blurred side-profile portrait against a deep orange backdrop',
   },
   {
-    src: 'https://i.pinimg.com/736x/0d/b6/1f/0db61f5245c835228df83398f6d96ceb.jpg',
+    src: '/hero/statue-mountain.jpg',
     alt: 'Classical statue whose face opens into a painted mountain landscape',
   },
   {
-    src: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=736&q=80',
+    src: '/hero/eltz-castle.jpg',
     alt: 'Eltz Castle rising out of morning mist above a mirrored reflection',
   },
   {
-    src: `${CDN}/gradients/hue-flow/hue-flow-01.png`,
+    src: '/hero/gradient-hue-flow.png',
     alt: 'Flowing teal-to-coral hue gradient',
   },
   {
-    src: 'https://i.pinimg.com/736x/54/13/9d/54139d6fd658b1d5e71cdc07ea37a57c.jpg',
+    src: '/hero/f1-starfield.jpg',
     alt: 'Formula 1 car streaking through a starfield tunnel of light',
   },
 ]
 
 const LEFT_IMAGES = [
   {
-    src: `${CDN}/stock-images/98f89cb9994f5c382ab964062c4039db.jpg`,
+    src: '/hero/racket-cloud.jpg',
     alt: 'Figure holding a racket that dissolves into a swirling colourful cloud',
   },
   {
-    src: 'https://i.pinimg.com/736x/fe/f0/8a/fef08a661d0ef55561d99a293c79dd81.jpg',
+    src: '/hero/flower-crown-smoke.jpg',
     alt: 'Portrait with a crown of flowers exhaling a plume of smoke into a blue sky',
   },
   {
-    src: `${CDN}/stock-images/ddcbee38be8b7274e19e132d7ab35b53.jpg`,
+    src: '/hero/bird-hand.jpg',
     alt: 'Hand gesture with a colourful cutout of a bird flying through the fingers',
   },
   {
-    src: `${CDN}/gradients/moon/moon-grade-01.png`,
+    src: '/hero/gradient-moon.png',
     alt: 'Pale moon-toned gradient',
   },
   {
-    src: 'https://i.pinimg.com/736x/39/27/f5/3927f53cebd0a148ba806fbd15e1fdd9.jpg',
+    src: '/hero/horseback-castle.jpg',
     alt: 'First-person view on horseback charging toward a medieval castle',
   },
   {
-    src: 'https://i.pinimg.com/736x/84/c6/10/84c610443c77c1e34398f071fdc3b71a.jpg',
+    src: '/hero/meadow.jpg',
     alt: 'Sunlit meadow of wind-blown grass and wildflowers',
   },
   {
-    src: `${CDN}/gradients/hero_gradient/hero-gradients-04.png`,
+    src: '/hero/gradient-hero-04.png',
     alt: 'Warm layered hero gradient',
   },
   {
-    src: 'https://i.pinimg.com/736x/a9/4c/e0/a94ce014127cfded1c7160b110eb7a86.jpg',
+    src: '/hero/driver-shattered-glass.jpg',
     alt: 'Racing driver in a shattered-glass collage of light and debris',
   },
   {
-    src: 'https://i.pinimg.com/736x/2d/0b/74/2d0b74227b38d56fcc8b9f4872addcfc.jpg',
+    src: '/hero/leaves-prism-portrait.jpg',
     alt: 'Sunlit portrait framed by leaves and prismatic light',
   },
 ]
