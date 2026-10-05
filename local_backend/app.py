@@ -25,6 +25,8 @@ SCRIPTS_DIR = REPO / "backend_scripts"
 SHIMS_DIR = ROOT / "shims"                        # local extract_keyframes / analyze_audio
 TASED_REPO = Path(r"D:\content\TASED-Net")        # saliency_module hardcodes /content/TASED-Net
 TASED_WEIGHTS = ROOT / "weights" / "TASED_updated.pt"
+AAM_REPO = Path(r"D:\content\Attend-to-Anything")  # AAM saliency (ICML 2026)
+AAM_WEIGHTS = ROOT / "weights" / "AAM.pth"
 MODEL_CACHE = ROOT / "hf-cache"
 BENCH_DIR = ROOT / "benchmarks"                   # drop volume benchmark JSONs here when recovered
 TMP = ROOT / "tmp"
@@ -48,6 +50,12 @@ def _load_env():
 
 _load_env()
 os.environ.setdefault("HF_HOME", str(MODEL_CACHE))
+# AAM saliency replaces OpenCV (images) / TASED-Net (video) when its weights
+# are present; aam_saliency.py falls back to the legacy models on any failure.
+if AAM_WEIGHTS.exists() and AAM_REPO.is_dir():
+    os.environ.setdefault("F1X8_SALIENCY", "aam")
+    os.environ.setdefault("AAM_REPO", str(AAM_REPO))
+    os.environ.setdefault("AAM_WEIGHTS", str(AAM_WEIGHTS))
 # fetch_video shells out to the yt-dlp binary; make sure the venv Scripts dir wins.
 os.environ["PATH"] = str(Path(sys.executable).parent) + os.pathsep + os.environ.get("PATH", "")
 
@@ -352,6 +360,8 @@ async def health():
     info = {"status": "ok", "backend": "local",
             "anthropic_key": bool(os.environ.get("ANTHROPIC_API_KEY")),
             "tased_weights": TASED_WEIGHTS.exists(),
+            "aam_weights": AAM_WEIGHTS.exists(),
+            "saliency": os.environ.get("F1X8_SALIENCY", "legacy"),
             "benchmarks": sorted(p.name for p in BENCH_DIR.glob("*.json"))}
     try:
         import torch

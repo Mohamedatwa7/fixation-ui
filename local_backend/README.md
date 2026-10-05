@@ -16,7 +16,16 @@ The Next.js frontend works unchanged — point `NEXT_PUBLIC_API_URL` here.
   `analyze_audio.py`, whose originals exist **only on the Modal volume**.
   Replace with the originals once the volume is reachable
   (`modal volume get fixation-assets ...`).
-- `weights/TASED_updated.pt` — public TASED-Net checkpoint (video gaze saliency).
+- `weights/TASED_updated.pt` — public TASED-Net checkpoint (video gaze saliency,
+  fallback only — see AAM below).
+- `weights/AAM.pth` — AAM "Attend to Anything" (ICML 2026) checkpoint. When
+  present (plus the repo at `D:\content\Attend-to-Anything`), `app.py` sets
+  `F1X8_SALIENCY=aam` and both image and video saliency run through
+  `backend_scripts/aam_saliency.py` (SalEC e-commerce prompt for images,
+  DHF1K free-viewing prompt for video) instead of OpenCV/TASED-Net. Any
+  AAM failure falls back to the legacy models at runtime.
+  `weights/aam_prompts.pt` is the cached CLIP ViT-L/14 prompt embedding,
+  rebuilt automatically (downloads CLIP once) if deleted.
 - `benchmarks/` — EMPTY until recovered from the Modal volume. Without them
   image KPIs simply omit MAdVerse percentiles (frontend falls back to 50th).
 - `hf-cache/` — Qwen2.5-VL-7B + Whisper downloads (~17 GB on first run).

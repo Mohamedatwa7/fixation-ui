@@ -176,7 +176,7 @@ def run_diagnosis(perception, keyframe_meta, audio_report, saliency_meta,
         f"VISUAL PERCEPTION (Qwen2.5-VL):\n\n{perception_text}\n\n"
         f"KEY-FRAMES:\n\n{kf_section}\n\n"
         f"AUDIO (Whisper+librosa):\n\n{audio_section}\n\n"
-        f"GAZE PREDICTION (TASED-Net):\n\n{saliency_section}\n\n"
+        f"GAZE PREDICTION ({saliency_meta.get('model', 'TASED-Net')}):\n\n{saliency_section}\n\n"
         f"Produce diagnostic JSON."
     )
     print("Sending to Claude for diagnostic synthesis...")
@@ -225,11 +225,21 @@ def main():
     with open(audio_path, "w") as f:
         json.dump(audio_report, f, indent=2, cls=_NumpyJSONEncoder)
 
-    print("\n--- STEP 3: Saliency (TASED-Net) ---")
-    from saliency_module import analyze_saliency
     saliency_dir = args.output.replace(".json", "_saliency")
-    saliency_meta = analyze_saliency(args.video_path, tased_weights_path=args.tased_weights,
-                                      output_dir=saliency_dir)
+    saliency_meta = None
+    if os.environ.get("F1X8_SALIENCY", "").lower() == "aam":
+        print("\n--- STEP 3: Saliency (AAM) ---")
+        try:
+            from aam_saliency import analyze_saliency_aam
+            saliency_meta = analyze_saliency_aam(args.video_path, output_dir=saliency_dir)
+        except Exception as e:
+            print(f"[saliency] AAM failed ({e!r}); falling back to TASED-Net")
+            saliency_meta = None
+    if saliency_meta is None:
+        print("\n--- STEP 3: Saliency (TASED-Net) ---")
+        from saliency_module import analyze_saliency
+        saliency_meta = analyze_saliency(args.video_path, tased_weights_path=args.tased_weights,
+                                          output_dir=saliency_dir)
 
     print("\n--- STEP 4: Visual perception (Qwen) ---")
     perception = run_perception(args.video_path, model_cache=args.model_cache)

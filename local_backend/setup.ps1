@@ -36,4 +36,17 @@ if (-not (Test-Path "weights\TASED_updated.pt")) {
     & .\.venv\Scripts\gdown.exe --fuzzy "https://drive.google.com/file/d/1y4KSTm-e7kP84k0IyVI-rRtmYZkrC-wL/view" -O "weights\TASED_updated.pt"
 }
 
+# 7. AAM saliency (ICML 2026) — upgrade over OpenCV/TASED; app.py auto-enables
+#    it (F1X8_SALIENCY=aam) when the repo + weights are present.
+if (-not (Test-Path "D:\content\Attend-to-Anything")) {
+    Write-Host "Cloning Attend-to-Anything (AAM)..." -ForegroundColor Cyan
+    git clone --depth 1 https://github.com/wz-zhao/Attend-to-Anything "D:\content\Attend-to-Anything"
+}
+Invoke-Expression "$pip install easydict einops loguru open_clip_torch wav2clip"
+if (-not (Test-Path "weights\AAM.pth")) {
+    Write-Host "Downloading AAM checkpoint via gdown (1.7 GB)..." -ForegroundColor Cyan
+    # Official checkpoint linked from the AAM README (wz-zhao/Attend-to-Anything)
+    & .\.venv\Scripts\python.exe -m gdown "1ttIONm6Mzx2n5d1cqRXrq95hHbYT32Bt" -O "weights\AAM.pth"
+}
+
 Write-Host "Setup complete. Start the server with .\run.ps1" -ForegroundColor Green

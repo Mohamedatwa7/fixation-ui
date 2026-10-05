@@ -64,6 +64,12 @@ def run_image_perception(image_path, model_cache=None):
 
 
 def compute_saliency_map(image_path, output_path=None):
+    if os.environ.get("F1X8_SALIENCY", "").lower() == "aam":
+        try:
+            from aam_saliency import compute_saliency_map_aam
+            return compute_saliency_map_aam(image_path, output_path)
+        except Exception as e:
+            print(f"[saliency] AAM failed ({e!r}); falling back to OpenCV")
     img = cv2.imread(image_path)
     if img is None:
         return None, None
