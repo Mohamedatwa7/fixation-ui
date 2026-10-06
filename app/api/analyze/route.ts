@@ -17,11 +17,14 @@ export async function POST(req: NextRequest) {
   const endpoint = req.nextUrl.searchParams.get('endpoint') ?? '/api/analyze/image'
 
   try {
-    const form = await req.formData()
-    
+    // JSON endpoints (/api/ask) forward the body verbatim; the analyze
+    // endpoints are multipart forms.
+    const isJson = req.headers.get('content-type')?.includes('application/json')
     const upstream = await fetch(`${apiUrl}${endpoint}`, {
       method: 'POST',
-      body: form,
+      ...(isJson
+        ? { body: await req.text(), headers: { 'Content-Type': 'application/json' } }
+        : { body: await req.formData() }),
     })
 
     const text = await upstream.text()

@@ -1,6 +1,17 @@
 // API client for F1X8
 import { MOCK_RESULT } from './mock-data'
-import type { DiagnosticResult, CustomMetricResult } from './mock-data'
+import type { DiagnosticResult } from './mock-data'
+import { setLastImage, getLastImage, getLastResult } from './resultStore'
+
+async function fileToB64(file: File): Promise<string> {
+  const buf = new Uint8Array(await file.arrayBuffer())
+  let s = ''
+  const chunk = 0x8000
+  for (let i = 0; i < buf.length; i += chunk) {
+    s += String.fromCharCode(...buf.subarray(i, i + chunk))
+  }
+  return btoa(s)
+}
 
 export interface AnalysisMeta {
   title?: string
@@ -163,6 +174,11 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
 }
 
 export async function analyzeCreative(file: File, meta: AnalysisMeta): Promise<any> {
+  // Keep the original creative in memory — the business Q&A panel sends it
+  // with each question (the backend is stateless).
+  if ((file.type || '').startsWith('image/')) {
+    try { setLastImage(await fileToB64(file), file.type) } catch { /* non-fatal */ }
+  }
   const form = new FormData()
   form.append('file', file)
   if (meta.title) form.append('title', meta.title)
@@ -277,26 +293,59 @@ export async function getDiagnostic(): Promise<DiagnosticResult> {
   return MOCK_RESULT
 }
 
+export interface PersonaRead {
+  persona: string
+  appeal_score: number
+  would_stop_scrolling: boolean
+  hook: string
+  friction: string
+  reaction: string
+}
+
+export interface AskVerdict {
+  verdict: 'works' | 'works_with_conditions' | 'unlikely'
+  score: number
+  confidence: 'high' | 'medium' | 'low'
+  reasoning: string
+  what_would_make_it_work: string[]
+  watchouts: string[]
+  evidence_used: string[]
+  audience_read?: PersonaRead[]
+  used_web_search?: boolean
+  question?: string
+  question_type?: string
+}
+
 /**
- * Ask for an open-ended "custom metric" judgment about a diagnostic.
- * Returned as AI judgment, clearly distinguished from grounded measurements.
+ * Ask a free-form business question about the current creative ("would this
+ * work for 30-40yo women?"). Answered by the backend as an AI judgment
+ * grounded in the diagnostic's measured evidence + a simulated audience
+ * panel + web search when the question needs market context.
  */
-export async function getCustomMetric(
-  _diagnosticId: string,
-  query: string,
-): Promise<CustomMetricResult> {
-  await new Promise(r => setTimeout(r, 900))
-  // Deterministic mock: derive a stable-ish score from the query length.
-  const score = Number((5.5 + ((query.length * 7) % 40) / 10).toFixed(1))
-  const confidence: CustomMetricResult['confidence'] =
-    score >= 7.5 ? 'high' : score >= 5.5 ? 'medium' : 'low'
-  return {
-    label: query,
-    score,
-    confidence,
-    reasoning:
-      `Assessed "${query}" against the creative's composition, attention flow, and ` +
-      `tonal cues. This is a qualitative AI judgment, not a gaze-grounded measurement, ` +
-      `so weight it accordingly alongside the diagnostic KPIs.`,
+export async function askQuestion(question: string): Promise<AskVerdict> {
+  const img = getLastImage()
+  if (!img) {
+    throw new Error(
+      'No creative available in this session — run an image diagnostic first.')
   }
+  const result = getLastResult()
+  // Strip heavy blobs; the backend only needs the scores/evidence.
+  const diagnostic = result
+    ? { ...result, heatmapDataUrl: undefined, metadata: undefined, timelines: undefined }
+    : undefined
+  const res = await fetch('/api/analyze?endpoint=/api/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      question,
+      image_b64: img.b64,
+      media_type: img.mediaType,
+      diagnostic,
+      title: result?.title,
+      format_type: result?.format,
+    }),
+  })
+  const data = await res.json().catch(() => ({}))
+  if (!res.ok || data.error) throw new Error(data.error || `Ask failed (${res.status})`)
+  return data as AskVerdict
 }

@@ -355,6 +355,27 @@ async def job_status(job_id: str):
     return JOBS.get(job_id, {"status": "not_found"})
 
 
+@app.post("/api/ask")
+def ask_endpoint(payload: dict):
+    """Business Q&A — no GPU involved, so no lock; sync def -> threadpool."""
+    question = (payload.get("question") or "").strip()
+    image_b64 = payload.get("image_b64")
+    if not question or not image_b64:
+        return {"error": "question and image_b64 are required"}
+    try:
+        return core.answer_business_question(
+            [(payload.get("media_type") or "image/jpeg", image_b64)],
+            question,
+            diagnostic=payload.get("diagnostic"),
+            context_text=core._context_text(payload.get("title"),
+                                            payload.get("description"),
+                                            payload.get("format_type")))
+    except Exception as e:
+        import traceback
+        print(f"[ask] failed: {traceback.format_exc()[-800:]}")
+        return {"error": str(e)}
+
+
 @app.get("/health")
 async def health():
     info = {"status": "ok", "backend": "local",

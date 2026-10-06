@@ -580,6 +580,211 @@ def _assess_context_fit(images, context_text, base_score):
         return None
 
 
+# ── Business Q&A (/api/ask) ─────────────────────────────────────────────────
+# Free-form questions ("would this work for 30-40yo women?", "would this
+# disrupt the iPhone launch?") answered as an explicit AI judgment grounded
+# in the pipeline's measured evidence. Never touches EP/Organic/In-Context.
+
+ASK_PARSE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "question_type": {"type": "string",
+                          "enum": ["audience_fit", "competitive", "channel_fit",
+                                   "general"]},
+        "needs_personas": {"type": "boolean"},
+        "personas": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "profile": {"type": "string"},
+                },
+                "required": ["profile"],
+                "additionalProperties": False,
+            },
+        },
+        "needs_web_search": {"type": "boolean"},
+        "web_search_focus": {"type": "string"},
+    },
+    "required": ["question_type", "needs_personas", "personas",
+                 "needs_web_search", "web_search_focus"],
+    "additionalProperties": False,
+}
+
+ASK_PARSE_PROMPT = """You triage business questions about an ad creative for a research pipeline.
+
+Given the question (and campaign context), decide:
+- question_type: audience_fit (about a demographic/segment), competitive (about a rival launch/campaign/moment), channel_fit (placement/format), or general.
+- needs_personas: true when simulated audience reactions would materially inform the answer (any audience_fit question; competitive/channel questions only if a specific audience is implied).
+- personas: when needs_personas, exactly 3 DISTINCT, concrete personas inside the target segment — vary life situation, media habits, and skepticism level. Each profile is 1-2 sentences, written in second person ("You are..."). Ground them in the campaign's market if known. Empty array otherwise.
+- needs_web_search: true only when the answer depends on current external facts (competitor launch timing/positioning, trends, seasonal moments). Audience-fit questions about the creative itself do not need the web.
+- web_search_focus: one sentence on what to look up, or "" if none."""
+
+PERSONA_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "appeal_score": {"type": "number"},
+        "would_stop_scrolling": {"type": "boolean"},
+        "hook": {"type": "string"},
+        "friction": {"type": "string"},
+        "reaction": {"type": "string"},
+    },
+    "required": ["appeal_score", "would_stop_scrolling", "hook", "friction",
+                 "reaction"],
+    "additionalProperties": False,
+}
+
+PERSONA_SYSTEM = """You simulate one specific consumer encountering an ad creative organically in their social feed. Stay strictly in character for the persona described in the user message — their taste, budget, skepticism and attention span, not a marketer's.
+
+React honestly as that person:
+- appeal_score: 0-10, how much this creative lands with you personally.
+- would_stop_scrolling: would it actually interrupt your thumb, first exposure, no brand loyalty assumed.
+- hook: the single element that most pulls you in (or the closest thing to one).
+- friction: what makes you scroll past, doubt it, or feel it isn't for you.
+- reaction: your gut response in your own voice, 1-2 sentences.
+
+Be specific to what is visible in the creative. Do not flatter it."""
+
+ASK_VERDICT_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "verdict": {"type": "string",
+                    "enum": ["works", "works_with_conditions", "unlikely"]},
+        "score": {"type": "number"},
+        "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+        "reasoning": {"type": "string"},
+        "what_would_make_it_work": {"type": "array", "items": {"type": "string"}},
+        "watchouts": {"type": "array", "items": {"type": "string"}},
+        "evidence_used": {"type": "array", "items": {"type": "string"}},
+    },
+    "required": ["verdict", "score", "confidence", "reasoning",
+                 "what_would_make_it_work", "watchouts", "evidence_used"],
+    "additionalProperties": False,
+}
+
+ASK_SYNTHESIS_PROMPT = """You are a senior media strategist answering one specific business question about an ad creative.
+
+You are given: the creative itself, the question, measured evidence from a diagnostic pipeline (gaze/attention from an eye-tracking-trained model, design KPIs with benchmark percentiles, an engagement judge's read, funnel stage), and — when relevant — simulated reactions from personas inside the target audience and live web findings.
+
+Rules:
+- Answer THE QUESTION ASKED, not a generic critique.
+- Ground every claim in a named piece of evidence (attention data, a KPI percentile, a persona reaction, a web finding). The reasoning must cite them concretely.
+- Weigh evidence honestly: measured attention/KPI data is strong evidence about noticing and readability; persona reactions are directional simulations, not research panels; say so when they carry the verdict.
+- score: 0-10 expected fit for the asked scenario. confidence reflects evidence coverage — low when the verdict leans mostly on simulation.
+- what_would_make_it_work: 2-4 concrete, creative-level changes ranked by impact.
+- watchouts: risks that could invalidate the verdict.
+- evidence_used: short tags of what actually informed you (e.g. "aam_attention", "contrast_pctl", "persona_panel", "web:launch_timing"). Never list evidence you did not use."""
+
+
+def _strip_heavy(obj, max_str=400):
+    """Deep-copy a diagnostic dict, dropping base64 blobs and giant strings."""
+    if isinstance(obj, dict):
+        return {k: _strip_heavy(v, max_str) for k, v in obj.items()
+                if not (isinstance(v, str) and len(v) > 4000)}
+    if isinstance(obj, list):
+        return [_strip_heavy(v, max_str) for v in obj[:20]]
+    if isinstance(obj, str) and len(obj) > max_str:
+        return obj[:max_str] + "…"
+    return obj
+
+
+def _ask_parse_json(resp):
+    raw = "".join(b.text for b in resp.content
+                  if getattr(b, "type", None) == "text").strip()
+    start = raw.find("{")
+    if start < 0:
+        raise ValueError("no JSON in response")
+    data, _ = json.JSONDecoder().raw_decode(raw[start:])
+    return data
+
+
+def answer_business_question(images, question, diagnostic=None,
+                             context_text=None):
+    """Three-stage grounded answer: triage -> persona panel -> synthesis."""
+    import anthropic
+    from concurrent.futures import ThreadPoolExecutor
+    client = anthropic.Anthropic()
+    content_images = [
+        {"type": "image", "source": {"type": "base64", "media_type": mt, "data": d}}
+        for mt, d in images
+    ]
+
+    # 1. Triage
+    triage_text = f"QUESTION: {question}"
+    if context_text:
+        triage_text += f"\n\nCAMPAIGN CONTEXT:\n{context_text}"
+    plan = _ask_parse_json(client.messages.create(
+        model="claude-opus-4-8", max_tokens=1000,
+        system=[{"type": "text", "text": ASK_PARSE_PROMPT}],
+        messages=[{"role": "user", "content": triage_text}],
+        output_config={"format": {"type": "json_schema",
+                                  "schema": ASK_PARSE_SCHEMA}}))
+
+    # 2. Persona panel (parallel, same ensemble pattern as the judge)
+    panel = []
+    if plan.get("needs_personas") and plan.get("personas"):
+        def _one(persona):
+            try:
+                resp = client.messages.create(
+                    model="claude-opus-4-8", max_tokens=800,
+                    system=[{"type": "text", "text": PERSONA_SYSTEM,
+                             "cache_control": {"type": "ephemeral"}}],
+                    messages=[{"role": "user", "content": content_images + [
+                        {"type": "text", "text":
+                         f"{persona['profile']}\n\nThis creative just appeared "
+                         f"in your feed. React."}]}],
+                    output_config={"format": {"type": "json_schema",
+                                              "schema": PERSONA_SCHEMA}})
+                out = _ask_parse_json(resp)
+                out["persona"] = persona["profile"]
+                return out
+            except Exception as e:
+                print(f"[ask] persona call failed: {e!r}")
+                return None
+        with ThreadPoolExecutor(max_workers=3) as ex:
+            panel = [p for p in ex.map(_one, plan["personas"][:3]) if p]
+
+    # 3. Grounded synthesis
+    parts = [f"QUESTION: {question}"]
+    if context_text:
+        parts.append(f"CAMPAIGN CONTEXT:\n{context_text}")
+    if diagnostic:
+        parts.append("MEASURED EVIDENCE (diagnostic pipeline output):\n"
+                     + json.dumps(_strip_heavy(diagnostic), ensure_ascii=False))
+    if panel:
+        parts.append("SIMULATED AUDIENCE PANEL (directional, not a research "
+                     "panel):\n" + json.dumps(panel, ensure_ascii=False))
+    if plan.get("needs_web_search") and plan.get("web_search_focus"):
+        parts.append(f"WEB RESEARCH FOCUS: {plan['web_search_focus']}")
+    parts.append("Answer the question. Return only the JSON object.")
+
+    kwargs = dict(
+        model="claude-opus-4-8", max_tokens=3000,
+        system=[{"type": "text", "text": ASK_SYNTHESIS_PROMPT,
+                 "cache_control": {"type": "ephemeral"}}],
+        messages=[{"role": "user",
+                   "content": content_images + [{"type": "text",
+                                                 "text": "\n\n".join(parts)}]}],
+        output_config={"format": {"type": "json_schema",
+                                  "schema": ASK_VERDICT_SCHEMA}})
+    if plan.get("needs_web_search"):
+        kwargs["tools"] = [{"type": "web_search_20260209", "name": "web_search",
+                            "max_uses": 3}]
+    resp = client.messages.create(**kwargs)
+    for _ in range(3):           # server-side search loop may pause the turn
+        if resp.stop_reason != "pause_turn":
+            break
+        kwargs["messages"] = kwargs["messages"] + [
+            {"role": "assistant", "content": resp.content}]
+        resp = client.messages.create(**kwargs)
+    verdict = _ask_parse_json(resp)
+    verdict["question"] = question
+    verdict["question_type"] = plan.get("question_type")
+    verdict["audience_read"] = panel
+    verdict["used_web_search"] = bool(plan.get("needs_web_search"))
+    return verdict
+
+
 def _context_text(title=None, description=None, format_type=None):
     """Advertiser-supplied context block for the judge and diagnosis prompts."""
     parts = []
@@ -1209,6 +1414,26 @@ def fastapi_app():
     @web_app.get("/api/job/{job_id}")
     async def job_status(job_id: str):
         return JOBS.get(job_id, {"status": "not_found"})
+
+    @web_app.post("/api/ask")
+    def ask_endpoint(payload: dict):
+        # sync def on purpose: blocking Anthropic calls run in the threadpool
+        question = (payload.get("question") or "").strip()
+        image_b64 = payload.get("image_b64")
+        if not question or not image_b64:
+            return {"error": "question and image_b64 are required"}
+        try:
+            return answer_business_question(
+                [(payload.get("media_type") or "image/jpeg", image_b64)],
+                question,
+                diagnostic=payload.get("diagnostic"),
+                context_text=_context_text(payload.get("title"),
+                                           payload.get("description"),
+                                           payload.get("format_type")))
+        except Exception as e:
+            import traceback
+            print(f"[ask] failed: {traceback.format_exc()[-800:]}")
+            return {"error": str(e)}
 
     @web_app.get("/health")
     async def health():
