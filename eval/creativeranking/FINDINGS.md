@@ -52,3 +52,18 @@ explanatory craft evidence, not outcome predictors.
 - sample.json, scores.jsonl (40k), benchmark_creativeranking_highctr.json,
   REPORT.md. Raw dataset at D:\datasets\CreativeRanking (115.6 GB zip +
   extracted 40k sample).
+
+## Pretraining results (2026-10-06, run complete)
+
+- **Holdout pair-accuracy: 0.709** (1,500 unseen products) — Qwen3-VL-4B +
+  LoRA r=16, one epoch over 38,500 pairs, 7h on the RTX 5090. At the level
+  of the dataset paper's purpose-built model. Learning curve still rising
+  slightly at end (0.697 @ 20k → 0.709 @ 38.5k).
+- **Zero-shot transfer to Samsung Gulf: Spearman +0.303, AUC 0.653** on the
+  132 labeled calibration creatives — a model that never saw a brand/Gulf
+  creative already ranks organic engagement meaningfully. Taobao→Gulf
+  transfer is real; the within-product pretrain learns portable
+  creative-execution signal, not Taobao style.
+- Artifacts: eval/finetune/out_cr/{adapter, head.pt, RESULT.json}.
+- Next: fine-tune this adapter on the 142 Samsung pairs vs the from-scratch
+  0.851 baseline.
