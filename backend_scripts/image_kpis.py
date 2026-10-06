@@ -151,18 +151,33 @@ def visual_hierarchy(image_bgr, saliency_map=None, benchmark=None):
     sal = saliency_map if saliency_map is not None else _compute_saliency(image_bgr)
     if sal is None:
         return _default("Visual hierarchy")
-    peak, mean = float(sal.max()), float(sal.mean())
-    ratio = peak / (mean + 1e-8)
-    # Continuous: flat field (ratio≈1) → ~0, one dominant focal point (ratio≥6) → 10.
-    score = round(min(10.0, max(0.0, (ratio - 1.0) * 2.0)), 1)
+    # Attention-mass concentration (Gini over the saliency distribution).
+    # The old peak/mean ratio saturated at score 10 for any ratio >= 6: every
+    # AAM attention map (and ~97% of OpenCV maps on the calibration set)
+    # pinned the ceiling, leaving the KPI with no variance. Gini is bounded
+    # (flat map -> 0, single-point mass -> 1) and never saturates first.
+    m = np.maximum(cv2.resize(sal.astype(np.float32), (256, 256)).ravel(), 0)
+    total = float(m.sum())
+    if total < 1e-8:
+        return _default("Visual hierarchy")
+    v = np.sort(m)
+    n = v.size
+    gini = float(2.0 * np.sum(np.arange(1, n + 1, dtype=np.float64) * v)
+                 / (n * total) - (n + 1) / n)
+    # Map the working range (busy/flat ~0.2 ... one dominant focal point ~0.9)
+    # onto 0-10.
+    score = round(min(10.0, max(0.0, (gini - 0.2) * (10.0 / 0.7))), 1)
     percentile = None
-    if benchmark and "hierarchy_ratio" in benchmark:
-        percentile = lookup_percentile(ratio, benchmark["hierarchy_ratio"])
+    # Benchmarks store the legacy ratio distribution; a Gini raw value is not
+    # comparable, so percentiles stay off until they're regenerated under the
+    # key "hierarchy_gini" (frontend falls back to the 50th).
+    if benchmark and "hierarchy_gini" in benchmark:
+        percentile = lookup_percentile(gini, benchmark["hierarchy_gini"])
     return {
-        "score": float(score), "raw_value": round(ratio, 2),
+        "score": float(score), "raw_value": round(gini, 3),
         "percentile": percentile, "label": "Visual hierarchy",
         "research_basis": "Tufte (1990); Lidwell et al. (2010)",
-        "methodology": f"Saliency peak-to-mean ratio: {ratio:.1f}",
+        "methodology": f"Attention-mass concentration (Gini): {gini:.2f}",
         "interpretation": "High = one clear focal point. Low = competing elements.",
     }
 
