@@ -103,7 +103,7 @@ def run_variant(name, cfg):
             idx = int(inputs["attention_mask"].sum(1).item()) - 1
             return head(hs[0, idx]).squeeze()
 
-    def evaluate(items):
+    def evaluate(items, return_scores=False):
         model.eval()
         scores = {}
         for it in items:
@@ -113,8 +113,9 @@ def run_variant(name, cfg):
         bot = [scores[i["id"]] for i in items if i["stratum"] == "bottom"]
         wins = sum(1 for t in top for b in bot if t > b)
         ties = sum(1 for t in top for b in bot if t == b)
-        return (wins + 0.5 * ties) / (len(top) * len(bot)) if top and bot \
+        auc = (wins + 0.5 * ties) / (len(top) * len(bot)) if top and bot \
             else float("nan")
+        return (auc, scores) if return_scores else auc
 
     zero_shot = evaluate(splits["holdout"])
     print(f"[{name}] zero-shot holdout AUC: {zero_shot:.3f}", flush=True)
@@ -151,7 +152,7 @@ def run_variant(name, cfg):
                 opt.step()
                 opt.zero_grad(set_to_none=True)
         tr_auc = evaluate(train_items)
-        ho_auc = evaluate(splits["holdout"])
+        ho_auc, ho_scores = evaluate(splits["holdout"], return_scores=True)
         print(f"[{name}] epoch {epoch}: loss={running/len(pairs):.4f} "
               f"train_auc={tr_auc:.3f} holdout_auc={ho_auc:.3f} "
               f"({time.time()-t0:.0f}s)", flush=True)
@@ -161,6 +162,11 @@ def run_variant(name, cfg):
             best = ho_auc
             model.save_pretrained(os.path.join(out_dir, "adapter"))
             torch.save(head.state_dict(), os.path.join(out_dir, "head.pt"))
+            # serving sidecar / Modal endpoint calibrate their 0-10 squash
+            # from the holdout score distribution of the saved checkpoint
+            with open(os.path.join(out_dir, "calibration.json"), "w",
+                      encoding="utf-8") as f:
+                json.dump({"holdout_scores": ho_scores}, f)
     with open(os.path.join(out_dir, "RESULT.json"), "w", encoding="utf-8") as f:
         json.dump({"variant": name, **cfg, "model_id": MODEL_ID,
                    "zero_shot_holdout_auc": round(zero_shot, 4),
