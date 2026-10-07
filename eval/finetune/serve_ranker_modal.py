@@ -17,17 +17,22 @@ import os
 
 import modal
 
-MODEL_ID = "Qwen/Qwen2.5-VL-3B-Instruct"
+# v2 (2026-10-07): Qwen3-VL-4B + CreativeRanking pretrain + Samsung
+# fine-tune — holdout AUC 0.921 vs the v1 (Qwen2.5-VL-3B) 0.851. Adapter at
+# /adapter/pre_lr5e6; v1 artifacts stay on the volume for rollback.
+MODEL_ID = "Qwen/Qwen3-VL-4B-Instruct"
 MAX_PIXELS = 512 * 28 * 28
+ADAPTER_DIR = "/adapter/pre_lr5e6"
 
 app = modal.App("fixation-ranker-api")
 hf_cache = modal.Volume.from_name("fixation-ranker-hf", create_if_missing=True)
 adapter_vol = modal.Volume.from_name("fixation-ranker", create_if_missing=True)
 
 image = (
-    modal.Image.debian_slim(python_version="3.11")
-    .pip_install("torch==2.4.0", "transformers==4.51.3", "peft==0.13.2",
-                 "accelerate==1.1.1", "pillow", "fastapi[standard]")
+    modal.Image.debian_slim(python_version="3.12")
+    # Pins mirror the local .venv-train that trained/validated this adapter.
+    .pip_install("torch", "transformers==5.18.0", "peft==0.21.2",
+                 "accelerate==1.15.0", "pillow", "fastapi[standard]")
     .env({"HF_HOME": "/hf"})
 )
 
@@ -39,20 +44,20 @@ class Ranker:
     def load(self):
         import torch
         from peft import PeftModel
-        from transformers import AutoProcessor, Qwen2_5_VLForConditionalGeneration
+        from transformers import AutoProcessor, AutoModelForImageTextToText
 
         self.torch = torch
         self.processor = AutoProcessor.from_pretrained(MODEL_ID, max_pixels=MAX_PIXELS)
-        base = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-            MODEL_ID, torch_dtype=torch.bfloat16, device_map="cuda")
-        self.model = PeftModel.from_pretrained(base, "/adapter/adapter").eval()
+        base = AutoModelForImageTextToText.from_pretrained(
+            MODEL_ID, dtype=torch.bfloat16, device_map="cuda")
+        self.model = PeftModel.from_pretrained(base, f"{ADAPTER_DIR}/adapter").eval()
         hidden = base.config.text_config.hidden_size if hasattr(base.config, "text_config") \
             else base.config.hidden_size
         self.head = torch.nn.Linear(hidden, 1, dtype=torch.bfloat16).to("cuda")
-        self.head.load_state_dict(torch.load("/adapter/head.pt", map_location="cuda"))
+        self.head.load_state_dict(torch.load(f"{ADAPTER_DIR}/head.pt", map_location="cuda"))
         self.head.eval()
         # holdout score distribution -> readable 0-10 squash
-        with open("/adapter/metrics.json") as f:
+        with open(f"{ADAPTER_DIR}/calibration.json") as f:
             scores = list(json.load(f).get("holdout_scores", {}).values())
         if scores:
             scores.sort()
@@ -64,7 +69,9 @@ class Ranker:
 
         messages = [{"role": "user", "content": [
             {"type": "image"},
-            {"type": "text", "text": "Assess this social advertising creative "
+            # Must byte-match the training prompt (pretrain_ranker_cr /
+            # finetune_samsung), or scores shift subtly.
+            {"type": "text", "text": "Assess this e-commerce advertising creative "
                                      "for in-feed engagement potential."}]}]
         self.chat_text = self.processor.apply_chat_template(
             messages, tokenize=False, add_generation_prompt=True)

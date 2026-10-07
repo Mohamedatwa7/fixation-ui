@@ -16,6 +16,9 @@ image = (
         "torch", "torchvision", "transformers", "qwen-vl-utils", "accelerate",
         "opencv-contrib-python", "numpy", "librosa", "openai-whisper",
         "yt-dlp", "anthropic>=0.117.0", "Pillow", "scipy",
+        # AAM saliency (ICML 2026) — model code deps; prompt embeddings ship
+        # precomputed on the volume so CLIP/open_clip is not needed here.
+        "easydict", "einops", "loguru", "wav2clip",
     )
     .run_commands("apt-get update && apt-get install -y ffmpeg")
     # yt-dlp must track upstream closely or YouTube/Instagram extraction breaks.
@@ -60,10 +63,19 @@ def benchmark_for(format_type):
     return BENCHMARKS[key]
 TASED_REPO = f"{NESTED}/TASED-Net"                      # saliency_module hardcodes /content/TASED-Net
 MODEL_CACHE = "/hf-cache"
+# AAM saliency (replaces OpenCV/TASED when present on the volume; see
+# backend_scripts/aam_saliency.py — falls back to the legacy models on any
+# failure, so a missing upload degrades gracefully).
+AAM_REPO_DIR = f"{NESTED}/aam/Attend-to-Anything"
+AAM_WEIGHTS_PATH = f"{NESTED}/aam/AAM.pth"
 
 
 def _setup_paths():
     """saliency_module.py hardcodes /content/TASED-Net; symlink it to the real repo."""
+    if os.path.isdir(AAM_REPO_DIR) and os.path.exists(AAM_WEIGHTS_PATH):
+        os.environ.setdefault("F1X8_SALIENCY", "aam")
+        os.environ.setdefault("AAM_REPO", AAM_REPO_DIR)
+        os.environ.setdefault("AAM_WEIGHTS", AAM_WEIGHTS_PATH)
     os.makedirs("/content", exist_ok=True)
     link = "/content/TASED-Net"
     if not os.path.islink(link) and not os.path.exists(link):
