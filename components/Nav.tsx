@@ -32,6 +32,12 @@ export default function Nav({ active, minimal }: NavProps) {
           </Link>
         )}
         <Link
+          href="/compare"
+          className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40 hover:text-white/80 transition-colors duration-300"
+        >
+          Pick the winner
+        </Link>
+        <Link
           href="/upload"
           className={`font-mono text-[10px] uppercase tracking-[0.18em] px-4 py-2 rounded-[2px] transition-colors duration-300
             ${active === 'upload'

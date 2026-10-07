@@ -361,6 +361,22 @@ async def job_status(job_id: str):
     return JOBS.get(job_id, {"status": "not_found"})
 
 
+@app.post("/api/compare")
+def compare_endpoint(payload: dict):
+    """Pick-the-winner: ranker orders 2-3 options, Opus explains."""
+    items = payload.get("items") or []
+    if not (2 <= len(items) <= 3) or any(not i.get("image_b64") for i in items):
+        return {"error": "items must be 2-3 entries with image_b64"}
+    try:
+        return core.compare_creatives(items, title=payload.get("title"),
+                                      description=payload.get("description"),
+                                      format_type=payload.get("format_type"))
+    except Exception as e:
+        import traceback
+        print(f"[compare] failed: {traceback.format_exc()[-800:]}")
+        return {"error": str(e)}
+
+
 @app.post("/api/ask")
 def ask_endpoint(payload: dict):
     """Business Q&A — no GPU involved, so no lock; sync def -> threadpool."""

@@ -611,6 +611,102 @@ def _assess_context_fit(images, context_text, base_score):
         return None
 
 
+# ── Pick the winner (/api/compare) ──────────────────────────────────────────
+# 2-3 creative options -> the validated pairwise ranker orders them, Opus
+# explains the pick. This is the ranker's exact validated competence (holdout
+# pair-accuracy 0.92 top-vs-bottom): comparative judgment, not absolute scores.
+
+COMPARE_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "why_winner": {"type": "string"},
+        "per_creative": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "index": {"type": "integer"},
+                    "read": {"type": "string"},
+                },
+                "required": ["index", "read"],
+                "additionalProperties": False,
+            },
+        },
+        "what_would_flip_it": {"type": "string"},
+        "caveat": {"type": "string"},
+    },
+    "required": ["why_winner", "per_creative", "what_would_flip_it", "caveat"],
+    "additionalProperties": False,
+}
+
+COMPARE_PROMPT = """You are a senior creative director explaining a head-to-head creative comparison.
+
+A fine-tuned ranking model (validated against real market outcomes: it picks the actually-better-performing creative ~92% of the time on held-out top-vs-bottom comparisons) has scored the attached creative options for expected in-feed engagement. The scores and the winner are given — do not re-litigate the ranking; your job is to explain it so a creative team can act.
+
+- why_winner: the concrete, visible properties of the winning creative that plausibly drive its edge (hook, focal clarity, contrast, emotional pull, legibility at feed size). Reference what is actually in the images.
+- per_creative: one honest read per option (index matches input order) — its strongest asset and its main drag.
+- what_would_flip_it: the single most impactful change to a losing option that could plausibly overturn the ranking.
+- caveat: one sentence on limits (model predicts relative engagement, not brand fit or campaign outcomes; close scores mean a weak preference).
+
+Be specific to these creatives. Never pad."""
+
+
+def _rank_score_b64(img_b64):
+    """Rank a base64 image via the ranker endpoint; None when unavailable."""
+    import tempfile
+    tmp = tempfile.NamedTemporaryFile(suffix=".img", delete=False)
+    try:
+        tmp.write(base64.b64decode(img_b64))
+        tmp.close()
+        return _rank_score(tmp.name)
+    finally:
+        os.unlink(tmp.name)
+
+
+def compare_creatives(items, title=None, description=None, format_type=None):
+    """items: [{image_b64, media_type, label?}] (2-3). Ranker orders, Opus explains."""
+    import anthropic
+    scores = []
+    for i, it in enumerate(items):
+        s = _rank_score_b64(it["image_b64"])
+        if s is None:
+            return {"error": "ranker unavailable — comparison requires the "
+                             "ranking model; try again shortly"}
+        scores.append(s)
+    order = sorted(range(len(items)), key=lambda i: -scores[i])
+    winner = order[0]
+
+    client = anthropic.Anthropic(timeout=180.0, max_retries=1)
+    content = []
+    for i, it in enumerate(items):
+        content.append({"type": "text",
+                        "text": f"Option {i} ({it.get('label') or f'creative {i+1}'}) — "
+                                f"ranker score {scores[i]}/10"
+                                + (" <- WINNER" if i == winner else "")})
+        content.append({"type": "image", "source": {
+            "type": "base64", "media_type": it.get("media_type") or "image/jpeg",
+            "data": it["image_b64"]}})
+    ctx = _context_text(title, description, format_type)
+    if ctx:
+        content.append({"type": "text", "text": f"CAMPAIGN CONTEXT:\n{ctx}"})
+    content.append({"type": "text", "text": "Explain the ranking. Return only the JSON object."})
+    resp = client.messages.create(
+        model="claude-opus-4-8", max_tokens=2000,
+        system=[{"type": "text", "text": COMPARE_PROMPT,
+                 "cache_control": {"type": "ephemeral"}}],
+        messages=[{"role": "user", "content": content}],
+        output_config={"format": {"type": "json_schema", "schema": COMPARE_SCHEMA}})
+    explanation = _ask_parse_json(resp)
+    return {
+        "winner_index": winner,
+        "ranking": [{"index": i, "label": items[i].get("label") or f"Creative {i+1}",
+                     "rank_score": scores[i]} for i in order],
+        "explanation": explanation,
+        "model_note": "Ranking by the outcome-validated pairwise ranker "
+                      "(holdout top-vs-bottom accuracy 0.92); explanation is AI judgment.",
+    }
+
+
 # ── Business Q&A (/api/ask) ─────────────────────────────────────────────────
 # Free-form questions ("would this work for 30-40yo women?", "would this
 # disrupt the iPhone launch?") answered as an explicit AI judgment grounded
@@ -1445,6 +1541,20 @@ def fastapi_app():
     @web_app.get("/api/job/{job_id}")
     async def job_status(job_id: str):
         return JOBS.get(job_id, {"status": "not_found"})
+
+    @web_app.post("/api/compare")
+    def compare_endpoint(payload: dict):
+        items = payload.get("items") or []
+        if not (2 <= len(items) <= 3) or any(not i.get("image_b64") for i in items):
+            return {"error": "items must be 2-3 entries with image_b64"}
+        try:
+            return compare_creatives(items, title=payload.get("title"),
+                                     description=payload.get("description"),
+                                     format_type=payload.get("format_type"))
+        except Exception as e:
+            import traceback
+            print(f"[compare] failed: {traceback.format_exc()[-800:]}")
+            return {"error": str(e)}
 
     @web_app.post("/api/ask")
     def ask_endpoint(payload: dict):
