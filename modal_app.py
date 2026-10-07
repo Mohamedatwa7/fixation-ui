@@ -558,7 +558,7 @@ def _assess_context_fit(images, context_text, base_score):
     untouched)."""
     try:
         import anthropic
-        client = anthropic.Anthropic()
+        client = anthropic.Anthropic(timeout=180.0, max_retries=1)
         content = [
             {"type": "image", "source": {"type": "base64", "media_type": mt, "data": d}}
             for mt, d in images
@@ -715,7 +715,7 @@ def answer_business_question(images, question, diagnostic=None,
     """Three-stage grounded answer: triage -> persona panel -> synthesis."""
     import anthropic
     from concurrent.futures import ThreadPoolExecutor
-    client = anthropic.Anthropic()
+    client = anthropic.Anthropic(timeout=180.0, max_retries=1)
     content_images = [
         {"type": "image", "source": {"type": "base64", "media_type": mt, "data": d}}
         for mt, d in images
@@ -813,7 +813,7 @@ def _assess_engagement_once(images, context_text=None):
     """One vision-LLM judge call. Returns the parsed judgment, or None on failure."""
     try:
         import anthropic
-        client = anthropic.Anthropic()
+        client = anthropic.Anthropic(timeout=180.0, max_retries=1)
         content = [
             {"type": "image", "source": {"type": "base64", "media_type": mt, "data": d}}
             for mt, d in images

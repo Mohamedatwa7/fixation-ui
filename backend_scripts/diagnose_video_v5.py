@@ -159,7 +159,7 @@ def run_diagnosis(perception, keyframe_meta, audio_report, saliency_meta,
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY not set.")
-    client = Anthropic(api_key=api_key)
+    client = Anthropic(api_key=api_key, timeout=180.0, max_retries=1)
     perception_text = "\n\n".join(f"## {k.upper()}\n{v}" for k, v in perception.items())
     kf_section = f"Video duration: {keyframe_meta.get('duration_sec', '?')}s\n\n"
     kf_section += "Top visual attention moments:\n"

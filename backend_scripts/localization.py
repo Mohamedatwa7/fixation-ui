@@ -42,7 +42,7 @@ def assess_localization(text_overlays_description, target_format=None):
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         return {"error": "ANTHROPIC_API_KEY not set"}
-    client = Anthropic(api_key=api_key)
+    client = Anthropic(api_key=api_key, timeout=180.0, max_retries=1)
 
     if not text_overlays_description or len(text_overlays_description) < 5:
         return {

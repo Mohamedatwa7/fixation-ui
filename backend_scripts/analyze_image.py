@@ -207,7 +207,7 @@ def run_image_diagnosis(perception, kpi_data, saliency_info, image_path,
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         raise RuntimeError("ANTHROPIC_API_KEY not set.")
-    client = Anthropic(api_key=api_key)
+    client = Anthropic(api_key=api_key, timeout=180.0, max_retries=1)
 
     perception_text = "\n\n".join(f"## {k.upper()}\n{v}" for k, v in perception.items())
     # The judge's funnel call (when available) wins over the CV-inferred stage so
