@@ -503,15 +503,20 @@ def _rank_score(image_path):
         # loop; requests' default of 30 hops can wedge the job for the whole
         # model load. Follow a few hops (enough for a ~90s warm-from-cache
         # boot) then fall back to weights instead of blocking the analysis.
-        url = RANKER_URL
-        for _ in range(5):
-            r = requests.post(url, json={"image_b64": img_b64},
-                              timeout=180, allow_redirects=False)
-            if r.status_code in (301, 302, 303, 307, 308):
-                url = r.headers.get("Location") or url
-                continue
-            break
-        else:
+        r = requests.post(RANKER_URL, json={"image_b64": img_b64},
+                          timeout=180, allow_redirects=False)
+        # Modal signals a cold boot with a 303 to an attempt-token URL that
+        # must be polled with GET (re-POSTing it is "bad redirect method").
+        # A few hops ride out a warm-from-cache boot (~90s); beyond that,
+        # fall back to weights instead of wedging the analysis job.
+        hops = 0
+        while r.status_code in (301, 302, 303, 307, 308) and hops < 5:
+            loc = r.headers.get("Location")
+            if not loc:
+                break
+            r = requests.get(loc, timeout=180, allow_redirects=False)
+            hops += 1
+        if r.status_code in (301, 302, 303, 307, 308):
             print("[ranker] still cold after redirect budget -> weights fallback")
             return None
         r.raise_for_status()
