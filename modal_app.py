@@ -499,7 +499,21 @@ def _rank_score(image_path):
     try:
         import requests
         img_b64 = base64.b64encode(open(image_path, "rb").read()).decode()
-        r = requests.post(RANKER_URL, json={"image_b64": img_b64}, timeout=180)
+        # Modal answers cold-booting endpoints with a 303 redirect-and-poll
+        # loop; requests' default of 30 hops can wedge the job for the whole
+        # model load. Follow a few hops (enough for a ~90s warm-from-cache
+        # boot) then fall back to weights instead of blocking the analysis.
+        url = RANKER_URL
+        for _ in range(5):
+            r = requests.post(url, json={"image_b64": img_b64},
+                              timeout=180, allow_redirects=False)
+            if r.status_code in (301, 302, 303, 307, 308):
+                url = r.headers.get("Location") or url
+                continue
+            break
+        else:
+            print("[ranker] still cold after redirect budget -> weights fallback")
+            return None
         r.raise_for_status()
         v = r.json().get("rank_score")
         return round(float(v), 1) if isinstance(v, (int, float)) else None
