@@ -53,9 +53,12 @@ Requires `ffmpeg` on PATH (installed via winget) and `ANTHROPIC_API_KEY`
 ## Known degradations vs. Modal
 
 - No MAdVerse percentiles until `benchmarks/*.json` are recovered.
-- Organic score uses the weight-based formula; the fine-tuned ranker
-  (`fixation-ranker-api`) lives on Modal and is unreachable (`_rank_score`
-  falls back automatically).
+- ~~Organic score uses the weight-based formula~~ FIXED 2026-10-07: start
+  the local ranker sidecar (`.\ranker_run.ps1`, port 8012, needs
+  `..\.venv-train`) and `_rank_score` uses the CreativeRanking-pretrained,
+  Samsung-fine-tuned Qwen3-VL-4B ranker (holdout AUC 0.921 vs the old
+  Modal ranker's 0.851). Without the sidecar it still falls back to the
+  weights formula automatically.
 - `shims/` keyframe + audio modules are interface-faithful rewrites, not the
   original code — timelines/scores are comparable but not bit-identical.
 - One GPU: concurrent jobs are serialized by a lock (they queue as

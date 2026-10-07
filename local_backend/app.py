@@ -80,6 +80,12 @@ sys.path.insert(0, str(SCRIPTS_DIR))
 sys.path.insert(0, str(REPO))
 import modal_app as core  # noqa: E402  (scoring, judge ensemble, prompts)
 
+# Organic ranker: prefer the local sidecar (ranker_service.py on :8012,
+# CreativeRanking-pretrained + Samsung-fine-tuned, holdout AUC 0.921) over
+# the unreachable Modal fixation-ranker URL. _rank_score already falls back
+# to the weights formula when nothing answers.
+core.RANKER_URL = os.environ.get("RANKER_URL", "http://127.0.0.1:8012/rank")
+
 JOBS: dict = {}                    # replaces modal.Dict — one process, plain dict
 _GPU_LOCK = threading.Lock()       # one GPU: serialize analyses instead of wedging
 
@@ -383,6 +389,7 @@ async def health():
             "tased_weights": TASED_WEIGHTS.exists(),
             "aam_weights": AAM_WEIGHTS.exists(),
             "saliency": os.environ.get("F1X8_SALIENCY", "legacy"),
+            "ranker_url": core.RANKER_URL,
             "benchmarks": sorted(p.name for p in BENCH_DIR.glob("*.json"))}
     try:
         import torch
