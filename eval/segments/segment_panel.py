@@ -127,7 +127,10 @@ def cmd_build():
             for p in posts:
                 likes = p.get("likesCount")
                 comments = p.get("commentsCount") or 0
-                if not isinstance(likes, (int, float)) or likes < 0:
+                # likesCount == -1 means the account hides like counts; rank
+                # those posts on comments (valid within-account signal).
+                likes = likes if isinstance(likes, (int, float)) and likes >= 0 else 0
+                if likes + comments <= 0:
                     continue
                 rows.append({
                     "post_id": p.get("id") or p.get("shortCode"),
@@ -137,6 +140,7 @@ def cmd_build():
                     "display_url": p.get("displayUrl"),
                     "timestamp": p.get("timestamp"),
                     "engagement": likes + comments,
+                    "likes_hidden": p.get("likesCount") == -1,
                 })
             # within-account percentile — controls for audience size/platform
             rows.sort(key=lambda r: r["engagement"])

@@ -1,73 +1,339 @@
 {
-  "_readme": "Candidate Gulf accounts per Samsung-relevant audience segment, for the segment-panel scrape (audience-known account panels). Status=candidate until (a) handle verified on-platform and (b) audience skew confirmed via an audience-stats source before any scraping. Prefer mid-tier regional accounts over global mega-accounts: a 50M-follower audience is too broad to serve as a segment label.",
-  "segments": {
-    "affluent_women_25_40": {
-      "samsung_relevance": "Galaxy Z Flip, Watch, Buds — premium fashion-adjacent devices",
-      "accounts": [
-        {"name": "Lojain Omran", "handle": "lojain_omran", "platform": "instagram", "base": "UAE/KSA", "followers_approx": "11M", "note": "fashion/beauty/lifestyle; skews broad — verify"},
-        {"name": "Karen Wazen", "handle": "karenwazen", "platform": "instagram", "base": "Dubai", "followers_approx": "8M", "note": "luxury fashion/lifestyle entrepreneur"},
-        {"name": "Rawan Bin Hussain", "handle": "rawan", "platform": "instagram", "base": "Kuwait/Dubai", "followers_approx": "7.4M", "note": "beauty/fashion"},
-        {"name": "Aseel Omran", "handle": "aseelomran", "platform": "instagram", "base": "KSA", "followers_approx": "6.8M", "note": "lifestyle/fashion"},
-        {"name": "Dalal AlDoub", "handle": "dalalid", "platform": "instagram", "base": "Kuwait", "followers_approx": "3M", "note": "makeup tutorials — strong female-skew expected"},
-        {"name": "Abeer Sinder", "handle": "abeersinder", "platform": "instagram", "base": "KSA", "followers_approx": "1.5M", "note": "beauty/lifestyle"},
-        {"name": "Yara Alnamlah", "handle": "yaraalnamlah", "platform": "instagram", "base": "KSA", "followers_approx": "1.4M", "note": "skincare/beauty founder (Treat)"},
-        {"name": "Eleen Suliman", "handle": "eleensuliman", "platform": "instagram", "base": "KSA", "followers_approx": "high-end fashion/travel", "note": "luxury-leaning female lifestyle"}
-      ]
+ "_readme": "Candidate Gulf accounts per Samsung-relevant audience segment, for the segment-panel scrape (audience-known account panels). Status=candidate until (a) handle verified on-platform and (b) audience skew confirmed via an audience-stats source before any scraping. Prefer mid-tier regional accounts over global mega-accounts: a 50M-follower audience is too broad to serve as a segment label.",
+ "segments": {
+  "affluent_women_25_40": {
+   "samsung_relevance": "Galaxy Z Flip, Watch, Buds \u2014 premium fashion-adjacent devices",
+   "accounts": [
+    {
+     "name": "Lojain Omran",
+     "handle": "lojain_omran",
+     "platform": "instagram",
+     "base": "UAE/KSA",
+     "followers_approx": "11M",
+     "note": "fashion/beauty/lifestyle; skews broad \u2014 verify"
     },
-    "tech_enthusiasts_18_35": {
-      "samsung_relevance": "Galaxy S Ultra / Z Fold launches, specs-driven messaging",
-      "accounts": [
-        {"name": "Faisal Alsaif (UTD)", "handle": "faisalalsaif", "platform": "instagram+youtube", "base": "KSA", "followers_approx": "3M+ YT subs", "note": "biggest Arabic tech reviewer (UTD Saudi)"},
-        {"name": "EMKWAN", "handle": "emkwan", "platform": "instagram+youtube", "base": "UAE", "followers_approx": "n/a", "note": "tech+lifestyle reviewer; prior Samsung collabs"},
-        {"name": "Abdullah Alghafis", "handle": "agafes", "platform": "instagram", "base": "KSA", "followers_approx": "384K", "note": "KSA tech creator"},
-        {"name": "Bader Al Safar", "handle": "baderalsafar", "platform": "tiktok", "base": "Gulf", "followers_approx": "10M TikTok", "note": "tech experiments/gadget testing"},
-        {"name": "Mokhtar Chahine", "handle": "mokhtarchahine", "platform": "instagram", "base": "Jeddah KSA", "followers_approx": "n/a", "note": "tech + photography crossover"},
-        {"name": "Abdallah Rakha", "handle": "abdallahrakha", "platform": "instagram", "base": "Dubai", "followers_approx": "n/a", "note": "real-time tech news"}
-      ]
+    {
+     "name": "Karen Wazen",
+     "handle": "karenwazen",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "8M",
+     "note": "luxury fashion/lifestyle entrepreneur"
     },
-    "gamers_16_30": {
-      "samsung_relevance": "Gaming phones/monitors/TVs; Odyssey line; youth A-series",
-      "accounts": [
-        {"name": "BanderitaX", "handle": "banderitax", "platform": "youtube+instagram", "base": "KSA", "followers_approx": "20.2M YT", "note": "flagship Saudi gaming channel"},
-        {"name": "SHoNgxBoNg", "handle": "shongxbong", "platform": "youtube", "base": "KSA", "followers_approx": "20.9M YT", "note": ""},
-        {"name": "MjrmGames", "handle": "mjrmgames", "platform": "youtube+instagram", "base": "KSA", "followers_approx": "10.7M YT", "note": ""},
-        {"name": "TMFaisal", "handle": "tmfaisal", "platform": "youtube", "base": "KSA", "followers_approx": "5.5M YT", "note": "horror/thriller games"},
-        {"name": "Xzit Thamer", "handle": "xzit_thamer", "platform": "instagram+youtube", "base": "KSA", "followers_approx": "1.4M IG", "note": ""},
-        {"name": "Bashar Kayyal", "handle": "basharkk", "platform": "instagram", "base": "UAE", "followers_approx": "n/a", "note": "CoD/Valorant/PUBG"},
-        {"name": "Hani AlQoublan", "handle": "hanialqablan", "platform": "instagram", "base": "UAE/KSA", "followers_approx": "1.5M", "note": ""}
-      ]
+    {
+     "name": "Rawan Bin Hussain",
+     "handle": "rawan",
+     "platform": "instagram",
+     "base": "Kuwait/Dubai",
+     "followers_approx": "7.4M",
+     "note": "beauty/fashion"
     },
-    "families_parents_28_45": {
-      "samsung_relevance": "TVs, appliances, family ecosystem messaging",
-      "accounts": [
-        {"name": "Nesma Elgohary", "handle": "nesmaelgohary", "platform": "instagram", "base": "KSA", "followers_approx": "5.6M", "note": "parenting/family life — top KSA parenting creator"},
-        {"name": "Aya Fawzy", "handle": "ayafawzy", "platform": "instagram", "base": "KSA", "followers_approx": "2M", "note": "home/motherhood routines"},
-        {"name": "Joory Almothna", "handle": "jooryalmothna", "platform": "instagram", "base": "KSA", "followers_approx": "1.7M", "note": "mom of 4, daily family life"},
-        {"name": "Leila Trabi (The Kid Expert)", "handle": "thekidexpert", "platform": "instagram", "base": "Dubai", "followers_approx": "806K", "note": "parenting consultant"},
-        {"name": "Virdah Javed Khan", "handle": "mom_in_dubai", "platform": "instagram", "base": "Dubai", "followers_approx": "798K", "note": "motherhood/food/lifestyle"},
-        {"name": "Sneha Rebecca", "handle": "srdubai", "platform": "instagram", "base": "Dubai", "followers_approx": "946K", "note": "lifestyle+parenting (expat-skewed audience)"},
-        {"name": "Lujain Daghestani", "handle": "lujaindaghestani", "platform": "instagram", "base": "KSA", "followers_approx": "222K", "note": "parenting hacks/child health"}
-      ]
+    {
+     "name": "Aseel Omran",
+     "handle": "aseelomran",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "6.8M",
+     "note": "lifestyle/fashion"
     },
-    "fitness_wellness_20_40": {
-      "samsung_relevance": "Galaxy Watch, Buds, health-tracking features",
-      "accounts": [
-        {"name": "Hana Z B", "handle": "hanazb", "platform": "instagram", "base": "KSA", "followers_approx": "1.3M", "note": "female fitness/wellness, THYGA founder"},
-        {"name": "Hanan Alanazi", "handle": "hananalanazi", "platform": "instagram", "base": "KSA", "followers_approx": "1M", "note": "realistic fitness goals, female-skew"},
-        {"name": "Wajdan Habish", "handle": "wejdanhb._", "platform": "instagram", "base": "UAE", "followers_approx": "196K", "note": "travel/lifestyle/fitness"},
-        {"name": "Mahsa Farahani", "handle": "mahsafarahaani", "platform": "instagram", "base": "Dubai", "followers_approx": "166K", "note": "yoga/mindfulness"},
-        {"name": "Rawan Zahran", "handle": "rawanzahran", "platform": "instagram", "base": "Jeddah", "followers_approx": "33K", "note": "Sweat Army Gym founder"},
-        {"name": "Tarek Khaleel", "handle": "tarek_khaleel", "platform": "instagram", "base": "Gulf", "followers_approx": "48K", "note": "male trainer/nutrition"}
-      ]
+    {
+     "name": "Dalal AlDoub",
+     "handle": "dalalid",
+     "platform": "instagram",
+     "base": "Kuwait",
+     "followers_approx": "3M",
+     "note": "makeup tutorials \u2014 strong female-skew expected"
     },
-    "luxury_premium_30_50": {
-      "samsung_relevance": "Z Fold, lifestyle TVs (Frame/Serif), premium ecosystem",
-      "accounts": [
-        {"name": "Mo Vlogs", "handle": "movlogs", "platform": "youtube+instagram", "base": "Dubai", "followers_approx": "multi-M", "note": "luxury cars/lifestyle — male-skew"},
-        {"name": "Karen Wazen", "handle": "karenwazen", "platform": "instagram", "base": "Dubai", "followers_approx": "8M", "note": "overlap with affluent-women segment"},
-        {"name": "Eleen Suliman", "handle": "eleensuliman", "platform": "instagram", "base": "KSA", "followers_approx": "n/a", "note": "high-end fashion/travel"},
-        {"name": "Amro Alqudah", "handle": "amroalqudah", "platform": "instagram", "base": "Dubai", "followers_approx": "n/a", "note": "photography/automotive/family — premium aesthetic"}
-      ]
+    {
+     "name": "Abeer Sinder",
+     "handle": "abeersinder",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "1.5M",
+     "note": "beauty/lifestyle"
+    },
+    {
+     "name": "Yara Alnamlah",
+     "handle": "yaraalnamlah",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "1.4M",
+     "note": "skincare/beauty founder (Treat)"
+    },
+    {
+     "name": "Eleen Suliman",
+     "handle": "eleensuliman",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "high-end fashion/travel",
+     "note": "luxury-leaning female lifestyle"
     }
+   ]
+  },
+  "tech_enthusiasts_18_35": {
+   "samsung_relevance": "Galaxy S Ultra / Z Fold launches, specs-driven messaging",
+   "accounts": [
+    {
+     "name": "Faisal Alsaif (UTD)",
+     "handle": "faisalalsaif",
+     "platform": "instagram+youtube",
+     "base": "KSA",
+     "followers_approx": "3M+ YT subs",
+     "note": "biggest Arabic tech reviewer (UTD Saudi)"
+    },
+    {
+     "name": "EMKWAN",
+     "handle": "emkwan",
+     "platform": "instagram+youtube",
+     "base": "UAE",
+     "followers_approx": "n/a",
+     "note": "tech+lifestyle reviewer; prior Samsung collabs"
+    },
+    {
+     "name": "Abdullah Alghafis",
+     "handle": "agafes",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "384K",
+     "note": "KSA tech creator"
+    },
+    {
+     "name": "Bader Al Safar",
+     "handle": "baderalsafar",
+     "platform": "tiktok",
+     "base": "Gulf",
+     "followers_approx": "10M TikTok",
+     "note": "tech experiments/gadget testing"
+    },
+    {
+     "name": "Mokhtar Chahine",
+     "handle": "mokhtarchahine",
+     "platform": "instagram",
+     "base": "Jeddah KSA",
+     "followers_approx": "n/a",
+     "note": "tech + photography crossover"
+    },
+    {
+     "name": "Abdallah Rakha",
+     "handle": "abdallahrakha",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "n/a",
+     "note": "real-time tech news"
+    }
+   ]
+  },
+  "gamers_16_30": {
+   "samsung_relevance": "Gaming phones/monitors/TVs; Odyssey line; youth A-series",
+   "accounts": [
+    {
+     "name": "BanderitaX",
+     "handle": "banderitax",
+     "platform": "youtube+instagram",
+     "base": "KSA",
+     "followers_approx": "20.2M YT",
+     "note": "flagship Saudi gaming channel"
+    },
+    {
+     "name": "SHoNgxBoNg",
+     "handle": "shongxbong",
+     "platform": "youtube",
+     "base": "KSA",
+     "followers_approx": "20.9M YT",
+     "note": ""
+    },
+    {
+     "name": "MjrmGames",
+     "handle": "mjrmgames",
+     "platform": "youtube+instagram",
+     "base": "KSA",
+     "followers_approx": "10.7M YT",
+     "note": ""
+    },
+    {
+     "name": "TMFaisal",
+     "handle": "tmfaisal",
+     "platform": "youtube",
+     "base": "KSA",
+     "followers_approx": "5.5M YT",
+     "note": "horror/thriller games"
+    },
+    {
+     "name": "Xzit Thamer",
+     "handle": "xzit_thamer",
+     "platform": "instagram+youtube",
+     "base": "KSA",
+     "followers_approx": "1.4M IG",
+     "note": ""
+    },
+    {
+     "name": "Bashar Kayyal",
+     "handle": "basharkk",
+     "platform": "instagram",
+     "base": "UAE",
+     "followers_approx": "n/a",
+     "note": "CoD/Valorant/PUBG"
+    },
+    {
+     "name": "Hani AlQoublan",
+     "handle": "hanialqablan",
+     "platform": "instagram",
+     "base": "UAE/KSA",
+     "followers_approx": "1.5M",
+     "note": ""
+    }
+   ]
+  },
+  "families_parents_28_45": {
+   "samsung_relevance": "TVs, appliances, family ecosystem messaging",
+   "accounts": [
+    {
+     "name": "Nesma Elgohary",
+     "handle": "nesmaelgohary",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "5.6M",
+     "note": "parenting/family life \u2014 top KSA parenting creator"
+    },
+    {
+     "name": "Aya Fawzy",
+     "handle": "ayafawzy",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "2M",
+     "note": "home/motherhood routines"
+    },
+    {
+     "name": "Joory Almothna",
+     "handle": "joory.days",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "1.7M",
+     "note": "mom of 4, daily family life (handle corrected via search)"
+    },
+    {
+     "name": "Leila Trabi (The Kid Expert)",
+     "handle": "thekidexpert",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "806K",
+     "note": "parenting consultant"
+    },
+    {
+     "name": "Virdah Javed Khan",
+     "handle": "mom_in_dubai",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "798K",
+     "note": "motherhood/food/lifestyle"
+    },
+    {
+     "name": "Sneha Rebecca",
+     "handle": "srdubai",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "946K",
+     "note": "lifestyle+parenting (expat-skewed audience)"
+    },
+    {
+     "name": "Lujain Daghestani",
+     "handle": "lujaindaghestani",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "222K",
+     "note": "parenting hacks/child health"
+    }
+   ]
+  },
+  "fitness_wellness_20_40": {
+   "samsung_relevance": "Galaxy Watch, Buds, health-tracking features",
+   "accounts": [
+    {
+     "name": "Hana Z B",
+     "handle": "hanazb",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "1.3M",
+     "note": "female fitness/wellness, THYGA founder"
+    },
+    {
+     "name": "Hanan Alanazi",
+     "handle": "hananalanazi",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "1M",
+     "note": "realistic fitness goals, female-skew"
+    },
+    {
+     "name": "Wajdan Habish",
+     "handle": "wejdanhb._",
+     "platform": "instagram",
+     "base": "UAE",
+     "followers_approx": "196K",
+     "note": "travel/lifestyle/fitness"
+    },
+    {
+     "name": "Mahsa Farahani",
+     "handle": "mahsafarahaani",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "166K",
+     "note": "yoga/mindfulness"
+    },
+    {
+     "name": "Rawan Zahran",
+     "handle": "rawanzahran",
+     "platform": "instagram",
+     "base": "Jeddah",
+     "followers_approx": "33K",
+     "note": "Sweat Army Gym founder"
+    },
+    {
+     "name": "Tarek Khaleel",
+     "handle": "tarek_khaleel",
+     "platform": "instagram",
+     "base": "Gulf",
+     "followers_approx": "48K",
+     "note": "male trainer/nutrition"
+    }
+   ]
+  },
+  "luxury_premium_30_50": {
+   "samsung_relevance": "Z Fold, lifestyle TVs (Frame/Serif), premium ecosystem",
+   "accounts": [
+    {
+     "name": "Mo Vlogs",
+     "handle": "movlogs",
+     "platform": "youtube+instagram",
+     "base": "Dubai",
+     "followers_approx": "multi-M",
+     "note": "luxury cars/lifestyle \u2014 male-skew"
+    },
+    {
+     "name": "Karen Wazen",
+     "handle": "karenwazen",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "8M",
+     "note": "overlap with affluent-women segment"
+    },
+    {
+     "name": "Eleen Suliman",
+     "handle": "eleensuliman",
+     "platform": "instagram",
+     "base": "KSA",
+     "followers_approx": "n/a",
+     "note": "high-end fashion/travel"
+    },
+    {
+     "name": "Amro Alqudah",
+     "handle": "amroalqudah",
+     "platform": "instagram",
+     "base": "Dubai",
+     "followers_approx": "n/a",
+     "note": "photography/automotive/family \u2014 premium aesthetic"
+    }
+   ]
   }
+ }
 }
