@@ -31,7 +31,7 @@ adapter_vol = modal.Volume.from_name("fixation-ranker", create_if_missing=True)
 image = (
     modal.Image.debian_slim(python_version="3.12")
     # Pins mirror the local .venv-train that trained/validated this adapter.
-    .pip_install("torch", "transformers==5.18.0", "peft==0.21.2",
+    .pip_install("torch", "torchvision", "transformers==5.18.0", "peft==0.21.2",
                  "accelerate==1.15.0", "pillow", "fastapi[standard]")
     .env({"HF_HOME": "/hf"})
 )
