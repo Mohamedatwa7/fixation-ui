@@ -90,3 +90,16 @@ beat-the-baseline result (0.921 vs 0.851) is comfortable.
 Production candidate: eval/finetune/out_samsung/pre_lr5e6/{adapter,head.pt}
 (Qwen3-VL-4B base). Next: wire into local backend organic scoring (currently
 falls back to weights formula), then Modal.
+
+## Epoch 2 (2026-10-08, overnight chain)
+
+- Pretrain pair-accuracy 0.709 -> **0.735** (second pass, new order);
+  zero-shot Samsung transfer 0.572 -> **0.645** holdout AUC — the prior
+  keeps getting more portable.
+- Samsung fine-tune from the epoch-2 adapter: best holdout AUC **0.921 —
+  exact tie with the incumbent**. The 82-creative holdout (~420 top-vs-
+  bottom comparisons) is saturated: better pretraining no longer moves it.
+- Read: accuracy is now bottlenecked on Samsung label volume, not on
+  pretraining quality. The monthly retrain loop (new matured creatives ->
+  frozen holdout) is the growth path; more CreativeRanking epochs are not.
+- Production stays on pre_lr5e6 (identical score, earlier provenance).

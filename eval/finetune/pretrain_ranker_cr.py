@@ -182,11 +182,13 @@ def cmd_train():
     if os.path.exists(ckpt_meta):
         with open(ckpt_meta, encoding="utf-8") as f:
             start = json.load(f).get("pairs_done", 0)
-        if start and os.path.isdir(os.path.join(OUT_DIR, "adapter")):
-            print(f"resuming from pair {start}")
-            model.load_adapter(os.path.join(OUT_DIR, "adapter"), "default")
-            head.load_state_dict(torch.load(os.path.join(OUT_DIR, "head.pt"),
-                                            weights_only=True))
+    # Load saved weights whenever they exist — mid-epoch resume (start>0) and
+    # fresh-epoch continuation (start==0 with a prior adapter) both want them.
+    if os.path.isdir(os.path.join(OUT_DIR, "adapter")):
+        print(f"loading existing adapter (resuming at pair {start})")
+        model.load_adapter(os.path.join(OUT_DIR, "adapter"), "default")
+        head.load_state_dict(torch.load(os.path.join(OUT_DIR, "head.pt"),
+                                        weights_only=True))
 
     def save(n_done):
         model.save_pretrained(os.path.join(OUT_DIR, "adapter"))
