@@ -67,3 +67,26 @@ explanatory craft evidence, not outcome predictors.
 - Artifacts: eval/finetune/out_cr/{adapter, head.pt, RESULT.json}.
 - Next: fine-tune this adapter on the 142 Samsung pairs vs the from-scratch
   0.851 baseline.
+
+## Samsung fine-tune A/B (2026-10-07) — pretraining pays, new production candidate
+
+Same 142-train/82-holdout split and top-vs-bottom AUC as the 0.851 baseline:
+
+| variant | holdout AUC |
+|---|---|
+| production baseline (Qwen2.5-VL-3B, from scratch) | 0.851 |
+| scratch_4b (Qwen3-VL-4B, from scratch) | 0.885 |
+| pre_lr2e5 (CreativeRanking-pretrained, LR 2e-5) | 0.912 |
+| **pre_lr5e6 (CreativeRanking-pretrained, LR 5e-6)** | **0.921** |
+
+Decomposition: base upgrade 3B->4B = +0.034; CreativeRanking pretraining =
++0.036 on top. Both pretrained variants beat scratch; gentler LR wins
+(re-anchor, don't bulldoze). Epoch 1 is the peak everywhere — 142 images
+overfit fast; best-by-holdout selection is load-bearing. Caveat: n=82
+holdout, CI roughly +-0.05 — the pretrain-vs-scratch gap is directionally
+consistent (2/2 variants) but not individually significant; the
+beat-the-baseline result (0.921 vs 0.851) is comfortable.
+
+Production candidate: eval/finetune/out_samsung/pre_lr5e6/{adapter,head.pt}
+(Qwen3-VL-4B base). Next: wire into local backend organic scoring (currently
+falls back to weights formula), then Modal.
