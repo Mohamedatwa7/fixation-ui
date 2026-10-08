@@ -42,3 +42,25 @@ Model parked at eval/sprinklr/out/ (adapter, head, calibration.json) —
 NOT serving. Integration decision pending: this is an account-aware
 multi-platform scorer for Samsung-owned channels, complementary to the
 production organic ranker (0.921 on brand-account IG organic).
+
+## Max-accuracy run (2026-10-09): 25k pairs x 2 epochs, val-selected
+
+| metric | run 1 (4.8k pairs) | max run (50k presentations) |
+|---|---|---|
+| holdout AUC (396) | 0.811 | **0.854** |
+| Facebook | 0.656 | **0.683** |
+| Instagram | 0.671 | **0.753** |
+| YouTube | 0.981 | **0.992** |
+| score 6+ -> top-quartile | 88.5% | **97.1%** (n=70) |
+| score <4 -> top-quartile | 9.5% | **12.7%** (n=118) |
+
+Validation curve plateaued at ~0.815-0.823 from 32k pair-presentations on
+(best at 36k) — the dataset's training value is now fully extracted; the
+next lift requires more labeled creatives (future Sprinklr exports), not
+more epochs. Caption effects stable across runs (hashtags +0.23).
+
+Production sentence, validated on untouched holdout: "scores 6+: 97% were
+genuine top-quartile performers; scores <4: 87% were genuine flops."
+
+Model: eval/sprinklr/out/{adapter_best, head_best.pt}. Integration
+decision still pending (account-aware scorer for Samsung-owned channels).
