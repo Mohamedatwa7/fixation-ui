@@ -56,6 +56,8 @@ if AAM_WEIGHTS.exists() and AAM_REPO.is_dir():
     os.environ.setdefault("F1X8_SALIENCY", "aam")
     os.environ.setdefault("AAM_REPO", str(AAM_REPO))
     os.environ.setdefault("AAM_WEIGHTS", str(AAM_WEIGHTS))
+# Perception upgrade: Qwen3-VL-8B (transformers >= 4.57 in this venv)
+os.environ.setdefault("F1X8_PERCEPTION", "qwen3")
 # fetch_video shells out to the yt-dlp binary; make sure the venv Scripts dir wins.
 os.environ["PATH"] = str(Path(sys.executable).parent) + os.pathsep + os.environ.get("PATH", "")
 

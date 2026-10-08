@@ -18,13 +18,20 @@ IMAGE_PERCEPTION_QUESTIONS = {
 
 def load_qwen_model(model_cache=None):
     import torch
-    from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
-    model_id = "Qwen/Qwen2.5-VL-7B-Instruct"
+    from transformers import AutoProcessor
+    # F1X8_PERCEPTION=qwen3 upgrades perception to Qwen3-VL-8B (needs
+    # transformers >= 4.57); default stays Qwen2.5-VL-7B.
+    if os.environ.get("F1X8_PERCEPTION", "").lower() == "qwen3":
+        from transformers import AutoModelForImageTextToText as _ModelCls
+        model_id = "Qwen/Qwen3-VL-8B-Instruct"
+    else:
+        from transformers import Qwen2_5_VLForConditionalGeneration as _ModelCls
+        model_id = "Qwen/Qwen2.5-VL-7B-Instruct"
     print(f"Loading {model_id}...")
     kwargs = {"torch_dtype": torch.float16, "device_map": "auto"}
     if model_cache:
         kwargs["cache_dir"] = model_cache
-    model = Qwen2_5_VLForConditionalGeneration.from_pretrained(model_id, **kwargs)
+    model = _ModelCls.from_pretrained(model_id, **kwargs)
     processor = AutoProcessor.from_pretrained(model_id, cache_dir=model_cache)
     print("Qwen loaded.")
     return model, processor

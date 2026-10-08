@@ -76,6 +76,8 @@ def _setup_paths():
         os.environ.setdefault("F1X8_SALIENCY", "aam")
         os.environ.setdefault("AAM_REPO", AAM_REPO_DIR)
         os.environ.setdefault("AAM_WEIGHTS", AAM_WEIGHTS_PATH)
+    # Perception upgrade: Qwen3-VL-8B (image rebuilt with transformers 5.x)
+    os.environ.setdefault("F1X8_PERCEPTION", "qwen3")
     os.makedirs("/content", exist_ok=True)
     link = "/content/TASED-Net"
     if not os.path.islink(link) and not os.path.exists(link):
