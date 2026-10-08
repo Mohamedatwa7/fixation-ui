@@ -28,7 +28,8 @@ OUT_PAIRS = os.path.join(DATA_DIR, "pairs.json")
 MIN_COHORT = 8
 MIN_GAP = 30.0
 HOLDOUT_N = 400
-MAX_PAIRS_PER_COHORT = 400
+MAX_PAIRS_PER_COHORT = 2500
+VAL_N = 240            # selection split — holdout stays untouched for reporting
 
 random.seed(48)
 
@@ -95,13 +96,23 @@ def main():
 
     for r in rows:
         r["split"] = "holdout" if r["id"] in holdout_ids else "train"
+    # validation split (checkpoint selection) — stratified, never paired
+    val_buckets = defaultdict(list)
+    for r in rows:
+        if r["split"] == "train" and r["stratum"] in ("top", "bottom"):
+            val_buckets[(r["platform"], r["stratum"])].append(r)
+    per_vb = max(5, VAL_N // max(1, len(val_buckets)))
+    for grp in val_buckets.values():
+        random.shuffle(grp)
+        for r in grp[:per_vb]:
+            r["split"] = "val"
     with open(OUT_DATASET, "w", encoding="utf-8") as f:
         json.dump(rows, f)
 
     # training pairs: within cohort, big gaps, train split only
     pairs = []
     for cohort, grp in groups.items():
-        tr = [r for r in grp if r["split"] == "train"]
+        tr = [r for r in grp if r["split"] == "train"]  # excludes val
         cand = [(a, b) for a in tr for b in tr
                 if a["percentile"] - b["percentile"] >= MIN_GAP]
         random.shuffle(cand)

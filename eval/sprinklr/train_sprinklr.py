@@ -33,7 +33,9 @@ PRETRAIN = os.path.join(FT_DIR, "out_cr")
 MODEL_ID = "Qwen/Qwen3-VL-4B-Instruct"
 MAX_PIXELS = 512 * 28 * 28
 LR = 5e-6
-MAX_PAIRS = 45000
+MAX_PAIRS = 60000
+EPOCHS = 2
+VAL_EVERY = 4000
 GRAD_ACCUM = 8
 SAVE_EVERY = 1000
 
@@ -80,7 +82,8 @@ def main():
     rows, by_id, pairs = load_all()
     holdout = [r for r in rows if r["split"] == "holdout"
                and r["stratum"] in ("top", "bottom")]
-    print(f"{len(pairs)} pairs | holdout {len(holdout)}")
+    val = [r for r in rows if r["split"] == "val"]
+    print(f"{len(pairs)} pairs | val {len(val)} | holdout {len(holdout)}")
 
     processor, model, head = build_model()
     chat = processor.apply_chat_template(
@@ -101,21 +104,20 @@ def main():
             idx = int(inputs["attention_mask"].sum(1).item()) - 1
             return head(hs[0, idx]).squeeze()
 
-    def eval_holdout():
+    def eval_split(subset):
         model.eval()
         scores = {}
-        for r in holdout:
+        for r in subset:
             scores[r["id"]] = float(score(r["image"], grad=False))
         model.train()
-        def auc_for(subset):
-            top = [scores[r["id"]] for r in subset if r["stratum"] == "top"]
-            bot = [scores[r["id"]] for r in subset if r["stratum"] == "bottom"]
+        def auc_for(ss):
+            top = [scores[r["id"]] for r in ss if r["stratum"] == "top"]
+            bot = [scores[r["id"]] for r in ss if r["stratum"] == "bottom"]
             return auc(top, bot) if top and bot else float("nan")
-        per_plat = {}
-        for plat in sorted({r["platform"] for r in holdout}):
-            per_plat[plat] = round(auc_for([r for r in holdout
-                                            if r["platform"] == plat]), 3)
-        return round(auc_for(holdout), 4), per_plat, scores
+        per_plat = {plat: round(auc_for([r for r in subset
+                                         if r["platform"] == plat]), 3)
+                    for plat in sorted({r["platform"] for r in subset})}
+        return round(auc_for(subset), 4), per_plat, scores
 
     # resume support
     state_p = os.path.join(OUT_DIR, "train_state.json")
@@ -130,17 +132,23 @@ def main():
             print(f"resumed at pair {start}")
 
     if start == 0:
-        zs_auc, zs_plat, _ = eval_holdout()
-        print(f"ZERO-SHOT (CR-pretrained): auc={zs_auc} per-platform={zs_plat}",
-              flush=True)
+        zs_auc, zs_plat, _ = eval_split(holdout)
+        print(f"ZERO-SHOT holdout: auc={zs_auc} per-platform={zs_plat}", flush=True)
 
     params = [p for p in model.parameters() if p.requires_grad]
     opt = torch.optim.AdamW([{"params": params, "lr": LR},
                              {"params": head.parameters(), "lr": LR * 10}])
     model.train()
     t0 = time.time()
-    for i in range(start, len(pairs)):
-        p = pairs[i]
+    sched = []
+    for ep in range(EPOCHS):
+        ep_pairs = pairs[:]
+        random.Random(100 + ep).shuffle(ep_pairs)
+        sched.extend(ep_pairs)
+    sched = sched[:MAX_PAIRS]
+    best_val = -1.0
+    for i in range(start, len(sched)):
+        p = sched[i]
         try:
             loss = F.softplus(-(score(by_id[p["top"]]["image"])
                                 - score(by_id[p["bottom"]]["image"]))) / GRAD_ACCUM
@@ -159,16 +167,26 @@ def main():
             with open(state_p, "w", encoding="utf-8") as f:
                 json.dump({"pairs_done": i + 1}, f)
             rate = (i + 1 - start) / (time.time() - t0)
-            print(f"[{i+1}/{len(pairs)}] {rate:.2f} pairs/s "
-                  f"ETA {(len(pairs)-i-1)/rate/3600:.1f}h", flush=True)
-        if (i + 1) % 10000 == 0:
-            a, plat, _ = eval_holdout()
-            print(f"[{i+1}] holdout auc={a} per-platform={plat}", flush=True)
+            print(f"[{i+1}/{len(sched)}] {rate:.2f} pairs/s "
+                  f"ETA {(len(sched)-i-1)/rate/3600:.1f}h", flush=True)
+        if (i + 1) % VAL_EVERY == 0:
+            va, vplat, _ = eval_split(val)
+            marker = ""
+            if va > best_val:
+                best_val = va
+                model.save_pretrained(os.path.join(OUT_DIR, "adapter_best"))
+                torch.save(head.state_dict(), os.path.join(OUT_DIR, "head_best.pt"))
+                marker = " <- best, saved"
+            print(f"[{i+1}] VAL auc={va} per-platform={vplat}{marker}", flush=True)
 
-    final_auc, per_plat, scores = eval_holdout()
-    print(f"FINAL holdout auc={final_auc} per-platform={per_plat}")
-    model.save_pretrained(os.path.join(OUT_DIR, "adapter"))
-    torch.save(head.state_dict(), os.path.join(OUT_DIR, "head.pt"))
+    # final: reload the best-by-val checkpoint, report on untouched holdout
+    if os.path.isdir(os.path.join(OUT_DIR, "adapter_best")):
+        model.load_adapter(os.path.join(OUT_DIR, "adapter_best"), "best")
+        model.set_adapter("best")
+        head.load_state_dict(torch.load(os.path.join(OUT_DIR, "head_best.pt"),
+                                        weights_only=True))
+    final_auc, per_plat, scores = eval_split(holdout)
+    print(f"FINAL (best-by-val) holdout auc={final_auc} per-platform={per_plat}")
 
     # calibration curve on holdout: squash scores 0-10, bucket hit-rates
     vals = sorted(scores.values())
