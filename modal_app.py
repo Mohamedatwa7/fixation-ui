@@ -651,6 +651,19 @@ A fine-tuned ranking model (validated against real market outcomes: it picks the
 Be specific to these creatives. Never pad."""
 
 
+def _rank_score_video(frames):
+    """Video organic rank: mean ranker score over sampled keyframes.
+    frames: [(media_type, b64)] from _sample_frames. None if any frame fails
+    (partial means aren't comparable across videos)."""
+    scores = []
+    for _, b64_data in frames or []:
+        s = _rank_score_b64(b64_data)
+        if s is None:
+            return None
+        scores.append(s)
+    return round(sum(scores) / len(scores), 1) if scores else None
+
+
 def _rank_score_b64(img_b64):
     """Rank a base64 image via the ranker endpoint; None when unavailable."""
     import tempfile
@@ -1442,6 +1455,7 @@ def fastapi_app():
                                          context_text=_context_text(title, description))
             funnel = judgment.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(kpis_block, judgment, "video", funnel)
+            video_rank = _rank_score_video(frames)
             # A result that exceeds the 100MB dict-entry cap kills the whole
             # job at the very end; better to ship it without the heatmap.
             heatmap_b64 = b64(sal_web)
@@ -1458,10 +1472,13 @@ def fastapi_app():
                     "verdict": report.get("diagnosis", {}),
                     "engagement_potential": engagement_potential,
                     "score": engagement_potential,
-                    "organic_engagement": organic,
+                    "organic_engagement": video_rank if video_rank is not None else organic,
+                    "organic_source": "ranker_keyframes" if video_rank is not None else "weights",
+                    "organic_weights_score": organic,
                     "kpis": five_kpis,
                     "kpis_overall": engagement_potential,
-                    "benchmarkPercentile": _cohort_percentile(organic),
+                    "benchmarkPercentile": _cohort_percentile(
+                        video_rank if video_rank is not None else organic),
                     "funnel_stage": funnel,
                     "product_tier": judgment.get("product_tier"),
                     "heatmap": heatmap_b64,

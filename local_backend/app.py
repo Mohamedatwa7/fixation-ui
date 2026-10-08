@@ -242,6 +242,7 @@ def _run_video(job_id, video_path, title=None, description=None):
         funnel = judgment.get("funnel_stage") or "mid"
         engagement_potential, five_kpis, organic = core.aggregate_engagement(
             kpis_block, judgment, "video", funnel)
+        video_rank = core._rank_score_video(frames)
         heatmap_b64 = b64(sal_web)
         ctx_fit = (core._assess_context_fit(frames, core._context_text(title, description),
                                             engagement_potential)
@@ -253,10 +254,13 @@ def _run_video(job_id, video_path, title=None, description=None):
                 "verdict": report.get("diagnosis", {}),
                 "engagement_potential": engagement_potential,
                 "score": engagement_potential,
-                "organic_engagement": organic,
+                "organic_engagement": video_rank if video_rank is not None else organic,
+                "organic_source": "ranker_keyframes" if video_rank is not None else "weights",
+                "organic_weights_score": organic,
                 "kpis": five_kpis,
                 "kpis_overall": engagement_potential,
-                "benchmarkPercentile": core._cohort_percentile(organic),
+                "benchmarkPercentile": core._cohort_percentile(
+                    video_rank if video_rank is not None else organic),
                 "funnel_stage": funnel,
                 "product_tier": judgment.get("product_tier"),
                 "heatmap": heatmap_b64,
