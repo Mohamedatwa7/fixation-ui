@@ -21,6 +21,8 @@ export interface AnalysisMeta {
   mediaType?: string
   /** Force in-feed scoring (organic pull as headline) regardless of format — set for social-URL analyses */
   inFeed?: boolean
+  /** Samsung-owned channel the post will run on (FBPAGE | INSTAGRAM | YOUTUBE) — routes Organic Pull to the owned-channel model */
+  ownedPlatform?: string
 }
 
 
@@ -155,6 +157,7 @@ function adaptResult(raw: any, meta: AnalysisMeta): any {
     craftScore: ctxScore !== undefined ? craftScore : undefined,
     organicEngagement: organic,
     organicSource: typeof raw.organic_source === 'string' ? raw.organic_source : undefined,
+    organicNote: typeof raw.organic_note === 'string' ? raw.organic_note : undefined,
     contextScore: ctxScore,
     contextReasoning: typeof raw.context_reasoning === 'string' ? raw.context_reasoning : undefined,
     benchmarkPercentile,
@@ -185,6 +188,7 @@ export async function analyzeCreative(file: File, meta: AnalysisMeta): Promise<a
   if (meta.description) form.append('description', meta.description)
   if (meta.format) form.append('format_type', meta.format)
   if (meta.role) form.append('role', String(meta.role).toLowerCase().replace(/\s+/g, '_'))
+  if (meta.ownedPlatform) form.append('owned_platform', meta.ownedPlatform)
   // Submit asynchronously and poll — a synchronous request holds the HTTP
   // connection open and trips Modal's web-request timeout (→ 408) on slower
   // images or cold starts. This mirrors the video flow.

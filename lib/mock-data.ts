@@ -61,8 +61,10 @@ export interface DiagnosticResult {
    *  context score has taken the headline */
   craftScore?: number
   organicEngagement?: number // beta: KPI weighting calibrated vs realized organic engagement
-  /** 'ranker' (fine-tuned pairwise model, holdout AUC 0.851) or 'weights' (refit KPI blend) */
+  /** 'ranker' | 'ranker_owned' | 'ranker_keyframes' | 'weights' */
   organicSource?: string
+  /** Calibration sentence for the model that produced organicEngagement */
+  organicNote?: string
   /** Context-conditioned expected performance — only present when the user supplied campaign context */
   contextScore?: number
   contextReasoning?: string

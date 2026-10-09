@@ -493,7 +493,7 @@ def _media_type(path):
 RANKER_URL = "https://mohamedymay7--rank.modal.run"
 
 
-def _rank_score(image_path):
+def _rank_score(image_path, variant="organic"):
     """Fine-tuned pairwise ranker (fixation-ranker-api) — the strongest
     validated predictor of realized organic engagement for stills (holdout
     AUC 0.851 vs 0.694 for the weight refit). Returns None on any failure so
@@ -505,7 +505,8 @@ def _rank_score(image_path):
         # loop; requests' default of 30 hops can wedge the job for the whole
         # model load. Follow a few hops (enough for a ~90s warm-from-cache
         # boot) then fall back to weights instead of blocking the analysis.
-        r = requests.post(RANKER_URL, json={"image_b64": img_b64},
+        r = requests.post(RANKER_URL,
+                          json={"image_b64": img_b64, "model": variant},
                           timeout=180, allow_redirects=False)
         # Modal signals a cold boot with a 303 to an attempt-token URL that
         # must be polled with GET (re-POSTing it is "bad redirect method").
@@ -1327,7 +1328,8 @@ def fastapi_app():
             if os.path.exists(tmp):
                 os.remove(tmp)
 
-    def _run_image(job_id, image_path, title, description, format_type, role):
+    def _run_image(job_id, image_path, title, description, format_type, role,
+                   owned_platform=None):
         try:
             JOBS[job_id] = {"status": "analyzing"}
             from analyze_image import analyze_image
@@ -1352,7 +1354,8 @@ def fastapi_app():
             measured = kpi_data.get("kpis", {})
             funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
             engagement_potential, five_kpis, organic = aggregate_engagement(measured, judgment, "image", funnel)
-            rank = _rank_score(image_path)
+            rank = _rank_score(image_path,
+                               "owned" if owned_platform else "organic")
             ctx_fit = (_assess_context_fit([(_media_type(image_path), b64(image_path))],
                                            _context_text(title, description, format_type),
                                            engagement_potential)
@@ -1365,7 +1368,12 @@ def fastapi_app():
                     "engagement_potential": engagement_potential,
                     "score": engagement_potential,
                     "organic_engagement": rank if rank is not None else organic,
-                    "organic_source": "ranker" if rank is not None else "weights",
+                    "organic_source": (("ranker_owned" if owned_platform else "ranker")
+                                       if rank is not None else "weights"),
+                    "organic_note": ("Samsung-owned-channel model (AUC 0.854; "
+                                     "scores 6+ were top-quartile performers 97% "
+                                     "of the time on held-out posts)"
+                                     if rank is not None and owned_platform else None),
                     "organic_weights_score": organic,
                     "kpis": five_kpis,
                     "kpis_overall": engagement_potential,
@@ -1534,6 +1542,7 @@ def fastapi_app():
         file: UploadFile = File(...),
         title: str = Form(None), description: str = Form(None),
         format_type: str = Form("KV"), role: str = Form("creative_director"),
+        owned_platform: str = Form(None),
     ):
         job_id = str(uuid.uuid4())
         tmp = f"/tmp/upload_{job_id}_{file.filename}"
@@ -1542,7 +1551,8 @@ def fastapi_app():
         JOBS[job_id] = {"status": "analyzing"}
         threading.Thread(
             target=_run_image,
-            args=(job_id, tmp, title, description, format_type, role),
+            args=(job_id, tmp, title, description, format_type, role,
+                  owned_platform or None),
             daemon=True,
         ).start()
         return {"job_id": job_id}

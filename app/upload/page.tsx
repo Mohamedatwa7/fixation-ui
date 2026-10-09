@@ -52,6 +52,7 @@ export default function UploadPage() {
   const [inputMode, setInputMode] = useState<InputMode>('upload')
   const [role, setRole] = useState<Role>('Marketer')
   const [format, setFormat] = useState<Format>('KV')
+  const [ownedPlatform, setOwnedPlatform] = useState('')
   const [title, setTitle] = useState('')
   const [context, setContext] = useState('')
   const [file, setFile] = useState<File | null>(null)
@@ -119,7 +120,8 @@ export default function UploadPage() {
     try {
       let result
       let sourcePreview: string | undefined
-      const sharedMeta = { title, description: context, format, role }
+      const sharedMeta = { title, description: context, format, role,
+                           ownedPlatform: ownedPlatform || undefined }
 
       if (inputMode === 'url' && mediaType === 'video') {
         // Social / video URL — send URL string directly to the video-url endpoint
@@ -351,6 +353,27 @@ export default function UploadPage() {
                   className="w-full appearance-none bg-white/[0.02] border border-white/15 rounded-[3px] px-3.5 py-3 font-mono text-xs text-[#fafafa] focus:outline-none focus:border-accent cursor-pointer transition-colors duration-300 pr-8 disabled:opacity-50"
                 >
                   {formats.map(f => <option key={f} value={f} className="bg-panel">{f}</option>)}
+                </select>
+                <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
+                  <ChevronIcon />
+                </div>
+              </div>
+            </BarField>
+
+            <BarField label="Channel" className="col-span-1 lg:col-span-2">
+              <div className="relative">
+                <select
+                  value={ownedPlatform}
+                  onChange={e => setOwnedPlatform(e.target.value)}
+                  disabled={isAnalyzing}
+                  aria-label="Posting channel"
+                  title="Samsung-owned channel: scores with the owned-channel model (6+ scores were top-quartile performers 97% of the time on held-out posts)"
+                  className="w-full appearance-none bg-white/[0.02] border border-white/15 rounded-[3px] px-3.5 py-3 font-mono text-xs text-[#fafafa] focus:outline-none focus:border-accent cursor-pointer transition-colors duration-300 pr-8 disabled:opacity-50"
+                >
+                  <option value="" className="bg-panel">General</option>
+                  <option value="INSTAGRAM" className="bg-panel">Samsung IG</option>
+                  <option value="FBPAGE" className="bg-panel">Samsung FB</option>
+                  <option value="YOUTUBE" className="bg-panel">Samsung YT</option>
                 </select>
                 <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-white/40">
                   <ChevronIcon />

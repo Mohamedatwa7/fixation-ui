@@ -23,6 +23,10 @@ import modal
 MODEL_ID = "Qwen/Qwen3-VL-4B-Instruct"
 MAX_PIXELS = 512 * 28 * 28
 ADAPTER_DIR = "/adapter/pre_lr5e6"
+# Dual-model serving: "model" field selects. organic = pre_lr5e6 (0.921 on
+# organic brand IG); owned = Sprinklr-trained (/adapter/sprinklr, 0.854 on
+# Samsung-owned multi-platform; 6+ scores -> 97% top-quartile).
+VARIANT_DIRS = {"organic": "/adapter/pre_lr5e6", "owned": "/adapter/sprinklr"}
 
 app = modal.App("fixation-ranker-api")
 hf_cache = modal.Volume.from_name("fixation-ranker-hf", create_if_missing=True)
@@ -50,22 +54,31 @@ class Ranker:
         self.processor = AutoProcessor.from_pretrained(MODEL_ID, max_pixels=MAX_PIXELS)
         base = AutoModelForImageTextToText.from_pretrained(
             MODEL_ID, dtype=torch.bfloat16, device_map="cuda")
-        self.model = PeftModel.from_pretrained(base, f"{ADAPTER_DIR}/adapter").eval()
+        self.model = PeftModel.from_pretrained(
+            base, f"{VARIANT_DIRS['organic']}/adapter", adapter_name="organic")
+        if os.path.isdir(f"{VARIANT_DIRS['owned']}/adapter"):
+            self.model.load_adapter(f"{VARIANT_DIRS['owned']}/adapter",
+                                    adapter_name="owned")
+        self.model = self.model.eval()
         hidden = base.config.text_config.hidden_size if hasattr(base.config, "text_config") \
             else base.config.hidden_size
-        self.head = torch.nn.Linear(hidden, 1, dtype=torch.bfloat16).to("cuda")
-        self.head.load_state_dict(torch.load(f"{ADAPTER_DIR}/head.pt", map_location="cuda"))
-        self.head.eval()
-        # holdout score distribution -> readable 0-10 squash
-        with open(f"{ADAPTER_DIR}/calibration.json") as f:
-            scores = list(json.load(f).get("holdout_scores", {}).values())
-        if scores:
-            scores.sort()
-            self.mid = scores[len(scores) // 2]
-            spread = (scores[int(0.9 * len(scores))] - scores[int(0.1 * len(scores))]) or 1.0
-            self.scale = 2.0 / spread
-        else:
-            self.mid, self.scale = 0.0, 1.0
+        self.heads, self.calib = {}, {}
+        for name, d in VARIANT_DIRS.items():
+            if not os.path.exists(f"{d}/head.pt"):
+                continue
+            h = torch.nn.Linear(hidden, 1, dtype=torch.bfloat16).to("cuda")
+            h.load_state_dict(torch.load(f"{d}/head.pt", map_location="cuda"))
+            h.eval()
+            self.heads[name] = h
+            with open(f"{d}/calibration.json") as f:
+                scores = sorted(json.load(f).get("holdout_scores", {}).values())
+            if scores:
+                mid = scores[len(scores) // 2]
+                spread = (scores[int(0.9 * len(scores))]
+                          - scores[int(0.1 * len(scores))]) or 1.0
+                self.calib[name] = (mid, 2.0 / spread)
+            else:
+                self.calib[name] = (0.0, 1.0)
 
         messages = [{"role": "user", "content": [
             {"type": "image"},
@@ -83,18 +96,24 @@ class Ranker:
 
         from PIL import Image as PILImage
 
+        variant = item.get("model") or "organic"
+        if variant not in self.heads:
+            variant = "organic"
         img = PILImage.open(io.BytesIO(base64.b64decode(item["image_b64"]))).convert("RGB")
+        self.model.set_adapter(variant)
         inputs = self.processor(text=[self.chat_text], images=[img],
                                 return_tensors="pt").to("cuda")
         with self.torch.no_grad():
             out = self.model(**inputs, output_hidden_states=True)
             hs = out.hidden_states[-1]
             idx = int(inputs["attention_mask"].sum(1).item()) - 1
-            raw = float(self.head(hs[0, idx]).squeeze())
-        squashed = 10.0 / (1.0 + pow(2.718281828, -(raw - self.mid) * self.scale))
+            raw = float(self.heads[variant](hs[0, idx]).squeeze())
+        mid, scale = self.calib[variant]
+        squashed = 10.0 / (1.0 + pow(2.718281828, -(raw - mid) * scale))
         return {
             "rank_score": round(squashed, 2),
             "raw": round(raw, 4),
+            "model": variant,
             "note": ("Relative organic-engagement rank signal (fine-tuned "
                      "pairwise ranker); compare between creatives, not an "
                      "absolute quality score."),

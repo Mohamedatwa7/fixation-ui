@@ -109,7 +109,8 @@ def b64(path):
 
 # ── Image pipeline (in-process, same as Modal did) ──────────────────────────
 
-def _image_result(image_path, title, description, format_type, role, lite=False):
+def _image_result(image_path, title, description, format_type, role, lite=False,
+                  owned_platform=None):
     from analyze_image import analyze_image
 
     judgment = core.assess_engagement(
@@ -134,7 +135,7 @@ def _image_result(image_path, title, description, format_type, role, lite=False)
     funnel = judgment.get("funnel_stage") or kpi_data.get("funnel_stage") or "mid"
     engagement_potential, five_kpis, organic = core.aggregate_engagement(
         measured, judgment, "image", funnel)
-    rank = core._rank_score(image_path)
+    rank = core._rank_score(image_path, "owned" if owned_platform else "organic")
     ctx_fit = (core._assess_context_fit(
         [(core._media_type(image_path), b64(image_path))],
         core._context_text(title, description, format_type),
@@ -145,7 +146,12 @@ def _image_result(image_path, title, description, format_type, role, lite=False)
         "engagement_potential": engagement_potential,
         "score": engagement_potential,
         "organic_engagement": rank if rank is not None else organic,
-        "organic_source": "ranker" if rank is not None else "weights",
+        "organic_source": (("ranker_owned" if owned_platform else "ranker")
+                           if rank is not None else "weights"),
+        "organic_note": ("Samsung-owned-channel model (AUC 0.854; scores 6+ "
+                         "were top-quartile performers 97% of the time on "
+                         "held-out posts)"
+                         if rank is not None and owned_platform else None),
         "organic_weights_score": organic,
         "kpis": five_kpis,
         "kpis_overall": engagement_potential,
@@ -157,11 +163,13 @@ def _image_result(image_path, title, description, format_type, role, lite=False)
     }
 
 
-def _run_image(job_id, image_path, title, description, format_type, role):
+def _run_image(job_id, image_path, title, description, format_type, role,
+               owned_platform=None):
     try:
         JOBS[job_id] = {"status": "analyzing"}
         with _GPU_LOCK:
-            result = _image_result(image_path, title, description, format_type, role)
+            result = _image_result(image_path, title, description, format_type, role,
+                                   owned_platform=owned_platform)
         JOBS[job_id] = {"status": "done", "result": result}
     except Exception as e:
         import traceback
@@ -316,6 +324,7 @@ async def submit_image(
     file: UploadFile = File(...),
     title: str = Form(None), description: str = Form(None),
     format_type: str = Form("KV"), role: str = Form("creative_director"),
+    owned_platform: str = Form(None),
 ):
     job_id = str(uuid.uuid4())
     tmp = str(TMP / f"upload_{job_id}_{file.filename}")
@@ -323,7 +332,8 @@ async def submit_image(
         f.write(await file.read())
     JOBS[job_id] = {"status": "analyzing"}
     threading.Thread(target=_run_image,
-                     args=(job_id, tmp, title, description, format_type, role),
+                     args=(job_id, tmp, title, description, format_type, role,
+                           owned_platform or None),
                      daemon=True).start()
     return {"job_id": job_id}
 

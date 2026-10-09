@@ -217,6 +217,20 @@ export default function SpecimenVerdict({ result }: { result: DiagnosticResult }
                 Organic {result.craftScore.toFixed(1)}
               </span>
             )}
+            {result.organicSource === 'ranker_owned' &&
+              typeof result.organicEngagement === 'number' && (
+              <span
+                className="font-mono text-[10px] uppercase tracking-[0.16em] px-2.5 py-1 rounded-[2px] border"
+                style={{
+                  color: scoreColor(result.organicEngagement),
+                  borderColor: `${scoreColor(result.organicEngagement)}40`,
+                }}
+                title={result.organicNote ??
+                  'Samsung-owned-channel performance forecast'}
+              >
+                Owned-channel {result.organicEngagement.toFixed(1)}
+              </span>
+            )}
             <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-white/35 pl-1">
               Better than <span className="text-accent">{result.benchmarkPercentile}%</span> of category
             </span>
